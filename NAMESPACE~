@@ -1,0 +1,16 @@
+useDynLib(SKAT, .registration = TRUE)
+
+# functions
+export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights, 
+       Get_Resampling_Pvalue, Resampling_FWER, Get_RequiredSampleSize,
+       SKAT.SSD.OneSet, SKAT.SSD.OneSet_SetIndex, SKAT.SSD.All,
+       SKAT_Null_Model, SKAT_Null_Model_MomentAdjust,
+       SKAT_Null_Model_EP, SKAT_Null_Model_EP_MomentAdjust,
+       Power_Continuous, Power_Logistic,
+       Power_Continuous_R, Power_Logistic_R,
+       Generate_SSD_SetID, Close_SSD, Open_SSD,Get_Genotypes_SSD)
+
+# variables
+#export(SSD_FILE_OPEN.isOpen,SSD_FILE_OPEN.FileName)
+
+

@@ -1,0 +1,7 @@
+.git
+.gitignore
+.*~$
+temp
+test_ssd
+test_vcf
+test

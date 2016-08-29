@@ -1,0 +1,32 @@
+useDynLib(SKAT, .registration = TRUE)
+
+# functions
+export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights, 
+       	Get_Resampling_Pvalue, Get_Resampling_Pvalue_1,
+       	Resampling_FWER, Resampling_FWER_1,
+	Get_RequiredSampleSize,
+       	SKAT.SSD.OneSet, SKAT.SSD.OneSet_SetIndex, SKAT.SSD.All,
+       	SKAT_Null_Model, SKAT_Null_Model_MomentAdjust,
+       	Power_Continuous, Power_Logistic,
+       	Power_Continuous_R, Power_Logistic_R,
+       	Generate_SSD_SetID, Close_SSD, Open_SSD,Get_Genotypes_SSD,
+	Read_Plink_FAM, Read_Plink_FAM_Cov, SKAT_CommonRare,Read_SNP_WeightFile,
+	SKAT_CommonRare.SSD.OneSet, SKAT_CommonRare.SSD.OneSet_SetIndex, SKAT_CommonRare.SSD.All, 
+	SKAT_NULL_emmaX,
+	SKATBinary, SKATBinary_Single, Get_EffectiveNumberTest, QQPlot_Adj,
+	SKATBinary.SSD.OneSet, SKATBinary.SSD.OneSet_SetIndex, SKATBinary.SSD.All,
+	SKAT_Null_Model_ChrX, SKAT_ChrX)
+
+     importFrom("graphics", "abline", "legend", "plot", "points")
+     importFrom("stats", "approxfun", "dbeta", "dchisq", "get_all_vars",
+     "glm", "integrate", "lm", "median", "model.frame",
+     "model.matrix", "model.response", "na.omit", "na.pass",
+     "pchisq", "predict", "qchisq", "qqplot", "quantile",
+     "rbinom", "rmultinom", "rnorm", "runif", "sd",
+     "smooth.spline", "uniroot", "var")
+     importFrom("utils", "data", "read.delim", "read.table", "write.table")
+     
+# variables
+#export(SSD_FILE_OPEN.isOpen,SSD_FILE_OPEN.FileName)
+
+
