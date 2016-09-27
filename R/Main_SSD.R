@@ -46,7 +46,7 @@ Read_Plink_FAM_Cov<-function(Filename, File_Cov, Is.binary=TRUE, flag1=0, cov_he
 	Cov.Obj<-read.table(File_Cov, header=cov_header)
 	ncov<-dim(Cov.Obj)[2]
 	
-	if(ncov <= 3){
+	if(ncov <= 2){
 		msg<-sprintf("Error: Cov file only has <= 2 columns!\n")
 		stop(msg)
 	}
