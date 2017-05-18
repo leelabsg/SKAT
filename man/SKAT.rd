@@ -28,7 +28,7 @@ SKAT.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots ,obj.SNPWeight=NULL)
       "davies" represents an exact method that  computes the p-value by inverting the characteristic function of the mixture chisq, 
       "liu" represents an approximation method that matches the first 3 moments, 
       "liu.mod" represents modified "liu" method that matches kurtosis instead of skewness 
-      to improve tail probability approximation, "optimal.adj" represents a SKAT-O based on an unified approach, 
+      to improve tail probability approximation,"SKATO" and "optimal.adj" represent a SKAT-O based on an unified approach, 
       and "optimal" is an old version of the implementation of SKAT-O. See details.}
       \item{weights.beta}{a numeric vector of parameters for the beta weights for the weighted kernels. 
       If you want to use your own  weights, please use the ``weights'' parameter. It will be ignored if ``weights'' parameter is not null.}
@@ -103,7 +103,7 @@ If r.corr is a vector, SKAT-O will be conducted with adaptively seleting \eqn{\r
 \eqn{\rho} should be a value between 0 and 1. When method="optimal" or method="optimal.adj", the r.corr parameter will be ignored.
 
 We slightly changed the implementation for SKAT-O to improve the estimation of p-values. You can run it by 
-using method="optimal.adj". It uses a grid of eight points \eqn{\rho=(0, 0.1^2, 0.2^2, 0.3^2, 0.4^2, 0.5^2, 0.5, 1)} 
+using method="optimal.adj" or "SKATO". It uses a grid of eight points \eqn{\rho=(0, 0.1^2, 0.2^2, 0.3^2, 0.4^2, 0.5^2, 0.5, 1)} 
 for the search of the optimal \eqn{\rho}.   
 If you want to use the original implementation of SKAT-O, use method="optimal" that 
 carries out SKAT-O with an equal sized grid of 11 points (from 0 to 1).
@@ -188,8 +188,9 @@ SKAT(Z, obj.b)$p.value
 #		- Optimal Test
 
 SKAT(Z, obj, method="optimal.adj")$p.value
-SKAT(Z, obj.b, method="optimal.adj")$p.value
 
+# you can get the same p-value by using method="SKATO"
+SKAT(Z, obj, method="SKATO")$p.value
 
 #############################################################
 #	SKAT with Beta(1,30) Weights

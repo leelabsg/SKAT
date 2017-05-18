@@ -75,13 +75,15 @@ attach(SKAT.example.ChrX)
 
 # binary trait
 obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D")
-SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", r.corr=0)
+
+# SKAT
+SKAT_ChrX(Z, obj.x, kernel = "linear.weighted")
 
 # Burden
 SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", r.corr=1)
 
 # SKAT-O
-SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", method="optimal.adj")
+SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", method="SKATO")
 
 
 

@@ -22,7 +22,7 @@ typedef int BOOL;
 #define pi 3.14159265358979
 #define log28 .0866  /*  log(2.0) / 8.0  */
 
-extern "C" {
+//extern "C" {
 
 static double sigsq, lmax, lmin, mean, c;
 static double intl, ersm;
@@ -255,7 +255,7 @@ static double exp1(double x)               /* to avoid underflows  */
    }
 
 
-void  qfc(double* lb1, double* nc1, int* n1, int *r1, double *sigma, double *c1, int *lim1, double *acc, double* trace, int* ifault, double *res)
+void  qfc_1(double* lb1, double* nc1, int* n1, int *r1, double *sigma, double *c1, int *lim1, double *acc, double* trace, int* ifault, double *res)
 
 /*  distribution function of a linear combination of non-central
    chi-squared random variables :
@@ -397,5 +397,5 @@ output:
 }
 
 
-}
+//}
 

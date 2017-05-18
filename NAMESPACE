@@ -24,7 +24,7 @@ export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights,
      "pchisq", "predict", "qchisq", "qqplot", "quantile",
      "rbinom", "rmultinom", "rnorm", "runif", "sd",
      "smooth.spline", "uniroot", "var")
-     importFrom("utils", "data", "read.delim", "read.table", "write.table")
+     importFrom("utils", "data", "read.delim", "read.table", "write.table", "txtProgressBar", "setTxtProgressBar")
      
 # variables
 #export(SSD_FILE_OPEN.isOpen,SSD_FILE_OPEN.FileName)

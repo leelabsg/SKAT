@@ -1,5 +1,14 @@
 %\VignetteIndexEntry{SKAT}
-\documentclass{article}
+%\documentclass{article}
+\documentclass[11pt]{article}
+
+
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{0.15in}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{8.6in}
+
 
 \usepackage{amsmath}
 \usepackage{amscd}
@@ -8,18 +17,19 @@
 \usepackage[utf8]{inputenc}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \title{SKAT Package}
 \author{Seunggeun (Shawn) Lee}
 \maketitle
 
 \section{Overview}
-SKAT package has functions to 1) test an association between a SNP set
-and continuous/binary phenotypes and 2) to compute power/sample size for future sequence association studies. 
+SKAT package has functions to 1) test for associations between SNP sets
+and continuous/binary phenotypes with adjusting for covariates and kinships and 2) to compute power/sample size for future studies.
+
 
 \section{Association test}
 
-\subsection{Example}
 An example dataset (SKAT.example) has a genotype matrix (Z) of  2000 individuals and 67 SNPs, 
 vectors of continuous (y.c) and binary (y.b) phenotypes, and a covariates matrix (X).
 
@@ -31,9 +41,8 @@ names(SKAT.example)
 attach(SKAT.example)
 @
 
-To test an association, SKAT\_Null\_Model function should be first used to estimate parameters
-and to obtain residuals under the null model of no associations. And then, 
-SKAT function can be used to get p-values.  
+To test for associations, SKAT\_Null\_Model function should be used in prior to run SKAT to estimate parameters
+under the null model of no associations.
 
 <<SKAT1>>=
 # continuous trait 
@@ -47,10 +56,10 @@ SKAT(Z, obj)$p.value
 @
 
 When the trait is binary and the sample size is small, 
-SKAT can produce conservative results. We developed a moment matching adjustment method 
+SKAT can produce conservative results. We developed a moment matching adjustment (MA)  
 that adjusts the asymptotic null distribution by estimating empirical variance and kurtosis.
-By default, SKAT ( >= ver 0.7) will conduct a small sample adjustment 
-when the sample size $ < 2000$. In the following code, we use only 200 samples to run SKAT.
+By default, SKAT will conduct the MA adjustment when the sample size $ < 2000$. 
+In the following code, we use only 200 samples to run SKAT. 
 
 <<SKAT11>>=
 
@@ -71,12 +80,16 @@ SKAT(Z[IDX,], obj.s, kernel = "linear.weighted")$p.value
 
 
 We recently developed an efficient resampling method to compute p-values for binary traits, 
-and the methods are implemented in SKATBinary function. When you use this function, Adjustment=TRUE in SKAT\_Null\_Model is not necessary.
+and the methods are implemented in SKATBinary function. When you use the SKATBinary function, Adjustment=TRUE in SKAT\_Null\_Model is not necessary.
 Implemented methods are 1) Efficient resampling (ER); 2) ER with adaptive resampling (ER.A);
 3) Quantile adjusted moment matching (QA); 4) Moment matching adjustment (MA);
 5) No adjustment (UA);  and 6) Hybrid. 
 "Hybrid" (default method) selects a method based on the total minor allele count (MAC), the number of individuals with minor 
 alleles (m), and the degree of case-control imbalance. 
+Detailed description of these methods can be found in the following reference: \\
+
+Lee, S., Fuchsberger, C., Kim, S., Scott, L. (2016)
+An efficient resampling method for calibrating single and gene-based rare variant association analysis in case–control studies. \textit{Biostatistics} (2016) 17 (1): 1-15.
   
 <<SKAT22>>=
 
@@ -95,16 +108,15 @@ $ Z W W Z'$, where $Z$ is a genotype matrix, and $W = diag \{ w_1, \ldots, w_m \
 In the previous examples, we used the default beta(1,25) weight, 
 $w_i = dbeta(p_i, 1, 25) $, where $dbeta$ is a beta density function,
 and $p_i$ is a minor allele frequency (MAF) of SNP $i$.
-You can use different parameters for the beta weight by changing the weights.beta parameter. 
-For example, if you want to use Madsen and Browning weight, use weight.beta=c(0.5,0.5). 
+Different parameters for the beta weight can be used by changing weights.beta. 
+For example, weight.beta=c(0.5,0.5) will use the Madsen and Browning weight.
 
 
 <<SKAT3>>=
 SKAT(Z, obj, kernel = "linear.weighted", weights.beta=c(0.5,0.5))$p.value
 @
 
-You can make your own weight vector and use it for the weighting. 
-For the logistic weight, we provide a function to generate the weight. 
+You can use your own weight vector by using the weights parameter. For the logistic weight, we provide a function to generate the weight. 
 
 <<SKAT4>>=
 # Shape of the logistic weight
@@ -122,42 +134,48 @@ SKAT(Z, obj, kernel = "linear.weighted", weights=weights)$p.value
 @
 
 
-
-\subsection{Combined Test of burden test and SKAT}
+\subsection{SKAT-O: Combined Test of burden test and SKAT}
 
 A test statistic of the combined test is
 $$Q_{\rho} = (1-\rho) Q_S + \rho Q_B,$$
 where $Q_S$ is a test statistic of SKAT, and $Q_B$ is a score test statistic of the burden test. 
-You can specify $\rho$ value using the r.corr parameter (default: , r.corr=0).
+The $\rho$ value can be specified by using the r.corr parameter (default: r.corr=0).
 
 <<SKAT41>>=
-#rho=0
+#rho=0, SKAT
 SKAT(Z, obj, r.corr=0)$p.value
 
 #rho=0.9
 SKAT(Z, obj, r.corr=0.9)$p.value
 
-#rho=1, burden test
+#rho=1, Burden test
 SKAT(Z, obj, r.corr=1)$p.value
 @
 
 
-If method=``optimal.adj'', SKAT-O method is performed, 
+If method=``optimal.adj'' or ``SKATO'' (both are equivalent), SKAT-O method will be performed, 
 which computes p-values with eight different values of $\rho=(0, 0.1^2, 0.2^2, 0.3^2, 0.4^2, 0.5^2, 0.5, 1)$
 and then uses the minimum p-value as a test statistic. 
-If you want to use the original implementation of SKAT-O, use method=``optimal''. 
-We recommend to use ``optimal.adj'', since it has a better type I error control.
+If you want to use the original implementation of SKAT-O, use method=``optimal'', which uses 
+eleven equally spaced $\rho$ values from 0 to 1 as a grid of $\rho$s.
+We recommend to use ``SKATO'' or ``optimal.adj'', since it has a better type I error control.
 
 <<SKAT42>>=
 
 #Optimal Test
-SKAT(Z, obj, method="optimal.adj")$p.value
+SKAT(Z, obj, method="SKATO")$p.value
 
 @
 
-\subsection{Combined test of rare and common variants}
+\subsection{Combined test of common and rare variants}
 
-If you want to test combined effects of common and rare variants,  you can use SKAT\_CommonRare function. 
+It is possible that both common and rare variants are associated with phenotypes. 
+To test for combined effects of common and rare variants, SKAT\_CommonRare function can be used.
+The detailed description of the combined test can be found in the following reference: \\
+
+Ionita-Laza, I., Lee, S., Makarov, V., Buxbaum, J. Lin, X. (2013). 
+Sequence kernel association tests for the combined effect of rare and common variants.  
+\emph{AJHG}, 92(6):841-53.  \\
 
 <<SKAT43>>=
 # Combined sum test (SKAT-C and Burden-C)
@@ -172,13 +190,8 @@ SKAT_CommonRare(Z, obj, r.corr.rare=1, r.corr.common=1, method="A" )$p.value
 
 @
 
-The detailed description of each method can be found in the following reference. \\
 
-Ionita-Laza, I., Lee, S., Makarov, V., Buxbaum, J. Lin, X. (2013). 
-Sequence kernel association tests for the combined effect of rare and common variants.  
-\emph{American Journal of Human Genetics}, 92(6):841-53.  \\
-
-\subsection{Imputing missing genotypes.}
+\subsection{Impute missing genotypes.}
 
 If there are missing genotypes, SKAT automatically imputes them
 based on Hardy-Weinberg equilibrium. 
@@ -207,11 +220,11 @@ SKAT(Z1,obj,impute.method = "random")$p.value
 
 \subsection{Resampling}
 
-SKAT package provides functions to carry out resampling to
-compute empirical p-values and to control family wise error rate. 
+SKAT package provides functions to carry out resampling method to
+compute empirical p-values and to control for family wise error rate. 
 Two different resampling methods are implemented.
-``bootstrap'' conducts the parametric bootstrap to resample residuals from $H_0$ 
-with considering covariates. When there is no covariate, ``bootstrap'' is equivalent to
+``bootstrap'' conducts a parametric bootstrap to resample residuals from $H_0$ 
+with adjusting for covariates. When there is no covariate, ``bootstrap'' is equivalent to
 the permutation. ``perturbation'' perturbs the residuals by multiplying 
 standard normal random variables. The default method is ``bootstrap''.
 From ver 0.7, we do not provide the ``perturbation'' method.
@@ -226,15 +239,63 @@ type.Resampling="bootstrap")
 re<- SKAT(Z, obj, kernel = "linear.weighted")
 re$p.value	# SKAT p-value
 Get_Resampling_Pvalue(re)	# get resampling p-value
+
+detach(SKAT.example)
 @
 
 When there are many genes/SNP sets to test, 
 resampling methods can be used to control family-wise error rate. 
-You can find an example in the next section. 
+Examples are provided in the next section.
 
-\subsection{Plink Binary format files}
+\subsection{Adjust for kinship}
 
-SKAT package can use plink binary format files for genome-wide data analysis. 
+If related individuals exist in your data, you need to adjust for kinship. 
+SKAT\_NULL\_emmaX function uses linear mixed model (EMMAX) to estimate the variance component, 
+which will be subsequently used to adjust for kinship. For the kinship adjustment, 
+SKAT\_NULL\_emmaX function should be used instead of SKAT\_Null\_Model. 
+
+<<SKATKin1>>=
+data(SKAT.fam.example)
+attach(SKAT.fam.example)
+
+# K: kinship matrix 
+obj<-SKAT_NULL_emmaX(y ~ X, K=K)
+SKAT(Z, obj)$p.value
+
+# SKAT-O
+SKAT(Z, obj, method="SKATO")$p.value	
+
+detach(SKAT.fam.example)
+@
+
+\subsection{X chromosome test}
+
+Since male has only one copy of X-chromosome, special care is needed to test for associations in X-chromosome. 
+We have developed a method to test for X-chromosome in region based rare variant test with and without X-inactivation. 
+To use it, you need to use SKAT\_Null\_Model\_ChrX to fit the null model and SKAT\_ChrX for association tests.
+Detailed description of association tests in X-chromosome  can be found in the following reference: \\
+
+Ma, C., Boehnke, M., Lee, S., the GoT2D Investigators (2015) Evaluating the Calibration and Power of Three Gene-based Association Tests of Rare Variants for the X Chromosome, \textit{Genetic Epidemiology}, 39 (7): 499-508.
+
+<<SKATX1>>=
+data(SKAT.example.ChrX)
+attach(SKAT.example.ChrX)
+
+Z = SKAT.example.ChrX$Z
+#############################################################
+#	Compute the P-value of SKAT 
+
+# binary trait
+obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", data=SKAT.example.ChrX)
+
+# run SKAT-O
+SKAT_ChrX(Z, obj.x, method="SKATO")$p.value
+detach(SKAT.example.ChrX)
+@
+
+\section{Plink Binary format files}
+
+For the genome-wide data analysis, plink binary format files can be used in SKAT.
 To use plink files, plink bed, bim and fam files, and your own setid file 
 that contains information of SNP sets are needed. 
 Example files can be found on the SKAT/MetaSKAT google group page.
@@ -275,11 +336,17 @@ SSD.INFO$nSample
 SSD.INFO$nSets
 
 obj<-SKAT_Null_Model(y ~ 1, out_type="C")
+@
+
+<<SKAT_B21,echo=TRUE, results=hide>>=
 out<-SKAT.SSD.All(SSD.INFO, obj)
+@
+
+<<SKAT_B22>>=
 out
 @
 
-If you have a plink covariate file, you can use Read\_Plink\_FAM\_Cov file to read both FAM and covariate files. 
+If you have a plink covariate file, Read\_Plink\_FAM\_Cov function can be used to read both FAM and covariate files. 
 
 <<SKAT_B2Cov>>=
 File.Cov<-"./Example1.Cov"
@@ -294,7 +361,13 @@ X2 = FAM_Cov$X2
 y<-FAM_Cov$Phenotype
 
 obj<-SKAT_Null_Model(y ~ X1 + X2, out_type="C")
+@
+
+<<SKAT_B2Cov1,echo=TRUE, results=hide>>=
 out<-SKAT.SSD.All(SSD.INFO, obj)
+@
+
+<<SKAT_B2Cov2>>=
 out
 @
 
@@ -308,8 +381,12 @@ can be used as a parameter in SKAT.SSD functions
 # Custom weight
 # File: Example1_Weight.txt
 obj.SNPWeight<-Read_SNP_WeightFile("./Example1_Weight.txt")
+@
 
+<<SKAT_B2Weight1,echo=TRUE, results=hide>>=
 out<-SKAT.SSD.All(SSD.INFO, obj, obj.SNPWeight=obj.SNPWeight)
+@
+<<SKAT_B2Weight2>>=
 out
 @
 
@@ -324,15 +401,16 @@ write.table(output.df, file="./save.txt", col.names=TRUE, row.names=FALSE)
 
 
 If more than one gene/SNP sets are to be tested, 
-you should adjust for multiple testing to control for family-wise error rate. 
-It can be done bonferroni correction. If gene/SNP sets are correlated, however,
-this approach can be conservative. 
-Alternatively, you can directly control family wise error rate (FWER) using the resampling method. 
+multiple test should be adjusted to control for family-wise error rate. 
+It can be done by the bonferroni correction. If gene/SNP sets are correlated, however,
+this approach can be conservative. Alternatively, you can directly control family wise error rate (FWER) using the resampling method. 
 
-<<SKAT_B3>>==
+<<SKAT_B3,echo=TRUE, results=hide>>=
 obj<-SKAT_Null_Model(y ~ 1, out_type="C", n.Resampling=1000, type.Resampling="bootstrap")
 out<-SKAT.SSD.All(SSD.INFO, obj)
+@
 
+<<SKAT_B31>>==
 # No gene is significant with controling FWER = 0.05
 Resampling_FWER(out,FWER=0.05)
 
@@ -341,7 +419,7 @@ Resampling_FWER(out,FWER=0.5)
 @
 
 ``SKAT.SSD.OneSet'' or ``SKAT.SSD.OneSet\_SetIndex'' functions can be used
-to test a single gene/SNP set. Alternatively, 
+to test for a single gene/SNP set. Alternatively, 
 you can obtain a genotype matrix using ``Get\_Genotypes\_SSD'' function and then run SKAT. 
 
 <<SKAT_B4>>==
@@ -364,18 +442,18 @@ SKAT(Z, obj, weights=weights)$p.value
 
 SKAT\_CommonRare function also can be used with SSD files. 
 
-<<SKAT_B5>>==
+<<SKAT_B5,echo=TRUE, results=hide>>==
 
 # test all genes in SSD file
 obj<-SKAT_Null_Model(y ~ X1 + X2, out_type="C")
 out<-SKAT_CommonRare.SSD.All(SSD.INFO, obj)
+
+<<SKAT_B51>>==
 out
-
-
 @
 
 
-After finishing, please close the SSD file. 
+After finishing to use SSD files, please close them.
 
 <<SKAT_B5>>==
 Close_SSD()
@@ -384,8 +462,8 @@ Close_SSD()
 
 \subsection{Plink Binary format files: SKATBinary}
 
-SKATBinary functions can be used with plink formatted files. This section shows 
-example code. Example plink files can be found on the SKAT/MetaSKAT google group page.
+SKATBinary functions can also be used with plink formatted files. This section shows 
+an example code. Example plink files can be found on the SKAT/MetaSKAT google group page.
 
 <<SKAT_BB1>>=
 
@@ -409,14 +487,17 @@ SSD.INFO<-Open_SSD(File.SSD, File.Info)
 
 # No adjustment is needed
 obj<-SKAT_Null_Model(Phenotype ~ COV1 + COV2, out_type="D", data=FAM, Adjustment=FALSE)
+@
 
-
+<<SKAT_BB1,echo=TRUE, results=hide>>==
 # SKAT
 out.skat<-SKATBinary.SSD.All(SSD.INFO, obj, method="SKAT")
 
 # SKAT-O
 out.skato<-SKATBinary.SSD.All(SSD.INFO, obj, method="SKATO")
+@
 
+<<SKAT_BB2>>==
 # First 5 variant sets, SKAT
 out.skat$results[1:5,]
 
@@ -447,7 +528,7 @@ which contains a haplotype matrix of 10,000 haplotypes over 200kb region (Haplot
 and a dataframe with information on each SNP. 
 These haplotypes were simulated using a calibrated coalescent model (cosi) with mimicking 
 linkage disequilibrium structure of European ancestry. 
-If you don't have any haplotype information, use this dataset to compute power/sample size.
+If no haplotype data are available, this dataset can be used to compute power/sample size.
 
 <<data>>=
 data(SKAT.haplotypes)
@@ -458,8 +539,7 @@ attach(SKAT.haplotypes)
 
 \subsection{Power/Sample Size calculation}
 
-The following example uses the haplotypes in SKAT.haplotypes with 
-the following parameters. 
+The following example uses the haplotypes in SKAT.haplotypes with the following parameters. 
 
 \begin{enumerate}
 \item Subregion length = 3k bp 
@@ -484,8 +564,8 @@ Get_RequiredSampleSize(out.b, Power=0.8)
 
 @
 
-In this example, N.Sim=10 was used to get results quickly. 
-When you do the power calculation, please increase it to more than 100. 
+In this example, N.Sim=10 was used to get the result quickly. 
+When you run the power calculation, please increase it to more than 100. 
 When BetaType = ``Log'' or OR.Type = ``Log'', the effect size of  continuous trait 
 and the log odds ratio of binary traits are $c |log_{10}(MAF)|$, 
 where $c$ is determined by Max\_Beta or Max\_OR. 
@@ -494,20 +574,18 @@ In this case, a causal variant with MAF=0.01 has $\beta = 1$.
 For binary traits, $c= log(7)/4 = 0.486$ with MAX\_OR=7. 
 And thus, a causal variant with MAF=0.01 has log OR = 0.972.
 
-If you consider non-zero  r.corr ($\rho$) values to compute power, 
-Power\_Continuous\_R or Power\_Logistic\_R functions can be used instead.
-Since they use slightly different method to compute power, 
+Power\_Continuous\_R or Power\_Logistic\_R functions can be used to compute power with 
+with non-zero  r.corr ($\rho$).
+Since these functions use slightly different method to compute power, 
 power estimates from Power\_Continuous\_R and Power\_Logistic\_R can be slightly different from 
-estimates from Power\_Continuous and Power\_Logistic although r.corr=0.
-
-If you want to computer the power of SKAT-O by estimating the optimal r.corr, use r.corr=2. 
+estimates from Power\_Continuous and Power\_Logistic even when r.corr=0.
+If you want to computer the power of SKAT-O by estimating the optimal r.corr, please use r.corr=2. 
 The estimated optimal r.corr is 
 $$
 r.corr = p_1^2 ( 2p_2-1)^2,
 $$
 where $p_1$ is the proportion of nonzero $\beta$s, and $p_2$ is the proportion of negative (or positive) $\beta$s 
 among the non-zero $\beta$s. 
-
 
 <<SKAT_P2>>==
 set.seed(500)

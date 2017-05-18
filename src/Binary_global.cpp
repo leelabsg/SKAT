@@ -138,10 +138,10 @@ void SKAT_Permu(double *Z, int *Y, int nSNP, int nSample, int nPermu, double * p
     
 }
 
-
+/*
 extern "C" {
     
-/*  
+ 
     void RSKATExactMC(double * Q, int * nQ, int * ncohort, double * aZ0, double * aZ1, int * ak, int * am
                       , int * total_m, int * amarker_idx, int * atotal, int * atotal_k, double * aprob_k
                       , double * ap1, int * aIsExact, double * pval, double *pval_same)
@@ -155,7 +155,7 @@ extern "C" {
         
         
     }
-*/
+
     
     void RSKATExact(int * resarray, int * nres, int * nres_k, double * Z0, double *Z1, int * k, int * m, int * total, int * total_k, double *prob_k, double * odds, double * p1, int * IsExact, double * pval, double *pval_same, double *minP, int * test_type, double * epsilon)
     {
@@ -186,7 +186,7 @@ extern "C" {
     }
     
 } // extern "C"
-
+*/
 
 
 
