@@ -31,5 +31,5 @@ Following are main functions and key references. For details, please refer the p
 ## Link
 * SKAT CRAN: [Link](https://cran.r-project.org/web/packages/SKAT/index.html)
 * SKAT google group: [Link](https://groups.google.com/forum/#!forum/skat_slee)
-* Example dataset: [Download](https://github.com/leeshawn/SKAT/blob/master/vignettes/Example.zip)  
+* Example dataset: [Link](https://github.com/leeshawn/SKAT/blob/master/vignettes/Example.zip)  
 
