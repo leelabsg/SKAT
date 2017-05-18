@@ -384,6 +384,7 @@ SKATBinary.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	}
 	
 
+	pb <- txtProgressBar(min=0, max=N.Set, style=3)
 	for(i in 1:N.Set){
 		Is.Error<-TRUE
 		try1<-try(SKATBinary.SSD.OneSet_SetIndex(SSD.INFO, i, obj, ..., obj.SNPWeight=obj.SNPWeight) ,silent = TRUE)
@@ -406,13 +407,14 @@ SKATBinary.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 				OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
 			}
 		}
-		if(floor(i/100)*100 == i){
-			cat("\r", i, "/", N.Set, "were done");
-		}
+		#if(floor(i/100)*100 == i){
+		#	cat("\r", i, "/", N.Set, "were done");
+		#}
+		setTxtProgressBar(pb, i)
 
 	}
 
-	
+	close(pb)
 	out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue
 	, N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test
 	, MAC=OUT.MAC, m=OUT.m

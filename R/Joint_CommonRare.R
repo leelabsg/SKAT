@@ -155,7 +155,7 @@ SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
 		}
 	}
 
-
+	pb <- txtProgressBar(min=0, max=N.Set, style=3)
 	for(i in 1:N.Set){
 		Is.Error<-TRUE
 		try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
@@ -197,13 +197,14 @@ SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
 				OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
 			}
 		}
-		if(floor(i/100)*100 == i){
-			cat("\r", i, "/", N.Set, "were done");
-		}
+		#if(floor(i/100)*100 == i){
+		#	cat("\r", i, "/", N.Set, "were done");
+		#}
+		setTxtProgressBar(pb, i)
 
 	}
 
-	
+	close(pb)	
 	out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, Q=OUT.Q
 	, N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, N.Marker.Rare=OUT.nRare, N.Marker.Common=OUT.nCommon)
 	re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling)
@@ -304,6 +305,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		re<-SKAT_1(Z.common, obj, weights.beta=weights.beta.common, weights = NULL, r.corr=r.corr.common
 		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, SetID = SetID1)
 		
+			
 		is.run=TRUE
 
 	} else if (n.common == 0 && n.rare > 0){

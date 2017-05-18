@@ -1,11 +1,16 @@
 
-SKAT.linear.Linear = function(res,Z,X1, kernel, weights = NULL, s2, method,res.out,n.Resampling,r.corr){
+SKAT.linear.Linear = function(res,Z,X1, kernel, weights = NULL, s2, method,res.out,n.Resampling,r.corr, IsMeta=FALSE){
 	
 	if(length(r.corr) > 1 && dim(Z)[2] == 1){
 		r.corr=0
 	}
-
-	if(length(r.corr) == 1 ){
+	
+	if(IsMeta){
+		re = SKAT_RunFrom_MetaSKAT(res=res,Z=Z, X1=X1, kernel=kernel, weights=weights, s2=s2
+		, out_type="C", method=method, res.out=res.out, n.Resampling=n.Resampling, r.corr=r.corr)
+		
+	
+	} else if(length(r.corr) == 1 ){
 
 		re = KMTest.linear.Linear(res,Z,X1, kernel, weights, s2, method
 		, res.out, n.Resampling, r.corr)

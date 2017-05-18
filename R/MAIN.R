@@ -13,7 +13,6 @@ SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta
 
 	}
 
-
 	if(class(obj) == "SKAT_NULL_Model_EMMAX"){
 
 		re = SKAT_emmaX(Z, obj, kernel = kernel, method=method, weights.beta=weights.beta, weights = weights, impute.method = impute.method,  r.corr=r.corr, is_check_genotype=is_check_genotype, is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF)
@@ -36,7 +35,10 @@ SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta
 
 
 SKAT_1 = function(Z,obj, ...){
-	if(class(obj) == "SKAT_NULL_Model_ADJ"){
+
+	if(class(obj) == "SKAT_NULL_Model_EMMAX"){
+		re<-SKAT_emmaX( Z, obj, ...)
+	} else if(class(obj) == "SKAT_NULL_Model_ADJ"){
 		re<-SKAT_With_NullModel_ADJ(Z,obj, ...)
 	} else if(class(obj) == "SKAT_NULL_Model"){
 		re<-SKAT_With_NullModel(Z,obj, ...)
@@ -323,17 +325,30 @@ SKAT_Check_RCorr<-function(kernel, r.corr){
 
 }
 
-SKAT_Check_Method<-function(method,r.corr){
+SKAT_Check_Method<-function(method,r.corr, n=NULL, m=NULL){
 
 
-
+	IsMeta=FALSE
+	
 	if(method != "liu"  && method != "davies" && method != "liu.mod" && method != "optimal" && method != "optimal.moment" 
 	&& method != "optimal.mod" && method != "adjust" && method != "optimal.adj" && method != "optimal.moment.adj"
-	 && method != "SKAT" && method != "SKATO" && method != "Burden" && method != "SKATO.m"   ){
+	 && method != "SKAT" && method != "SKATO" && method != "Burden" && method != "SKATO.m" 
+	 && method !="davies.M" && method != "optimal.adj.M"  ){
 		stop("Invalid method!")
 	}
+	
+	# Run Meta-code
+	if(method=="davies.M"){
+		IsMeta=TRUE
+		method="davies"	
+	} else if(method=="optimal.adj.M"){
+		IsMeta=TRUE
+		method="optimal.adj"
+	}
+
 	if(method=="SKAT"){
 		method="davies"	
+		r.corr=0
 	} else if(method == "SKATO"){
 		method="optimal.adj"
 	} else if(method =="SKATO.m"){
@@ -355,8 +370,16 @@ SKAT_Check_Method<-function(method,r.corr){
 	} else if (method =="optimal.moment") {
 		method="liu.mod"
 	}
+	
+	# if # of r.corr > 1, m/n < 1 and n > 10000, use Meta
+	if(!is.null(n) && !is.null(m) && length(r.corr) > 1){
+		if(m/n < 1 && n > 5000){
+			IsMeta=TRUE
+		}
+	}
+	
 
-	re<-list(method=method,r.corr=r.corr)
+	re<-list(method=method,r.corr=r.corr, IsMeta=IsMeta)
 	return(re)
 
 }
@@ -372,11 +395,11 @@ SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="d
 
 	n<-dim(Z)[1]
 	m<-dim(Z)[2]
-	out.method<-SKAT_Check_Method(method,r.corr)
+	out.method<-SKAT_Check_Method(method, r.corr, m=m, n=n)
 
 	method=out.method$method
 	r.corr=out.method$r.corr
-
+	IsMeta=out.method$IsMeta
 
 	SKAT_Check_RCorr(kernel, r.corr)
 	
@@ -412,7 +435,7 @@ SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="d
 		  if( kernel =="linear" || kernel == "linear.weighted"){
 		    re = SKAT.linear.Linear(obj.res$res,out.z$Z.test
 			,obj.res$X1, kernel, out.z$weights,obj.res$s2,method
-			,obj.res$res.out, obj.res$n.Resampling,r.corr=r.corr)
+			,obj.res$res.out, obj.res$n.Resampling,r.corr=r.corr, IsMeta=IsMeta)
 		  } else {  
 		    re = SKAT.linear.Other(obj.res$res,out.z$Z.test
 			,obj.res$X1, kernel, out.z$weights,obj.res$s2,method
@@ -424,7 +447,7 @@ SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="d
 		if( kernel =="linear" || kernel == "linear.weighted"){
 			re = SKAT.logistic.Linear(obj.res$res, out.z$Z.test
 			,obj.res$X1, kernel, out.z$weights, obj.res$pi_1,method
-			,obj.res$res.out, obj.res$n.Resampling,r.corr=r.corr)
+			,obj.res$res.out, obj.res$n.Resampling,r.corr=r.corr, IsMeta=IsMeta)
 		} else {  
 			re = SKAT.logistic.Other(obj.res$res,out.z$Z.test
 			,obj.res$X1, kernel, out.z$weights, obj.res$pi_1, method

@@ -113,11 +113,14 @@ SKAT_NULL_emmaX <- function(formula, data=NULL, K=NULL, Kin.File=NULL, ngrids=10
 		
 	#######################################################
 	# Estimate parameters
-		
-    #eig.R <- emma.eigen.R.wo.Z(K,X)
-    eig.R<-SKAT.emma.eigen.R.wo.Z(K,X)
+			
+    eig.R <- emma.eigen.R.wo.Z(K,X)
+    #eig.R<-SKAT:::SKAT.emma.eigen.R.wo.Z(K,X) # This code sometimes makes an error!
 	
     etas <- crossprod(eig.R$vectors,y)
+    #etas<-crossprod(eig.R$vectors,res)
+
+    
   	logdelta <- (0:ngrids)/ngrids*(ulim-llim)+llim
     m <- length(logdelta)
     delta <- exp(logdelta)
@@ -201,15 +204,30 @@ SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weigh
 	if(class(obj) != "SKAT_NULL_Model_EMMAX"){
 		stop("ERROR: obj is not an returned object from SKAT.emmaX.null")
 	} 
-	if(method=="optimal.adj"){
-		stop("SKAT-O is not implemented for SKAT_EmmaX yet!")
-	}
-	if(length(r.corr) > 1){
-		stop("SKAT-O is not implemented for SKAT_EmmaX yet! r.corr should be a scalar.")
-	}
+	#if(method=="optimal.adj"){
+	#	stop("SKAT-O is not implemented for SKAT_EmmaX yet!")
+	#}
+	#if(length(r.corr) > 1){
+	#	stop("SKAT-O is not implemented for SKAT_EmmaX yet! r.corr should be a scalar.")
+	#}
+	
 
 	m = ncol(Z)
 	n = nrow(Z)
+
+	# Added by SLEE 4/24/2017
+	out.method<-SKAT_Check_Method(method,r.corr, n=n, m=m)
+	method=out.method$method
+	r.corr=out.method$r.corr
+	IsMeta=out.method$IsMeta
+	
+	if(method=="optimal.adj"){
+		IsMeta=TRUE
+	}
+	
+	SKAT_Check_RCorr(kernel, r.corr)
+	#
+	
 	#####################################
 	# Check genotypes and parameters
 	out.z<-SKAT_MAIN_Check_Z(Z, n, obj$id_include, SetID, weights, weights.beta, impute.method, is_check_genotype
@@ -220,7 +238,27 @@ SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weigh
 	}
 	Z = out.z$Z.test
 	weights = out.z$weights
-  	
+	res = obj$res
+	
+	if(!IsMeta){
+		re = SKAT_emmaX_work(Z=Z, obj=obj, kernel=kernel, method=method, weights=weights, r.corr=r.corr)
+	} else {
+		re = SKAT_RunFrom_MetaSKAT(res=obj$res,Z=Z, X1=NULL, kernel=kernel, weights=weights
+		, P0=obj$P, out_type="V", method=method, res.out=NULL, n.Resampling=0, r.corr=r.corr)
+
+	}
+
+  	re$param$n.marker<-m
+  	re$param$n.marker.test<-ncol(Z)
+	
+	return(re)
+}
+
+SKAT_emmaX_work = function( res, Z, obj, kernel, method, weights=NULL, r.corr=0){
+
+	m = ncol(Z)
+	n = nrow(Z)
+	
   	# Weighted Linear Kernel 
   	if (kernel == "linear.weighted") {
     	Z = t(t(Z) * (weights))
@@ -260,9 +298,7 @@ SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weigh
   
   re<-list(p.value = out$p.value, Test.Type = method, Q = Q, param=out$param ) 
 
-  re$param$n.marker<-m
-  re$param$n.marker.test<-ncol(out.z$Z.test)
-	 
+ 
   return(re)
 }
 
@@ -320,6 +356,7 @@ SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ...){
 	Is.Resampling = FALSE
 	n.Resampling = 0
 	
+	pb <- txtProgressBar(min=0, max=N.Set, style=3)
 	for(i in 1:N.Set){
 		Is.Error<-TRUE
 		try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
@@ -355,8 +392,9 @@ SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ...){
 			OUT.Marker[i]<-re$param$n.marker
 			OUT.Marker.Test[i]<-re$param$n.marker.test
 		}
+		setTxtProgressBar(pb, i)
 	}
-
+	close(pb)
 	
 	out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test)
 	re<-list(results=out.tbl)
