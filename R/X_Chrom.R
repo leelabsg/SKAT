@@ -144,7 +144,7 @@ SKAT_Null_Model_ChrX = function(formula, SexVar, data=NULL, out_type="C", n.Resa
 
 SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method="davies", weights.beta=c(1,25)
 , weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE
-, is_dosage = FALSE, missing_cutoff=0.15, estimate_MAF=1, SetID=NULL){
+, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID=NULL){
 
 	
 	if(kernel != "linear" && kernel != "linear.weighted"){
@@ -182,7 +182,7 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 
 	out.z<-SKAT_MAIN_Check_Z(Z, n.all, id_include, SetID
 		, weights, weights.beta, impute.method, is_check_genotype
-		, is_dosage, missing_cutoff,estimate_MAF=estimate_MAF, Is.chrX=TRUE, SexVar=SexVar)
+		, is_dosage, missing_cutoff,max_maf=max_maf, estimate_MAF=estimate_MAF, Is.chrX=TRUE, SexVar=SexVar)
 
 	out.z$Z.test<-SKAT_Code_XChr(out.z$Z.test, is_X.inact=is_X.inact, SexVar=SexVar[out.z$id_include.test])
 	
@@ -192,13 +192,13 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 	
 		re<-SKAT_With_NullModel_ADJ(Z, obj, kernel = kernel, method=method, weights.beta=weights.beta
 		, weights = weights, impute.method = impute.method,  r.corr=r.corr, is_check_genotype=is_check_genotype
-		, is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF, out.z=out.z)
+		, is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF, out.z=out.z)
 
 	} else if(class(obj) == "SKAT_NULL_Model_ChrX"){
 
 		re<-SKAT_With_NullModel(Z,obj, kernel = kernel, method=method, weights.beta=weights.beta
 		, weights = weights, impute.method = impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype
-		, is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF, out.z=out.z)
+		, is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF, out.z=out.z)
 
 	} 
 		

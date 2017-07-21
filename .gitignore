@@ -7,3 +7,7 @@ src/*.so
 src/*.dll
 .DS_Store
 *~
+.Rapp.history
+temp
+test_binary
+test_ssd

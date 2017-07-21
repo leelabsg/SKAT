@@ -153,7 +153,7 @@ void Kernel_IBS_Weight_1(int * Z, int * pn, int * pp, int *UseGivenWeight ,  dou
 
 void Kernel_2wayIX_1(int * Z, int * pn, int * pp, double * Kernel){
 
-    int i,j,k,n,p,diff;
+    int i,j,k,n,p;
     double temp, temp1, temp2;
 
     n = *pn;

@@ -49,7 +49,7 @@ SKATBinary_RestoreSeed<-function(out.seed){
 
 SKATBinary<-function(Z, obj, kernel = "linear.weighted", method="SKAT", method.bin="Hybrid", 
 weights.beta=c(1,25), weights = NULL, r.corr=0, impute.method = "bestguess", 
-is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, estimate_MAF=1, N.Resampling=2 *10^6, 
+is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, N.Resampling=2 *10^6, 
 seednum=100, epsilon=10^-6, SetID=NULL){
 
 
@@ -69,7 +69,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 	
 	
 	
-	out.Z = SKATExactBin_Check(Z=Z, obj=obj.res, kernel = kernel, weights.beta=weights.beta, weights = weights, impute.method = impute.method, r.corr=r.corr, is_dosage = is_dosage, estimate_MAF=estimate_MAF,
+	out.Z = SKATExactBin_Check(Z=Z, obj=obj.res, kernel = kernel, weights.beta=weights.beta, weights = weights, impute.method = impute.method, r.corr=r.corr, is_dosage = is_dosage, max_maf=max_maf, estimate_MAF=estimate_MAF,
 		missing_cutoff=missing_cutoff, SetID = SetID, Is.Single=FALSE, Is.MakeZ1=FALSE)
 	
 	if(out.Z$return==1){

@@ -57,7 +57,7 @@ public:
 class Hasht   // info for column i  the columns i = 0 ... get_noc()-1
 {
 private:
-	int *index;
+	 //int *index;
 	
     std::string m_setidfile;
     std::string m_bimfile;

@@ -167,6 +167,124 @@ BedFileReader::BedFileReader(char* filename, char* mapname,
 	}
 }
 
+// Added by SLEE 05/18/2017
+// Constructor for reading Bed file
+// 
+BedFileReader::BedFileReader(char* filename, char* mapname, char* famname, int* myerror)
+{
+  *myerror = NO_ERRORS;
+  
+  // Added SLEE
+  std::string str;
+  
+  
+  this->m_filename = filename;
+  this->m_filename_bim = mapname;
+  this->m_filename_fam = famname;
+  m_snp_sets= new SNP_info[1];
+  //================================
+  std::string line;
+  this->m_line_counter = -1;
+  this->m_fam.open(this->m_filename_fam.c_str());
+  if (!this->m_fam)
+  {
+    *myerror = CANT_OPEN_FAM_FILE4READ;
+    return;
+  }
+  while (!this->m_fam.eof( ) ) 
+  {
+    getline(this->m_fam, line);
+    this->m_line_counter++;
+  }
+  this->m_fam.close();
+  this->m_size_of_esi = (this->m_line_counter+3)/4;
+  
+  //================================
+  this->m_file.open(this->m_filename.c_str(), std::ios::binary);
+  if (!this->m_file)
+  {
+    *myerror = CANT_OPEN_BED_FILE4READ;
+    return;
+  }
+  
+  char tmpbuf[3]; memset(tmpbuf, '\0', sizeof(tmpbuf));
+  this->m_file.read(tmpbuf,sizeof(tmpbuf)); // three first bytes - permanent in bed file
+  
+}
+
+
+//==========================================================
+// Read one SNP genotypes from plink bed file
+//  Added by SLEE May 18, 2017
+//==========================================================
+void BedFileReader::read_One_SNP(int SNPindex, int * genotype, int* myerror)
+{
+  
+  //int count_win_size = 1;
+  int bits_val[MY_CHAR_BIT];
+  std::vector<int> temp_snp_info0, temp_snp_info1;
+  std::vector<char> encoded_snp_info, buff;
+  
+  if(!this->m_file.is_open()){
+    printf("Error! bed file isn't opened");
+    *myerror= BED_FILE_READ_ERROR;
+    return;
+  }
+  
+  temp_snp_info0.assign(this->m_line_counter, 0);
+  temp_snp_info1.assign(this->m_line_counter, 0);
+  encoded_snp_info.assign(this->m_size_of_esi, 0);
+  buff.assign(this->m_size_of_esi, 0);
+  
+  size_t individuals_counter = 0;
+  
+  size_t pos = (SNPindex-1)*this->m_size_of_esi +3;
+  size_t pos_cur = this->m_file.tellg();
+  if(!pos_cur){
+    printf("Error! bed file tellg, [%lu]",pos_cur);
+    *myerror= BED_FILE_READ_ERROR;
+    return;
+  }
+  
+  if(!this->m_file.seekg(pos ,std::ios::beg)){
+    printf("Error! bed file seekg");
+    *myerror= BED_FILE_READ_ERROR;
+    return;  
+  }
+  
+  this->m_file.read((char*) &buff[0],this->m_size_of_esi); 
+  
+  for(size_t i=0; i<this->m_size_of_esi; i++)   //process the buff info
+  {	//===============================================================					
+    //=== This part converts Byte "buff[i]" to bits values "bits_val"
+    //=== for example byte buff[0] = "w" ->  bits_val = 11101110
+    memset(bits_val, 0, sizeof(bits_val));
+    int k = MY_CHAR_BIT;  //8
+    while (k > 0)
+    {
+      -- k;
+      bits_val[k] = (buff[i]&(1 << k) ? 1 : 0);
+    }
+    //==========================================================
+    //=== here interpret Bit information "bits_val" to snps and count it - decode it
+    decode_byte(bits_val, &individuals_counter, &temp_snp_info0[0], &temp_snp_info1[0], 0);
+    
+  } //end of for(int i=0; i<this->m_size_of_esi; i++)   //process the buff info
+  
+  for(int i=0;i<this->m_line_counter; i++){
+    genotype[i] = temp_snp_info0[i] + temp_snp_info1[i];
+  }
+  
+  return;
+}
+
+void BedFileReader::close_bed()
+{
+  if(this->m_file.is_open()){
+    this->m_file.close();
+  }
+}
+
 //==========================================================
 //This function creates *.mwa file for SeiId application
 //Inputs:
@@ -206,8 +324,8 @@ void BedFileReader::read_data_and_create_mwo_used_hashtable(Hasht* ht,int* myerr
 	}
 
 	size_t individuals_counter = 0;
-	char* encoded_snp_info = new char[(this->m_line_counter+3)/4] ;
-	this->m_size_of_esi = (this->m_line_counter+3)/4;  // !!!Number of bytes per one snp = one line length!!!
+	this->m_size_of_esi = (this->m_line_counter+3)/4; 
+	char* encoded_snp_info = new char[this->m_size_of_esi] ;
 	char* buff = new char [this->m_size_of_esi]; 
 	char tmpbuf[3]; memset(tmpbuf, '\0', sizeof(tmpbuf));
 	this->m_file.read(tmpbuf,sizeof(tmpbuf)); // three first bytes - permanent in bed file
@@ -275,7 +393,7 @@ void BedFileReader::read_data_and_create_mwo_used_hashtable(Hasht* ht,int* myerr
 		{	//===============================================================					
 			//=== This part converts Byte "buff[i]" to bits values "bits_val"
 			//=== for example byte buff[0] = "w" ->  bits_val = 11101110
-			memset(bits_val, NULL, sizeof(bits_val));
+			memset(bits_val, 0, sizeof(bits_val));
 			int k = MY_CHAR_BIT;  //8
 			while (k > 0)
 			{
@@ -305,7 +423,7 @@ void BedFileReader::read_data_and_create_mwo_used_hashtable(Hasht* ht,int* myerr
 			// ENCODE OUTPUT
 			//if (this->m_encode_output == 1)
 			{
-				memset(encoded_snp_info,0,sizeof(encoded_snp_info));
+				memset(encoded_snp_info,0,sizeof(char)* this->m_size_of_esi);
 				
                 //printf("%d:%d-%d\n",ht->m_hash_table[j],  m_snp_sets[ht->m_hash_table[j]].total_counter_per_letter[0], this->m_snp_sets[ht->m_hash_table[j]].total_counter_per_letter[1]);
                 /* If m_MAFConvert==1 && 0 allele is the major allele */
@@ -559,7 +677,13 @@ void BedFileReader::decode_byte(int* bits_val,size_t * individuals_counter,
 //==========================================================
 BedFileReader::~BedFileReader()
 {
-	delete[] m_snp_sets;
+  if(this->m_file.is_open()){
+    this->m_file.close();
+  }
+  if(m_snp_sets){
+	  delete[] m_snp_sets;
+  }
+  
 }
 
 //==========================================================

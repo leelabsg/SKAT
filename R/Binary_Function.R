@@ -458,7 +458,7 @@ SKATBinary.Single.CheckZ<-function(Z, id_include, impute.method, is_check_genoty
 #	Check genotype matrix
 #
 SKATExactBin_Check<-function(Z, obj, kernel = "linear.weighted", weights.beta=c(1,25), weights = NULL, impute.method = "bestguess"
-, r.corr=0, is_dosage = FALSE, missing_cutoff, SetID, estimate_MAF, Is.Single=FALSE, Is.MakeZ1 = TRUE){
+, r.corr=0, is_dosage = FALSE, missing_cutoff, max_maf, SetID, estimate_MAF, Is.Single=FALSE, Is.MakeZ1 = TRUE){
 
 	is_check_genotype=TRUE
 	obj.res = SKATExactBin_CheckObj(obj)
@@ -471,7 +471,7 @@ SKATExactBin_Check<-function(Z, obj, kernel = "linear.weighted", weights.beta=c(
 	
 	SKAT_Check_RCorr(kernel, r.corr)
 	out.z<-SKAT_MAIN_Check_Z(Z, n, obj.res$id_include, SetID, weights, weights.beta, impute.method
-	, is_check_genotype, is_dosage, missing_cutoff, estimate_MAF)
+	, is_check_genotype, is_dosage, missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
 	
 	if(out.z$return ==1){
 		out.z$param$n.marker<-m

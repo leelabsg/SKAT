@@ -149,20 +149,6 @@ void Get_TotalNumberofInd( int* Total_Num_IND)
 
 
 //===============================================================
-//You can see it in automatically generated INFO file  ==== Get_TotalNumberofSets  use 1...Total_Num_SNPSets
-
-//Get_SetID(MWA_FILE_ID, *SetIDs)
-	//Return a vector of all of SetIDs in the MWA file
-	//MWA_File_ID : integer value of file ID. 
-	//SetIDs : a vector of SetIDs in the MWA file
-
-//USAGE FROM R:
-//MwoFileReader* MWA_FILE_ID;
-//Open_MWA(MWA_File, MWA_FILE_ID)
-
-
-
-//===============================================================
 	
 //Get_NumberofSnps(MWA_FILE_ID, SetID,*Num_SNP)
 	//Return a number of SNPs in the given SNP Set. 
@@ -206,3 +192,22 @@ void Get_Genotypes_withID( int Set_number, int* Z, char * SNPID, int size, int I
 
 
 //===============================================================
+//
+//  Read one SNP
+void Close_Plink_BED(){
+  if(MW != NULL){
+    delete MW;
+  }
+}
+
+void Open_Plink_BED(char* Bed, char* Bim, char* Fam, int* myerror){
+  
+  Close_Plink_BED(); 
+  MW = new BedFileReader(Bed,Bim,Fam,myerror);
+}
+
+void Read_One_SNP_From_BED(int SNPindex, int * genotype, int* myerror){
+  MW->read_One_SNP(SNPindex,genotype, myerror);
+}
+
+  

@@ -11,7 +11,7 @@
 	SKATBinary(Z, obj, kernel = "linear.weighted", method="SKAT"
 	, method.bin="Hybrid", weights.beta=c(1,25), weights = NULL
 	, r.corr=0, impute.method = "bestguess", is_check_genotype=TRUE
-	, is_dosage = FALSE, missing_cutoff=0.15
+	, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
 	, estimate_MAF=1, N.Resampling=2 *10^6, seednum=100, epsilon=10^-6
 	, SetID=NULL)
 	
@@ -46,6 +46,7 @@
       \item{is_check_genotype}{a logical value indicating whether to check the validity of the genotype matrix Z (default= TRUE). See SKAT page for details.}
       \item{is_dosage}{a logical value indicating whether the matrix Z is a dosage matrix. If it is TRUE, SKAT will ignore ``is_check_genotype''. }
       \item{missing_cutoff}{a cutoff of the missing rates of SNPs (default=0.15). Any SNPs with missing rates higher than the cutoff will be excluded from the analysis.}
+      \item{max_maf}{a cutoff of the maximum minor allele frequencies (MAF) (default=1, no cutoff). Any SNPs with MAF > cutoff will be excluded from the analysis.}
       \item{estimate_MAF}{a numeric value indicating how to estimate MAFs for the weight calculation and 
       the missing genotype imputation. See SKAT page for details. }
       \item{N.Resampling}{a number of resampling to be conducted to get p-values (default=2 *10^6).}

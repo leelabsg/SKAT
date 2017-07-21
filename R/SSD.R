@@ -31,7 +31,6 @@ Print_Error_SSD<-function(code){
 		MSG<-sprintf("Error [%d]\n",code)
 		stop(MSG)
 	}
-	
 	return(1)
 }
 
@@ -433,6 +432,33 @@ Get_Genotypes_SSD<-function(SSD_INFO, Set_Index, is_ID = FALSE){
 	}
 	
 	return(t(Z.out.t))
+}
+
+
+##################################################################
+#
+#	Read one SNP from plink BED file 
+
+Open_Plink<-function(File.Bed, File.Bim, File.Fam, Is_ReadBim=TRUE){
+  
+  File.Bed<-normalizePath(File.Bed ,mustWork =FALSE)
+  File.Bim<-normalizePath(File.Bim ,mustWork =FALSE)
+  File.Fam<-normalizePath(File.Fam ,mustWork =FALSE)
+ 
+  Check_File_Exists(File.Bed)
+  Check_File_Exists(File.Bim)
+  Check_File_Exists(File.Fam)
+ 
+  err_code<-0
+
+  temp<-.C("R_Open_Plink_BED"
+           , as.character(File.Bed), as.character(File.Bim), as.character(File.Fam),
+           as.integer(err_code))
+  
+  
+  error_code<-temp[[4]]
+  Print_Error_SSD(error_code)
+
 }
 
 

@@ -11,7 +11,7 @@
 SKAT(Z, obj, kernel = "linear.weighted", 
   method="davies", weights.beta=c(1,25), weights=NULL, 
   impute.method="fixed", r.corr=0, is_check_genotype=TRUE,
-  is_dosage = FALSE, missing_cutoff=0.15 , estimate_MAF=1)
+  is_dosage = FALSE, missing_cutoff=0.15 , max_maf=1, estimate_MAF=1)
 
 SKAT.SSD.OneSet(SSD.INFO, SetID, obj, \dots ,obj.SNPWeight=NULL)
 
@@ -46,6 +46,7 @@ SKAT.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots ,obj.SNPWeight=NULL)
       If it is FALSE and you use weighted kernels, the weights should be given through the ``weights'' parameter.}
       \item{is_dosage}{a logical value indicating whether the matrix Z is a dosage matrix. If it is TRUE, SKAT will ignore ``is_check_genotype''. }
       \item{missing_cutoff}{a cutoff of the missing rates of SNPs (default=0.15). Any SNPs with missing rates higher than the cutoff will be excluded from the analysis.}
+      \item{max_maf}{a cutoff of the maximum minor allele frequencies (MAF) (default=1, no cutoff). Any SNPs with MAF > cutoff will be excluded from the analysis.}
       \item{estimate_MAF}{a numeric value indicating how to estimate MAFs for the weight calculation and 
       the missing genotype imputation. If estimate_MAF=1 (default), SKAT uses all samples to estimate MAFs. 
       If estimate_MAF=2, only samples with non-missing phenotypes and covariates are used to estimate MAFs. }

@@ -62,8 +62,8 @@ SKAT.emma.eigen.R.wo.Z <- function(K, X) {
 #
 #	X : covariates
 #	Z = NULL
-#	
-SKAT_NULL_emmaX <- function(formula, data=NULL, K=NULL, Kin.File=NULL, ngrids=100, llim=-10, ulim=10, esp=1e-10) {
+#	Updated by SLEE 07/21/2017
+SKAT_NULL_emmaX<- function(formula, data=NULL, K=NULL, Kin.File=NULL, ngrids=100, llim=-10, ulim=10, esp=1e-10, Is.GetEigenResult=FALSE) {
   
 	# check missing 
 	obj1<-model.frame(formula,na.action = na.omit,data)
@@ -165,40 +165,52 @@ SKAT_NULL_emmaX <- function(formula, data=NULL, K=NULL, Kin.File=NULL, ngrids=10
   	# = V-1 y - V-1 X (X'V-1X)-1 X'V-1 y
   	# = P y
   	# P = V-1 -  V-1 X (X'V-1X)-1 X'V-1
-  
-    #lambda_inv<-1/(maxva*eig.R$values+maxve)
-  	#X.etas <- t(eig.R$vectors) %*% X 
-    #XVX<- t(X.etas) %*% (X.etas * lambda_inv)
-  	#XVX_inv<-solve(XVX)		
-  	#V_inv<- eig.R$vectors %*% (t(eig.R$vectors) * lambda_inv )
-  	#XV_inv = t(X) %*% V_inv
-  	#P = V_inv -  t(XV_inv) %*% (XVX_inv %*% XV_inv)
-  	#res = P %*% y
- 	
+
  	va=maxva
- 	ve=maxve 	
-  	
+ 	ve=maxve 
+
+	#if(Is.EPACTS){
+ 	#	idx.lambda<-which(abs(eig.R$values) > mean(abs(eig.R$values)) / 10000)
+ 	#  
+    #	lambda_inv<-1/(va * eig.R$values[idx.lambda] + ve)
+  	#
+  	#	P = eig.R$vectors[,idx.lambda] %*% (t(eig.R$vectors[,idx.lambda]) * (lambda_inv))
+  	#	res = P %*% y
+  	#	
+
+  		
   	V = va * K
-  	diag(V) = diag(V) + ve 
-    V_inv<- solve(V)
+  	diag(V) = diag(V) + ve
+    	
+    # numerical reason
+    # added
+    if(ve/va < 0.01){
+    	eig.V<-eigen(V, symmetric=TRUE)
+		idx.lambda<-which(abs(eig.V$values) > mean(abs(eig.V$values)) / 10000)
+		V_inv<- eig.V$vectors[,idx.lambda] %*% (t(eig.V$vectors[,idx.lambda]) * (1/eig.V$values[idx.lambda]) )
+    	
+    } else {
+    	V_inv<- solve(V)
+  	}
   
   	XVX = t(X) %*% (V_inv %*% X)
   	XVX_inv<-solve(XVX)
-  	
-  	
   	XV_inv = t(X) %*% V_inv
   	P = V_inv -  t(XV_inv) %*% (XVX_inv %*% XV_inv)
   	res = P %*% y
   	
-  	
   	re<-list( LL=maxLL, va=va, ve=ve, P=P, res=res, id_include=id_include)
+  	if(Is.GetEigenResult){
+  	  re$eig.R=eig.R
+  	}
+  	
   	class(re)<-"SKAT_NULL_Model_EMMAX"
   	return (re)
 }
 
 
 SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, estimate_MAF=1, SetID = NULL){
+, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=max_maf, estimate_MAF=1, SetID = NULL){
 
 
 	if(class(obj) != "SKAT_NULL_Model_EMMAX"){
@@ -231,7 +243,7 @@ SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weigh
 	#####################################
 	# Check genotypes and parameters
 	out.z<-SKAT_MAIN_Check_Z(Z, n, obj$id_include, SetID, weights, weights.beta, impute.method, is_check_genotype
-	, is_dosage, missing_cutoff, estimate_MAF=estimate_MAF)
+	, is_dosage, missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
 	if(out.z$return ==1){
 		out.z$param$n.marker<-m
 		return(out.z)

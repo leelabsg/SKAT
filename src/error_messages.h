@@ -33,7 +33,7 @@
 #define REQUESTED_SET_ID_DOESNOT_EXISTS		14  //check setID in info file
 #define WARNING_CANT_OPEN_FILE4WRITE_2PRINTSET		15 // warning - if can't print - skip printing
 #define BIM_FILE_TOKEN_WRONG 16 
-
+#define BED_FILE_READ_ERROR 17 
 
 #endif //_ERROR_MESSAGES_H
 

@@ -256,8 +256,9 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 	if(is.null(obj.res$n.all)){
 		obj.res$n.all=n
 	}
+	# no max_maf cutoff
 	out<-SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=NULL, weights.beta=c(1,1), 
-	impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, estimate_MAF=estimate_MAF)
+	impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, max_maf=1, estimate_MAF=estimate_MAF)
 	if(out$return ==1){
 		out$param$n.marker<-m
 		out$n.rare = 0
@@ -303,7 +304,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		# Run SKAT with common variants
 		Z.common<-cbind(Z[,id.common])
 		re<-SKAT_1(Z.common, obj, weights.beta=weights.beta.common, weights = NULL, r.corr=r.corr.common
-		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, SetID = SetID1)
+		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, max_maf=1, SetID = SetID1)
 		
 			
 		is.run=TRUE
@@ -313,7 +314,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		# Run SKAT with rare variants
 		Z.rare<-cbind(Z[,id.rare])
 		re<-SKAT_1(Z.rare, obj, weights.beta=weights.beta.rare, weights = NULL, r.corr=r.corr.rare
-		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, SetID = SetID1)
+		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, max_maf=1, SetID = SetID1)
 		
 		is.run=TRUE
 		

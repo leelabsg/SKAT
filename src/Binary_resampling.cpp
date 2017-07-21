@@ -70,16 +70,12 @@ void  SL_out(){
 */
 
 void SL_GetSample(int n, int k, int *y, int *x){
-    int i, j, temp;
+    int i, j;
     
     for (i = 0; i < n; i++){
         x[i] = i;
     }
     for (i = 0; i < k; i++) {
-        
-        /*temp = rand();
-        j = temp % n;*/
-        
         j = SL_runif_INT(n);
         y[i] = x[j] ;
         x[j] = x[--n];
@@ -87,15 +83,12 @@ void SL_GetSample(int n, int k, int *y, int *x){
 }
 
 void SL_GetPermu(int n, int *y, int *x){
-    int i, j, temp;
+    int i, j;
     
     for (i = 0; i < n; i++){
         x[i] = y[i];
     }
     for (i = 0; i < n; i++) {
-        
-        /*temp = rand();
-         j = temp % n;*/
         
         j = SL_runif_INT(n);
         y[i] = x[j] ;

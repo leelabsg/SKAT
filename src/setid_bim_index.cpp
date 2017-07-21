@@ -185,7 +185,7 @@ void Hasht::upload_snpid_from_setid_build_hash(int * myerror)
                 size_t nlength = tokens.at(0).length();
 				this->m_hash_table[index] = result_of_search;
 				m_setidf_setid[index] = new char[nlength +1];
-                m_setidf_setid[index][nlength] = NULL;
+                m_setidf_setid[index][nlength] = '\0';
 				strncpy (m_setidf_setid[index] , tokens.at(0).c_str(), nlength); //copy the setId
 				index ++;
 			}
@@ -356,7 +356,7 @@ void Hasht::upload_snpid_from_bim(int * myerror)
         
         size_t nlength = tokens.at(1).length();
 		m_bimf_snpsid[i] = new char[nlength+1];
-        m_bimf_snpsid[i][nlength] = NULL;
+        m_bimf_snpsid[i][nlength] = '\0';
 		strncpy (m_bimf_snpsid[i] , tokens.at(1).c_str(), nlength);
         m_bimf_sorted[i] = i;
 

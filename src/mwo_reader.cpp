@@ -402,7 +402,7 @@ void MwoFileReader::prepare_out_array_print_snpset_to_file(snpset* ss, int set_n
 			//===============================================================
 			//=== This part converts Byte "buff[i]" to bits values "bits_val"
 			//=== for example byte buff[0] = "w" ->  bits_val = 11101110
-			memset(bits_val, NULL, sizeof(bits_val));
+			memset((void *)bits_val, 0, sizeof(bits_val));
 			int k = MY_CHAR_BIT;  //8
 			while (k > 0)
 			{
@@ -514,11 +514,11 @@ size_t MwoFileReader::get_NumberofSnps(int SetID,int* myerror)
 //==========================================================
 //Destructor - free all dynamically allocated memory
 //==========================================================
-MwoFileReader::~MwoFileReader()
-	{
+MwoFileReader::~MwoFileReader(){
+		
 		delete [] this->m_offsetarr;
 		delete [] this->m_set_size;
 		this->m_file.close();
-	};
+}
 
 

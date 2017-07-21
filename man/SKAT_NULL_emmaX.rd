@@ -7,7 +7,7 @@
  \usage{
 
 SKAT_NULL_emmaX (formula, data=NULL, K=NULL, 
-Kin.File=NULL, ngrids=100, llim=-10, ulim=10, esp=1e-10) 
+Kin.File=NULL, ngrids=100, llim=-10, ulim=10, esp=1e-10, Is.GetEigenResult=FALSE) 
   
  }
 \arguments{
@@ -19,7 +19,7 @@ Kin.File=NULL, ngrids=100, llim=-10, ulim=10, esp=1e-10)
       \item{llim}{Lower bound of log ratio of two variance components}
       \item{ulim}{Upper bound of log ratio of two variance components}
       \item{esp}{Tolerance of numerical precision error}
-
+      \item{Is.GetEigenResult}{Return intermediate eigen-decomposition results}
 }
 \value{
 	This function returns an object that has model parameters and residuals of the NULL model of no associations. 

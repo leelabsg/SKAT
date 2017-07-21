@@ -9,7 +9,7 @@
 SKAT_ChrX(Z, obj, is_X.inact =TRUE
 , kernel = "linear.weighted", method="davies", weights.beta=c(1,25)
 , weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE
-, is_dosage = FALSE, missing_cutoff=0.15, estimate_MAF=1, SetID=NULL)
+, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID=NULL)
 
 
  }
@@ -30,6 +30,7 @@ SKAT_ChrX(Z, obj, is_X.inact =TRUE
       \item{is_check_genotype}{a logical value indicating whether to check the validity of the genotype matrix Z (default= TRUE). See SKAT page for details.}
       \item{is_dosage}{a logical value indicating whether the matrix Z is a dosage matrix. If it is TRUE, SKAT will ignore ``is_check_genotype''. }
       \item{missing_cutoff}{a cutoff of the missing rates of SNPs (default=0.15). Any SNPs with missing rates higher than the cutoff will be excluded from the analysis.}
+      \item{max_maf}{a cutoff of the maximum minor allele frequencies (MAF) (default=1, no cutoff). Any SNPs with MAF > cutoff will be excluded from the analysis.}
       \item{estimate_MAF}{a numeric value indicating how to estimate MAFs for the weight calculation and 
       the missing genotype imputation. See SKAT page for details. }
       \item{SetID}{Internal use only. }
