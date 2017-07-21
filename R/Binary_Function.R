@@ -363,7 +363,7 @@ Get_Resample_P<-function(Z, res, res.out){
 #	Check genotype matrix
 #
 
-SKATBinary.Single.CheckZ<-function(Z, id_include, impute.method, is_check_genotype, is_dosage, missing_cutoff, estimate_MAF=1){
+SKATBinary.Single.CheckZ<-function(Z, id_include, impute.method, is_check_genotype, is_dosage, estimate_MAF=1){
 
 	#############################################
 	# Check parameters

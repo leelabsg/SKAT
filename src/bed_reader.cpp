@@ -226,7 +226,7 @@ void BedFileReader::read_One_SNP(int SNPindex, int * genotype, int* myerror)
   std::vector<char> encoded_snp_info, buff;
   
   if(!this->m_file.is_open()){
-    printf("Error! bed file isn't opened");
+    //printf("Error! bed file isn't opened");
     *myerror= BED_FILE_READ_ERROR;
     return;
   }
@@ -241,13 +241,13 @@ void BedFileReader::read_One_SNP(int SNPindex, int * genotype, int* myerror)
   size_t pos = (SNPindex-1)*this->m_size_of_esi +3;
   size_t pos_cur = this->m_file.tellg();
   if(!pos_cur){
-    printf("Error! bed file tellg, [%lu]",pos_cur);
+    //printf("Error! bed file tellg, [%lu]",pos_cur);
     *myerror= BED_FILE_READ_ERROR;
     return;
   }
   
   if(!this->m_file.seekg(pos ,std::ios::beg)){
-    printf("Error! bed file seekg");
+    //printf("Error! bed file seekg");
     *myerror= BED_FILE_READ_ERROR;
     return;  
   }

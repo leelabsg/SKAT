@@ -34,12 +34,12 @@ SKATExactBin_CheckObj<-function(obj.res){
 
 SKATExactBin.Adaptive<-function(Z, obj, kernel = "linear.weighted", weights.beta=c(1,25), weights = NULL, impute.method = "bestguess"
 , r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE 
-, N.Iter = 50000, N.Resampling=2 * 10^6, missing_cutoff=0.15, SetID = NULL, estimate_MAF=1, epsilon){
+, N.Iter = 50000, N.Resampling=2 * 10^6, missing_cutoff=0.15, max_maf=1, SetID = NULL, estimate_MAF=1, epsilon){
 
 
 	obj = SKATExactBin_Check(Z=Z, obj=obj, kernel = kernel, weights.beta=weights.beta
 	, weights = weights, impute.method = impute.method, r.corr=r.corr, is_dosage = is_dosage, estimate_MAF=estimate_MAF, 
-	missing_cutoff=missing_cutoff, SetID = SetID)
+	missing_cutoff=missing_cutoff, max_maf=max_maf, SetID = SetID)
 	
 	if(obj$return ==1){
 		return(obj)
@@ -87,12 +87,12 @@ SKATExactBin.Adaptive<-function(Z, obj, kernel = "linear.weighted", weights.beta
 
 SKATExactBin<-function(Z, obj, kernel = "linear.weighted", method.bin="ER"
 , weights.beta=c(1,25), weights = NULL, impute.method = "bestguess"
-, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, SetID = NULL, estimate_MAF=1,
+, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, SetID = NULL, estimate_MAF=1,
 N.Resampling=10^7, ExactMax=10000, test_type=1, Is.testdata=FALSE, File=NULL, Is.Single=FALSE, epsilon){
 
 	
 	obj = SKATExactBin_Check(Z=Z, obj=obj, kernel = kernel, weights.beta=weights.beta
-	, weights = weights, impute.method = impute.method, r.corr=r.corr, is_dosage = is_dosage, estimate_MAF=estimate_MAF,
+	, weights = weights, impute.method = impute.method, r.corr=r.corr, is_dosage = is_dosage, max_maf=max_maf, estimate_MAF=estimate_MAF,
 	missing_cutoff=missing_cutoff, SetID = SetID, Is.Single=Is.Single)
 
 	
@@ -152,7 +152,7 @@ N.Resampling=10^7, ExactMax=10000, test_type=1, Is.testdata=FALSE, File=NULL, Is
 
 SKATExactBin.Firth<-function(Z, obj, kernel = "linear.weighted", method.bin="ER"
 , weights.beta=c(1,25), weights = NULL, impute.method = "bestguess"
-, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, SetID = NULL, estimate_MAF=1, Is.Single=FALSE){
+, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, SetID = NULL, estimate_MAF=1, Is.Single=FALSE){
 
 	if(ncol(Z) != 1 && r.corr !=1){
 		stop("Firth method only can be used for single variant or burden test!")
@@ -160,7 +160,7 @@ SKATExactBin.Firth<-function(Z, obj, kernel = "linear.weighted", method.bin="ER"
 	
 	obj = SKATExactBin_Check(Z=Z, obj=obj, kernel = kernel, weights.beta=weights.beta
 	, weights = weights, impute.method = impute.method, r.corr=r.corr, is_dosage = is_dosage, estimate_MAF=estimate_MAF,
-	missing_cutoff=missing_cutoff, SetID = SetID, Is.Single=Is.Single)
+	missing_cutoff=missing_cutoff, max_maf=max_maf, SetID = SetID, Is.Single=Is.Single)
 	
 	if(obj$return ==1){
 		return(obj)

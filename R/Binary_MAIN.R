@@ -95,7 +95,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 	if(m == length(obj.res$id_include)){
 		re = SKAT(Z=Z, obj=obj, kernel = kernel, method=method, weights.beta=weights.beta, weights=weights, 
        	impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-       	is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF)	
+       	is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)	
        	
        	re$method.bin=method.bin
 		if(class(obj) == "SKAT_NULL_Model_ADJ"){
@@ -143,7 +143,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 
 		re = SKAT(Z=Z, obj=obj, kernel = kernel, method=method, weights.beta=weights.beta, weights=weights, 
        	impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-       	is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF)	
+       	is_dosage = is_dosage, missing_cutoff=missing_cutoff , max_maf=max_maf, estimate_MAF=estimate_MAF)	
 		
 		if (class(obj) == "SKAT_NULL_Model_ADJ") {
         	method.bin = "MA"
@@ -156,7 +156,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 		
 		re = SKAT(Z=Z, obj=obj.res, kernel = kernel, method=method, weights.beta=weights.beta, weights=weights, 
        	impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-       	is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF)	
+       	is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)	
 		
 		re$MAP = -1
 
@@ -165,7 +165,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 		
 		re = SKATExactBin(Z=Z, obj=obj.res, kernel = kernel, method.bin=method.bin, weights.beta=weights.beta, weights=weights,  
 		impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-		is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF,
+		is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF,
 		N.Resampling=N.Resampling, epsilon=epsilon)
 		
 		# if re$p.value*1000 < re$p.value.noadj, and method.bin="MA"
@@ -182,7 +182,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 	
 		re = SKATExactBin(Z=Z, obj=obj.res, kernel = kernel, method.bin=method.bin, weights.beta=weights.beta, weights=weights,  
 		impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-		is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF,
+		is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF,
 		N.Resampling=N.Resampling, epsilon=epsilon)
 
 		if(!re$is.accurate && Is.Hybrid){
@@ -194,7 +194,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 			
 			re = SKATExactBin(Z=Z, obj=obj.res, kernel = kernel, method.bin=method.bin, weights.beta=weights.beta, weights=weights,  
 			impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-			is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF,
+			is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF,
 			N.Resampling=N.Resampling, epsilon=epsilon)
 			re$p.value.exact = p.value.exact
 		}	
@@ -204,7 +204,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 		
 		re = SKATExactBin.Adaptive(Z=Z, obj=obj.res, kernel = kernel, weights.beta=weights.beta, weights=weights, 
 		impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-		is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF,
+		is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF,
 		N.Iter=10000, N.Resampling=N.Resampling, epsilon=epsilon)
 		
 		if(!re$is.accurate && Is.Hybrid){
@@ -216,7 +216,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 			
 			re = SKATExactBin(Z=Z, obj=obj.res, kernel = kernel, method.bin=method.bin, weights.beta=weights.beta, weights=weights,  
 			impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-			is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF,
+			is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF,
 			N.Resampling=N.Resampling, epsilon=epsilon)
 			re$p.value.exact = p.value.exact
 		}	
@@ -226,7 +226,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 		
 		re = SKATExactBin.Firth(Z=Z, obj=obj.res, kernel = kernel, weights.beta=weights.beta, weights=weights, 
 		impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
-		is_dosage = is_dosage, missing_cutoff=missing_cutoff, estimate_MAF=estimate_MAF)
+		is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
 
 	} else {
 	
@@ -250,7 +250,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 
 
 SKATBinary_Single<-function(Z, obj, method.bin="Hybrid", impute.method = "bestguess", 
-is_check_genotype=TRUE, is_dosage = FALSE, estimate_MAF=1, N.Resampling=2*10^6, seednum=100, epsilon=10^-6){
+is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, N.Resampling=2*10^6, seednum=100, epsilon=10^-6){
 
 
 	out.seed=SKATBinary_SeedNum(seednum)
@@ -291,7 +291,7 @@ is_check_genotype=TRUE, is_dosage = FALSE, estimate_MAF=1, N.Resampling=2*10^6, 
 	
 		re = SKATExactBin(Z=cbind(Z), obj=obj.res, kernel = "linear", method.bin=method.bin, weights.beta=c(1,1), weights=NULL,  
 		impute.method=impute.method, r.corr=1, is_check_genotype=is_check_genotype,
-		is_dosage = is_dosage, missing_cutoff=1, estimate_MAF=estimate_MAF,
+		is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF,
 		N.Resampling=N.Resampling, Is.Single=TRUE, epsilon=epsilon)
 
 	
@@ -300,7 +300,7 @@ is_check_genotype=TRUE, is_dosage = FALSE, estimate_MAF=1, N.Resampling=2*10^6, 
 		
 		re = SKATExactBin.Firth(Z=cbind(Z), obj=obj.res, kernel = "linear", weights.beta=c(1,1), weights=NULL, 
 		impute.method=impute.method, r.corr=1, is_check_genotype=is_check_genotype,
-		is_dosage = is_dosage, missing_cutoff=1, estimate_MAF=estimate_MAF, Is.Single=TRUE)
+		is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF, Is.Single=TRUE)
 
 	} else {
 	
