@@ -92,7 +92,7 @@ void Kernel_IBS_Weight_1(int * Z, int * pn, int * pp, int *UseGivenWeight ,  dou
             for(i=0;i<n;i++){
                 temp1 += Z[i*p + k] ;
             }
-            weight[k] = sqrt(2* p) / sqrt(temp1);
+            weight[k] = sqrt(2.0 * p) / sqrt((double)temp1);
         }
     }
     
