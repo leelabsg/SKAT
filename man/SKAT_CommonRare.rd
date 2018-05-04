@@ -9,7 +9,7 @@
  }
  \usage{
 
-	SKAT_CommonRare(Z, obj, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5)
+	SKAT_CommonRare(Z, obj, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights=NULL
 	, method="C", r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL
 	, test.type="Joint", is_dosage=FALSE, missing_cutoff=0.15
 	, estimate_MAF=1, SetID1=NULL)
@@ -29,7 +29,8 @@
       \item{obj}{an output object of the SKAT_Null_Model function. }
       \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (default=c(1,25)).}
       \item{weights.beta.common}{a numeric vector of parameters of beta weights for common variants (default=c(0.5,0.5)).}
-            
+      \item{weights}{a numeric vector of weights for both common and rare variants. When it is NULL, the beta weight with the ``weights.beta.rare'' and ``weights.beta.common''  parameter are used. When method ="C", the coefficient to combine common and rare variants test statistics will be calculated after applying the weights to variants. }
+      
       \item{method}{a method to combine common and rare variant effects (default="C"). "C" represents the combined sum test,
       and "A" represents the adaptive sum test. "AR" represents a different type of adaptive test in which 
       common variants are projected over rare variants. }
@@ -126,7 +127,9 @@ SKAT_CommonRare(Z, obj, test.type="Rare.Only")$p.value
 # Use CommonRare_Cutoff=0.01 instead of CommonRare_Cutoff = NULL
 SKAT_CommonRare(Z, obj, CommonRare_Cutoff=0.01)$p.value
 
-
+# Use custom weights; the first 10 variants have higher weights 
+weights<-rep(1,67); weights[1:10]<-2
+SKAT_CommonRare(Z, obj, weights=weights)$p.value
 
 }
 

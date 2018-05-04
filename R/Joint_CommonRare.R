@@ -1,5 +1,5 @@
 
-SKAT_Scale_Genotypes= function(obj.res, Z1, Z2, weights.beta=c(1,25), weights.beta2=c(1,1), weights=NULL, r.corr1, r.corr2){
+SKAT_Scale_Genotypes= function(obj.res, Z1, Z2, weights.beta=c(1,25), weights.beta2=c(1,1), weights1=NULL, weights2=NULL, r.corr1, r.corr2){
 
 	if(obj.res$out_type == "C"){
 		s2 = obj.res$s2
@@ -18,16 +18,18 @@ SKAT_Scale_Genotypes= function(obj.res, Z1, Z2, weights.beta=c(1,25), weights.be
 	p.m1<-dim(Z1)[2]
 	p.m2<-dim(Z2)[2]	
 
-	if(is.null(weights)){
+	if(is.null(weights1)){
 		MAF<-colMeans(Z1)/2
 		weights<-Beta.Weights(MAF,weights.beta)
 	}
 	
 	# Weights for rare variants, but no weights for common variants	
 	Z1 = t(t(Z1) * (weights))
-	
-	MAF2<-colMeans(Z2)/2
-	weights2<-Beta.Weights(MAF2,weights.beta2)
+
+	if(is.null(weights2)){ 	
+	  MAF2<-colMeans(Z2)/2
+	  weights2<-Beta.Weights(MAF2,weights.beta2)
+	}
 	Z2 = t(t(Z2) * (weights2))
 	
 	
@@ -215,7 +217,7 @@ SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
 
 
 
-SKAT_CommonRare<-function(Z, obj, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), method="C",
+SKAT_CommonRare<-function(Z, obj, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights=NULL, method="C",
 r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_dosage=FALSE, missing_cutoff=0.15, estimate_MAF=1, SetID1=NULL){
 
 	
@@ -303,7 +305,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		
 		# Run SKAT with common variants
 		Z.common<-cbind(Z[,id.common])
-		re<-SKAT_1(Z.common, obj, weights.beta=weights.beta.common, weights = NULL, r.corr=r.corr.common
+		re<-SKAT_1(Z.common, obj, weights.beta=weights.beta.common, weights = weights, r.corr=r.corr.common
 		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, max_maf=1, SetID = SetID1)
 		
 			
@@ -313,7 +315,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		
 		# Run SKAT with rare variants
 		Z.rare<-cbind(Z[,id.rare])
-		re<-SKAT_1(Z.rare, obj, weights.beta=weights.beta.rare, weights = NULL, r.corr=r.corr.rare
+		re<-SKAT_1(Z.rare, obj, weights.beta=weights.beta.rare, weights = weights, r.corr=r.corr.rare
 		, is_check_genotype=is_check_genotype, is_dosage = TRUE, missing_cutoff=1, max_maf=1, SetID = SetID1)
 		
 		is.run=TRUE
@@ -325,8 +327,13 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		
 		Z.rare<-cbind(Z[,id.rare])
 		Z.common<-cbind(Z[,id.common])
+		weights1 = weights2 = NULL
+		if(!is.null(weights)){
+		  weights1 = weights[id.rare]
+		  weights2 = weights[id.common]
+		}
 		obj.scale<-SKAT_Scale_Genotypes(obj.res, Z.rare, Z.common, r.corr1=r.corr.rare, r.corr2=r.corr.common, 
-			weights.beta=weights.beta.rare, weights.beta2=weights.beta.common )
+			weights.beta=weights.beta.rare, weights.beta2=weights.beta.common, weights1=weights1, weights2=weights2 )
 		
 		if(method=="C"){
 			
