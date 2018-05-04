@@ -20,11 +20,11 @@ SKAT_Scale_Genotypes= function(obj.res, Z1, Z2, weights.beta=c(1,25), weights.be
 
 	if(is.null(weights1)){
 		MAF<-colMeans(Z1)/2
-		weights<-Beta.Weights(MAF,weights.beta)
+		weights1<-Beta.Weights(MAF,weights.beta)
 	}
 	
 	# Weights for rare variants, but no weights for common variants	
-	Z1 = t(t(Z1) * (weights))
+	Z1 = t(t(Z1) * (weights1))
 
 	if(is.null(weights2)){ 	
 	  MAF2<-colMeans(Z2)/2
@@ -259,7 +259,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		obj.res$n.all=n
 	}
 	# no max_maf cutoff
-	out<-SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=NULL, weights.beta=c(1,1), 
+	out<-SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
 	impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, max_maf=1, estimate_MAF=estimate_MAF)
 	if(out$return ==1){
 		out$param$n.marker<-m
@@ -273,6 +273,9 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 	
 	Z.org<-Z
 	Z<-out$Z.test
+	weights.org<-weights
+	weights<-out$weights
+	
 	m.test<-ncol(Z)
 	
 	# Since I already used ID include.
@@ -328,7 +331,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 		Z.rare<-cbind(Z[,id.rare])
 		Z.common<-cbind(Z[,id.common])
 		weights1 = weights2 = NULL
-		if(!is.null(weights)){
+		if(!is.null(weights.org)){
 		  weights1 = weights[id.rare]
 		  weights2 = weights[id.common]
 		}
