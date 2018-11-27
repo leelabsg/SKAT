@@ -11,3 +11,4 @@ src/*.dll
 temp
 test_binary
 test_ssd
+*Rproj

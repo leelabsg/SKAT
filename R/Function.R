@@ -366,11 +366,11 @@ SKAT_Get_MAF<-function(Z,id_include=NULL, Is.chrX=FALSE, SexVar=NULL){
 			id.female<-intersect(id.female, id_include)
 		}
 		
-		n.male<-length(id.male)
-		n.female<-length(id.female)
-		
+		n.male.v<-colSums(!is.na(as.matrix(Z[id.male,])))
+		n.female.v<-colSums(!is.na(as.matrix(Z[id.female,])))
+
 		id.all<-union(id.male, id.female)
-		MAF<-colSums(cbind(Z[id.all,]))/(2*n.female+n.male)
+		MAF<-colSums(cbind(Z[id.all,]), na.rm = TRUE)/(2*n.female.v+n.male.v)
 				
 	}	
 	
