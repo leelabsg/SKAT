@@ -24,7 +24,7 @@ Get_Genotypes_SSD_New<-function(SSD_INFO, Set_Index){
 	SNP_ID_SIZE=1024 # it should be the same as SNP_ID_SIZE_MAX in error_messages.h 
 	
 	Is_MakeFile=0
-  if(get("SSD_FILE_OPEN.isOpen", envir=SSD.env) == 0){
+  	if(get("SSD_FILE_OPEN.isOpen", envir=SSD.env) == 0){
 		stop("SSD file is not opened. Please open it first!")
 	}
 
@@ -44,50 +44,49 @@ Get_Genotypes_SSD_New<-function(SSD_INFO, Set_Index){
 	Z.out=NULL
 	Pos=SSD_INFO$SetInfo$Offset[id1]
 	
-	if (SSD_INFO$format=="GT"){
-		flag=FALSE
-		i=1
-		while (flag==FALSE){
-			if (N.SNP_left>10 ){
-				N.SNP=10
-				N.SNP_left=N.SNP_left-10
-			} else {
-				flag=TRUE
-				N.SNP=N.SNP_left	
-			}
-			size<-N.SNP * N.Sample
-			Z<-rep(9,size)
+	flag=FALSE
+	i=1
+	while (flag==FALSE){
+		if (N.SNP_left>10 ){
+			N.SNP=10
+			N.SNP_left=N.SNP_left-10
+		} else {
+			flag=TRUE
+			N.SNP=N.SNP_left	
+		}
+		size<-N.SNP * N.Sample
+		Z<-rep(9,size)
 
 		
-			SNPID=raw(N.SNP* SNP_ID_SIZE)
+		SNPID=raw(N.SNP* SNP_ID_SIZE)
 			
 		
 
-			temp<-.C("R_Get_Genotypes_withID_new",as.integer(Set_Index),as.integer(Z), SNPID, as.integer(size)
-			,as.integer(Is_MakeFile), as.integer(err_code), as.integer(Pos),as.integer(N.SNP),PACKAGE="SKAT")
+		temp<-.C("R_Get_Genotypes_withID_new",as.integer(Set_Index),as.integer(Z), SNPID, as.integer(size)
+		,as.integer(Is_MakeFile), as.integer(err_code), as.integer(Pos),as.integer(N.SNP),PACKAGE="SKAT")
 
 	
 			
-			error_code<-temp[[6]]
-			Print_Error_SSD(error_code)
+		error_code<-temp[[6]]
+		Print_Error_SSD(error_code)
 		
-			SNPID.m<-matrix(temp[[3]], byrow=TRUE, nrow=N.SNP)
-			SNPID.c<-apply(SNPID.m, 1, rawToChar)
+		SNPID.m<-matrix(temp[[3]], byrow=TRUE, nrow=N.SNP)
+		SNPID.c<-apply(SNPID.m, 1, rawToChar)
 
-			Z.out.t<-Matrix(temp[[2]],byrow=TRUE, nrow=N.SNP,sparse=TRUE)
-			rownames(Z.out.t)<-SNPID.c
+		Z.out.t<-Matrix(temp[[2]],byrow=TRUE, nrow=N.SNP,sparse=TRUE)
+		rownames(Z.out.t)<-SNPID.c
 			
 
-			Pos=temp[[7]]
-			rm(temp)
-			gc()
-			if (i==1){Z.out<-Z.out.t} else {Z.out=Matrix(rbind(Z.out,Z.out.t), sparse=TRUE)}
-			i=i+1;		
+		Pos=temp[[7]]
+		rm(temp)
+		gc()
+		if (i==1){Z.out<-Z.out.t} else {Z.out=Matrix(rbind(Z.out,Z.out.t), sparse=TRUE)}
+		i=i+1;		
 			
-		}	
+	}	
 	
-	}
-  Z.out<-t(Z.out)
+	
+  	Z.out<-t(Z.out)
 	return(Z.out)
 }
 
