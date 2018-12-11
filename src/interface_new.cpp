@@ -111,6 +111,12 @@ void R_Get_Genotypes_withID( int *Set_number, int * Z , char * SNPID, int * size
 	Get_Genotypes_withID( *Set_number, Z, SNPID,  *size,  * Is_MakeFile, err);
 }	
 
+void R_Get_Genotypes_withID_new( int *Set_number, int * Z , char * SNPID, int * size, int *Is_MakeFile, int * err, unsigned int *Pos, int * N_snp) // set_number base on INFO file. The result will be printed to file.
+{
+	Get_Genotypes_withID_new( *Set_number, Z, SNPID,  *size,  * Is_MakeFile, err, Pos,* N_snp);
+}	
+	
+	
 /********************************************************************
   Kernel
 ********************************************************************/
