@@ -17,6 +17,7 @@ void Get_TotalNumberofInd( int* Total_Num_IND);
 void Get_NumberofSnps(int SetID,int *Num_SNP,int* myerror);
 void Get_Genotypes( int Set_number, int* Z, int size, int Is_MakeFile,int* myerror);
 void Get_Genotypes_withID( int Set_number, int* Z, char * SNPID,int size, int Is_MakeFile, int* myerror);
+void Get_Genotypes_withID_new( int Set_number, int* Z, char * SNPID, int size, int Is_MakeFile, int* myerror, unsigned int * Pos, int N_snp); // set_number base on INFO file. The result will be printed to file.
 
 void Kernel_IBS_1(int * Z, int * pn, int * pp, double * Kernel);
 void Kernel_IBS_Weight_1(int * Z, int * pn, int * pp, int *UseGivenWeight ,  double * weight, double * Kernel);
