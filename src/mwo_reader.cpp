@@ -633,7 +633,7 @@ int Is_MakeFile, int* myerror, char * SNPID)
 		}
 
 	}
-	int MY_CHAR_BIT=8;
+	
 	int bits_val[MY_CHAR_BIT];
 	size_t ind_count = 0;
 	size_t ind_count_prev=0;
