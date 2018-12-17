@@ -243,7 +243,7 @@ R_CMethodDef cMethods[] = {
 //
    {"R_Get_Genotypes", (DL_FUNC) &R_Get_Genotypes, 5, type6},
    {"R_Get_Genotypes_withID", (DL_FUNC) &R_Get_Genotypes_withID, 6, type7},
-   {"R_Get_Genotypes_withID_new", (DL_FUNC) &R_Get_Genotypes_withID, 8, type71},
+   {"R_Get_Genotypes_withID_new", (DL_FUNC) &R_Get_Genotypes_withID_new, 8, type71},
 //   
    {"RSKATExact", (DL_FUNC) &RSKATExact, 18, type8},
    {"RSKATOExact", (DL_FUNC) &RSKATOExact, 21, type9},
