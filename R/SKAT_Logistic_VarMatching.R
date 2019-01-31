@@ -29,7 +29,7 @@ KMTest.logistic.Linear.VarMatching = function(res, Z, X1, kernel, weights = NULL
 
   	Q.Temp = t(res)%*%Z
   	Q = Q.Temp %*% t(Q.Temp)/2
-
+	Q=as.numeric(Q)
   	Q.res = NULL
   	if(n.Resampling > 0){
   		Q.Temp.res = t(res.out)%*%Z
@@ -44,7 +44,9 @@ KMTest.logistic.Linear.VarMatching = function(res, Z, X1, kernel, weights = NULL
   		Q.sim = rowSums(rbind(Q.Temp.res1^2))/2
 
 	} 
-
+	
+	Q.res=as.numeric(Q.res)
+	
 	Q.all<-c(Q,Q.res)
 	p_all<-mu
 
