@@ -300,7 +300,8 @@ SKAT_Optimal_Logistic_VarMatching  = function(res, Z, X1, kernel, weights = NULL
 	p.m<-dim(Z)[2]
 	n.r<-length(r.all)
 	
-	D  = diag(pi_1)   
+	D=Matrix(0 ,nrow=length(pi_1), ncol=length(pi_1),sparse=TRUE)
+	diag(D)=pi_1
 	if (kernel == "linear.weighted") {
 		Z = t(t(Z) * (weights))
 	}
