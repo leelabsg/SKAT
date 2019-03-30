@@ -15,7 +15,7 @@ export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights,
 	SKAT_NULL_emmaX,
 	SKATBinary, SKATBinary_Single, Get_EffectiveNumberTest, QQPlot_Adj,
 	SKATBinary.SSD.OneSet, SKATBinary.SSD.OneSet_SetIndex, SKATBinary.SSD.All,
-	SKAT_Null_Model_ChrX, SKAT_ChrX)
+	SKAT_Null_Model_ChrX, SKAT_ChrX,SKATBinary_spa)
 
      importFrom("graphics", "abline", "legend", "plot", "points")
      importFrom("stats", "approxfun", "dbeta", "dchisq", "get_all_vars",
