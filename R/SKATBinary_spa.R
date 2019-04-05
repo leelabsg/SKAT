@@ -33,9 +33,6 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 	p.old=c()
 	p.new=c()
 
-	g.sum=0
-	q.sum=0
-
 		for (jj in 1:ncol(G)){
 
 
@@ -62,11 +59,11 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 			p.old[jj]=p_temp1
 
 
-			g.sum=g.sum+g.qtemp*weight[jj]*sqrt(n.g)
-			q.sum=q.sum+q*weight[jj]*sqrt(n.g)
+			
+
 
 			##zscore.all_0[,jj]=qnorm(p_temp1/2, mean = 0, sd =sqrt( variancematrix[jj,jj]),lower.tail = FALSE, log.p = FALSE)*weight[jj]*sign(q-mu1)
-			zscore.all_0[,jj]=(q-mu1)*sqrt(n.g)
+			zscore.all_0[,jj]=(q-mu1)
 	
 			id1<-which(stat.qtemp > Cutoff^2) 
 
@@ -107,6 +104,10 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 				zscore.all_1[,jj]=qnorm(p_temp1/2, mean = 0, sd =sqrt( variancematrix[jj,jj]),lower.tail = FALSE, log.p = FALSE)*weight[jj]*sign(q-mu1)
 
 			}
+			if (p_temp1<1){
+				g.sum=g.sum+g.qtemp*weight[jj]
+				q.sum=q.sum+q*weight[jj]
+			}
 			if (p_temp1>0){
 				VarS[jj]= zscore.all_0[,jj]^2/qchisq(p_temp1, 1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
 			} else {
@@ -129,7 +130,9 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 
 
 
-SKATBinary_spa<-function(G, obj, Cutoff ){
+SKATBinary_spa
+
+test<-function(G, obj, Cutoff ){
 		X=obj$X1
 		u=obj$mu
 		w=obj$pi_1
@@ -172,7 +175,7 @@ SKATBinary_spa<-function(G, obj, Cutoff ){
 		qtemp=t(G)%*%res_temp2-t(G)%*%  (w^(0.5)*X )%*%temp1%*% (t(X) %*% (res_temp2* w^(0.5)))
 
 
-		out_kernel=SPA_ER_kernel(G, obj, res_all, u, Cutoff, MAFsum,qtemp, resampling_time=0,variancematrix,weight);
+		out_kernel=SPA_ER_kernel(G, obj,  u, Cutoff, variancematrix, weight)
 		zscore.all_1=out_kernel$zscore.all_0* weight
 		VarS=out_kernel$VarS*weight^2
 
@@ -205,7 +208,10 @@ SKATBinary_spa<-function(G, obj, Cutoff ){
 		
 		vars_inf=which(VarS==Inf)
 		if (length(vars_inf)>0){
-			VarS[vars_inf]=VarS_org[vars_inf]
+			G2_adj_n=G2_adj_n[-vars_inf,-vars_inf]
+			zscore.all_1=zscore.all_1[-vars_inf]
+			VarS=Vars[-vars_inf]
+			VarS_org=VarS_org[-vars_inf]
 		}
 		
 		G2_adj_n=G2_adj_n%*%diag(VarS/VarS_org)
