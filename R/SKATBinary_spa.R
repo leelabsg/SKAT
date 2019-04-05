@@ -20,10 +20,12 @@ Beta_Weight<-function(MAF,weights.beta){
 
 
 
-SPA_ER_kernel<-function(G, obj, res_all, u, Cutoff, MAFsum,qtemp,resampling_time,variancematrix, weight){
 
-	
-	res_time=resampling_time+1
+SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
+	res_all=obj$res
+	MAFsum=colSums(G)
+	qtemp=matrix(rep(0,dim(G)[2]))
+	res_time=1
 	zscore.all_0<-matrix(rep(0, (ncol(G)*res_time)), ncol=ncol(G))
 	zscore.all_1<-matrix(rep(0, (ncol(G)*res_time)), ncol=ncol(G))
 	VarS=c()
@@ -33,6 +35,7 @@ SPA_ER_kernel<-function(G, obj, res_all, u, Cutoff, MAFsum,qtemp,resampling_time
 
 	g.sum=0
 	q.sum=0
+
 		for (jj in 1:ncol(G)){
 
 
@@ -44,14 +47,16 @@ SPA_ER_kernel<-function(G, obj, res_all, u, Cutoff, MAFsum,qtemp,resampling_time
 			}
 			NAset<-which(G[,jj]==0)
 			G1<-G[,jj]  -  obj$XXVX_inv %*%  (obj$XV %*% G[,jj])
-			q<-(t(G1) %*% (res_all+u)) /sqrt(n.g)
-			g=G1 /sqrt(n.g)
-
+			#q<-(t(G1) %*% (res_all+u)) /sqrt(n.g)
+			#g=G1 /sqrt(n.g)
+			q<-(t(G1) %*% (res_all+u)) 
+			g=G1
 
 			mu.qtemp=u; g.qtemp=g   ###G_tilde*w^(-1/2) 
 			mu1 <- sum(mu.qtemp * g.qtemp)
  			var1 <- sum(mu.qtemp * (1 - mu.qtemp) * g.qtemp^2)
-    		 
+
+
     			stat.qtemp<-(q - mu1)^2/var1
     			p_temp1<-pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
 			p.old[jj]=p_temp1
@@ -119,6 +124,7 @@ SPA_ER_kernel<-function(G, obj, res_all, u, Cutoff, MAFsum,qtemp,resampling_time
 		outlist$zscore.all_1=zscore.all_1
 		return(outlist) ;
 }
+
 
 
 
