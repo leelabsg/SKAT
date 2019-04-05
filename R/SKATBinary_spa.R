@@ -209,8 +209,8 @@ test<-function(G, obj, Cutoff ){
 		vars_inf=which(VarS==Inf)
 		if (length(vars_inf)>0){
 			G2_adj_n=G2_adj_n[-vars_inf,-vars_inf]
-			zscore.all_1=zscore.all_1[-vars_inf]
-			VarS=Vars[-vars_inf]
+			zscore.all_1=zscore.all_1[,-vars_inf]
+			VarS=VarS[-vars_inf]
 			VarS_org=VarS_org[-vars_inf]
 		}
 		
