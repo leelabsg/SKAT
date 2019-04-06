@@ -116,6 +116,8 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 
 SKATBinary_spa<-function (G, obj, Cutoff)
 {
+    if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
+
     X = obj$X1
     u = obj$mu
     w = obj$pi_1
@@ -133,8 +135,11 @@ SKATBinary_spa<-function (G, obj, Cutoff)
     MAF_0 = which(colSums(G)==0)
     if (length(MAF_0)>0){
 	cat("The following columns are removed due to no-variation: ", MAF_0,"\n")
-	G=G[,-MAF_0]
+	G=Matrix(G[,-MAF_0],sparse=TRUE)
     }
+    if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
+		       
+		       
     for (jj in 1:ncol(G)) {
         n.g <- sum(G[, jj])
         if (n.g/(2 * length(G[, jj])) > 0.5) {
