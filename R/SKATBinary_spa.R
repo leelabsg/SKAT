@@ -114,10 +114,10 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 
 
 
-SKATBinary_spa<-function (G, obj, Cutoff)
+SKATBinary_spa<-function (G, obj, Cutoff,method="All")
 {
     if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
-
+    if (!method %in% c("All","Unadjusted","Robust")){stop("WARNING: wrong method option!\n")}
     X = obj$X1
     u = obj$mu
     w = obj$pi_1
@@ -187,11 +187,14 @@ SKATBinary_spa<-function (G, obj, Cutoff)
     if (length(IDX) > 0) {
         r.all[IDX] <- 0.999
     }
-    out = SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1, Phi = as.matrix(G2_adj_n),
-        r.corr = r.all, method = "optimal.adj", Score.Resampling = NULL)
     list_myfun = list()
-    list_myfun$p_skato_old = out$p.value
-    list_myfun$p_each_old = out$param$p.val.each
+    if (method!="Robust"){
+    	out = SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1, Phi = as.matrix(G2_adj_n),
+        r.corr = r.all, method = "optimal.adj", Score.Resampling = NULL)
+
+    	list_myfun$p_skato_old = out$p.value
+    	list_myfun$p_each_old = out$param$p.val.each
+    }
     VarS_org = diag(G2_adj_n)
     vars_inf = which(VarS == Inf)
     if (length(vars_inf) > 0) {
@@ -219,26 +222,30 @@ SKATBinary_spa<-function (G, obj, Cutoff)
     }
     r = min(r, 1)
     list_myfun$r = r
-    out = try(SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1,
+    if (method=="All"){
+    	out = try(SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1,
         Phi = as.matrix(G2_adj_n), r.corr = r.all, method = "optimal.adj",
         Score.Resampling = NULL), silent = TRUE)
-    if (class(out) != "try-error") {
-        list_myfun$p_skato = out$p.value
-        list_myfun$p_each = out$param$p.val.each
-    }     else {
-        list_myfun$p_skato = NA
-        list_myfun$p_each = rep(NA, 7)
+    	if (class(out) != "try-error") {
+        	list_myfun$p_skato = out$p.value
+        	list_myfun$p_each = out$param$p.val.each
+    	}     else {
+        	list_myfun$p_skato = NA
+        	list_myfun$p_each = rep(NA, 7)
+    	}
     }
-    out = try(SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1,
+    if (method !="Unadjusted"){
+    	out = try(SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1,
         Phi = as.matrix(G2_adj_n %*% diag(rep(1/r, dim(G2_adj_n)[2]))),
         r.corr = r.all, method = "optimal.adj", Score.Resampling = NULL),
         silent = TRUE)
-    if (class(out) != "try-error") {
-        list_myfun$p_skato_2 = out$p.value
-        list_myfun$p_each_2 = out$param$p.val.each
-    }     else {
-        list_myfun$p_skato_2 = NA
-        list_myfun$p_each_2 = rep(NA, 7)
+    	if (class(out) != "try-error") {
+        	list_myfun$p_skato_2 = out$p.value
+        	list_myfun$p_each_2 = out$param$p.val.each
+    	}     else {
+        	list_myfun$p_skato_2 = NA
+        	list_myfun$p_each_2 = rep(NA, 7)
+    	}
     }
     if (flag == 2) {
         list_myfun$rare_n = 0
