@@ -230,8 +230,9 @@ SKATBinary_spa<-function (G, obj, Cutoff,method="All")
         	list_myfun$p_skato = out$p.value
         	list_myfun$p_each = out$param$p.val.each
     	}     else {
-        	list_myfun$p_skato = NA
-        	list_myfun$p_each = rep(NA, 7)
+		cat("Please check your genotype matrix. P value is 1!\n")
+        	list_myfun$p_skato = 1
+        	list_myfun$p_each = rep(1, 7)
     	}
     }
     if (method !="Unadjusted"){
@@ -243,8 +244,9 @@ SKATBinary_spa<-function (G, obj, Cutoff,method="All")
         	list_myfun$p_skato_2 = out$p.value
         	list_myfun$p_each_2 = out$param$p.val.each
     	}     else {
-        	list_myfun$p_skato_2 = NA
-        	list_myfun$p_each_2 = rep(NA, 7)
+		cat("Please check your genotype matrix. P value is 1!\n")
+        	list_myfun$p_skato = 1
+        	list_myfun$p_each = rep(1, 7)
     	}
     }
     if (flag == 2) {
