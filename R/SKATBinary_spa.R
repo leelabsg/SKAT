@@ -203,7 +203,9 @@ SKATBinary_spa<-function (G, obj, Cutoff,method="All")
 	G2_adj_n[vars_inf,]=0
 	G2_adj_n[,vars_inf]=0
     }
-    G2_adj_n = G2_adj_n %*% diag(VarS/VarS_org)
+    if (length(VarS)==1){G2_adj_n = G2_adj_n *VarS/VarS_org} else{
+    	G2_adj_n = G2_adj_n %*% diag(VarS/VarS_org)
+    }
     mu = out_kernel$mu
     g.sum = out_kernel$g.sum
     q.sum = out_kernel$q.sum
@@ -236,8 +238,10 @@ SKATBinary_spa<-function (G, obj, Cutoff,method="All")
     	}
     }
     if (method !="Unadjusted"){
+	if (dim(G2_adj_n)[2]==1){Phi_temp=as.matrix(G2_adj_n *1/r)} else {Phi_temp=as.matrix(G2_adj_n %*% diag(rep(1/r, dim(G2_adj_n)[2])))}
+
     	out = try(SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1,
-        Phi = as.matrix(G2_adj_n %*% diag(rep(1/r, dim(G2_adj_n)[2]))),
+        Phi = Phi_temp,
         r.corr = r.all, method = "optimal.adj", Score.Resampling = NULL),
         silent = TRUE)
     	if (class(out) != "try-error") {
