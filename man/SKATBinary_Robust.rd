@@ -12,9 +12,8 @@
 	, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
 	, r.corr=0, impute.method = "bestguess", is_check_genotype=TRUE
 	, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
-	, estimate_MAF=1, N.Resampling=2 *10^6, seednum=100, epsilon=10^-6
-	, SetID=NULL)
-	
+	, estimate_MAF=1)
+	 
 	SKATBinary.SSD.OneSet(SSD.INFO, SetID, obj, \dots ,obj.SNPWeight=NULL)
 
 	SKATBinary.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots ,obj.SNPWeight=NULL)
@@ -26,16 +25,12 @@
       Each genotype should be coded as 0, 1, 2, and 9 (or NA) for AA, Aa, aa, and missing, 
       where A is a major allele and a is a minor allele. }
       \item{obj}{output object from SKAT_Null_Model. }
-      \item{kernel}{type of kernel (default= "linear.weighted"). See SKAT page for details. }
+      \item{kernel}{type of kernel (default= "linear.weighted"). The possible choices are "linear" and "linear.weighted".}
       \item{method}{type of gene based test (default= "SKAT"). The possible choices are
-      "SKAT", "Burden" and "SKATO", which represents SKAT, Burden and SKAT-O tests, respectively. 
-      This parameter differs from the "method" parameter in SKAT function. 
-      "Burden" is equivalent to method="davies" and r.corr=1 and "SKATO" is equivalent to method="optimal.adj" in the SKAT function.
-      When method="Burden" or method="SKATO", r.corr will be ignored.}
-      \item{method.bin}{type of method to compute a p-value (default="Hybrid"). Possible choices are
-      "Hybrid", "ER", "ER.A", "QA", "MA" and "UA". See details}
-     \item{weights.beta}{a numeric vector of parameters of beta weights. 
-      It is only used for weighted kernels. 
+      "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. 
+     \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (MAF<=0.01). It is only used for weighted kernels. 
+      If you want to use your own  weights, please specify the ``weights'' parameter.}
+       \item{weights.beta.common}{a numeric vector of parameters of beta weights for common variants (MAF>0.01). It is only used for weighted kernels. 
       If you want to use your own  weights, please specify the ``weights'' parameter.}
       \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}
       \item{impute.method}{a method to impute missing genotypes (default= "bestguess"). "bestguess" imputes missing genotypes as most likely 
@@ -49,12 +44,9 @@
       \item{max_maf}{a cutoff of the maximum minor allele frequencies (MAF) (default=1, no cutoff). Any SNPs with MAF > cutoff will be excluded from the analysis.}
       \item{estimate_MAF}{a numeric value indicating how to estimate MAFs for the weight calculation and 
       the missing genotype imputation. See SKAT page for details. }
-      \item{N.Resampling}{a number of resampling to be conducted to get p-values (default=2 *10^6).}
-      \item{seednum}{a seed number for random number generation (default=100). If NULL, no seed number will be assigned.}
-      \item{epsilon}{a precision level  (default=10^-6).}
+
       
       \item{SSD.INFO}{an SSD_INFO object returned from Open_SSD. }
-      \item{SetID}{a character value of Set ID. You can find a set ID of each set from SetInfo object of SSD.INFO. In SKATBinary function, this parameter is for the internal use only.}
       \item{SetIndex}{a numeric value of Set index. You can find a set index of each set from SetInfo object of SSD.INFO  }
       \item{\dots}{further arguments to be passed to ``SKATBinary'' }
       \item{obj.SNPWeight}{an output object of Read_SNP_WeightFile (default=NULL). 
