@@ -5,7 +5,7 @@
 
 Get_Resampling_Pvalue<-function(obj){
 
-	if(class(obj) != "SKAT_OUT" || class(obj) != "SKATBinary_OUT"){
+	if(class(obj) != "SKAT_OUT" && class(obj) != "SKATBinary_OUT"){
 		stop("obj is not a SKAT output object")
 	}
 

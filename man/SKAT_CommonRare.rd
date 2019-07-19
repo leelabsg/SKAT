@@ -9,7 +9,8 @@
  }
  \usage{
 
-	SKAT_CommonRare(Z, obj, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights=NULL
+	SKAT_CommonRare(Z, obj, weights.beta.rare=c(1,25)
+	, weights.beta.common=c(0.5,0.5), weights=NULL
 	, method="C", r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL
 	, test.type="Joint", is_dosage=FALSE, missing_cutoff=0.15
 	, estimate_MAF=1, SetID1=NULL)
