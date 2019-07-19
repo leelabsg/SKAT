@@ -79,7 +79,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 		out.Z$method.bin="NA"
 		
 		SKATBinary_RestoreSeed(out.seed)
-		
+		class(out.Z)<-"SKATBinary_OUT"
 		return(out.Z)
 	}
 
@@ -109,7 +109,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 		re$m = m
 		
 		SKATBinary_RestoreSeed(out.seed)
-		
+		class(re)<-"SKATBinary_OUT"
 		return(re)
 	}
 	
@@ -243,6 +243,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 	re$m = m
 		
 	re$method.bin = method.bin
+	class(re)<-"SKATBinary_OUT"
 	return(re)
 	 
 }
@@ -268,6 +269,7 @@ is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estim
 	if(out.Z$return==1){
 		
 		SKATBinary_RestoreSeed(out.seed)
+	  class(out.Z)<-"SKATBinary_OUT"
 		return(out.Z)
 	}
 
@@ -314,6 +316,7 @@ is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estim
 	SKATBinary_RestoreSeed(out.seed)
 	
 	re$method.bin = method.bin
+	class(re)<-"SKATBinary_OUT"
 	return(re)
 	 
 }
