@@ -14,9 +14,9 @@
 	, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
 	, estimate_MAF=1)
 
-	SKAT_CommonRare.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
+	SKATBinary_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
 
-	SKAT_CommonRare.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
+	SKATBinary_Robust.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
 
  }
 \arguments{
