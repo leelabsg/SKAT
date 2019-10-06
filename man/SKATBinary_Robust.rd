@@ -28,9 +28,9 @@
       \item{method}{type of gene based test (default= "SKATO"). The possible choices are
       "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. 
       \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (MAF<=0.01). It is only used for weighted kernels. 
-      If you want to use your own  weights, please specify the ``weights'' parameter.}
+      If you want to use your own  weights, please specify the "weights" parameter.}
       \item{weights.beta.common}{a numeric vector of parameters of beta weights for common variants (MAF>0.01). It is only used for weighted kernels. 
-      If you want to use your own  weights, please specify the ``weights'' parameter.}
+      If you want to use your own  weights, please specify the "weights" parameter.}
       \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}
       \item{r.corr.rare}{the \eqn{\rho} parameter for rare variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively}
       \item{r.corr.common}{the \eqn{\rho} parameter for common variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively}
