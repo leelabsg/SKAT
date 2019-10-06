@@ -27,31 +27,6 @@
       \item{kernel}{type of kernel (default= "linear.weighted"). The possible choices are "linear" and "linear.weighted".}
       \item{method}{type of gene based test (default= "SKATO"). The possible choices are
       "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. 
-      \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (MAF<=0.01). It is only used for weighted kernels. 
-      If you want to use your own  weights, please specify the "weights" parameter.}
-      \item{weights.beta.common}{a numeric vector of parameters of beta weights for common variants (MAF>0.01). It is only used for weighted kernels. 
-      If you want to use your own  weights, please specify the "weights" parameter.}
-      \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}
-      \item{r.corr.rare}{the \eqn{\rho} parameter for rare variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively}
-      \item{r.corr.common}{the \eqn{\rho} parameter for common variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively}
-      \item{CommonRare_Cutoff}{MAF cutoff for common vs rare variants (default=NULL). It should be a numeric value between 
-      0 and 0.5, or NULL. When it is NULL, \eqn{1/ \sqrt{2 SampleSize }} will be used. }	     	     
-      \item{impute.method}{a method to impute missing genotypes (default= "bestguess"). "bestguess" imputes missing genotypes as most likely 
-      values (0,1,2), "random" imputes missing genotypes by generating binomial(2,p) random variables (p is the MAF), 
-      and "fixed" imputes missing genotypes by assigning the mean genotype value (2p).}
-      \item{is_check_genotype}{a logical value indicating whether to check the validity of the genotype matrix Z (default= TRUE). See SKAT page for details.}
-      \item{is_dosage}{a logical value indicating whether the matrix Z is a dosage matrix. If it is TRUE, SKAT will ignore ``is_check_genotype''. }
-      \item{missing_cutoff}{a cutoff of the missing rates of SNPs (default=0.15). Any SNPs with missing rates higher than the cutoff will be excluded from the analysis.}
-      \item{max_maf}{a cutoff of the maximum minor allele frequencies (MAF) (default=1, no cutoff). Any SNPs with MAF > cutoff will be excluded from the analysis.}
-      \item{estimate_MAF}{a numeric value indicating how to estimate MAFs for the weight calculation and 
-      the missing genotype imputation. See SKAT page for details. }
-
-      \item{SSD.INFO}{an SSD_INFO object returned from Open_SSD. }
-      \item{SetID}{a character value of Set ID. You can find a set ID of each set from SetInfo object of SSD.INFO. In SKATBinary_Robust function, this parameter is for the internal use only.}
-      \item{SetIndex}{a numeric value of Set index. You can find a set index of each set from SetInfo object of SSD.INFO  }
-      \item{\dots}{further arguments to be passed to ``SKATBinary_Robust'' }
-
-	  
 }
 \value{
 	\item{p.value}{p-value. It will be the mid p-value if ER or ER.A are used to compute the p-value.}
