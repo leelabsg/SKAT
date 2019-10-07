@@ -110,7 +110,7 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 
 
 
-SKATBinary_spa<-function (G, obj, Cutoff=2,method="Robust"){
+SKATBinary_spa<-function (G, obj, Cutoff=2,method="SKATO",r.corr=NULL){
 	weights.beta.rare=c(1,25)
 	weights.beta.common=c(0.5,0.5)
     if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
