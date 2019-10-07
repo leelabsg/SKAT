@@ -1,3 +1,22 @@
+Beta_Weight<-function(MAF,weights.beta){
+
+	n<-length(MAF)
+	weights<-rep(0,n)	
+	IDX_0<-which(MAF == 0)
+	if(length(IDX_0) == n){
+		stop("No polymorphic SNPs")
+	} else if( length(IDX_0) == 0){
+		weights<-dbeta(MAF,weights.beta[1],weights.beta[2])
+	} else {
+		weights[-IDX_0]<-dbeta(MAF[-IDX_0],weights.beta[1],weights.beta[2])
+	}
+
+	
+	#print(length(IDX_0))
+	#print(weights[-IDX_0])
+	return(weights)
+	
+}
 
 SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 
@@ -92,7 +111,8 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
 
 
 SKATBinary_spa<-function (G, obj, Cutoff=2,method="Robust"){
-
+	weights.beta.rare=c(1,25)
+	weights.beta.common=c(0.5,0.5)
     if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
     X = obj$X1
     u = obj$mu
@@ -125,7 +145,7 @@ SKATBinary_spa<-function (G, obj, Cutoff=2,method="Robust"){
     }
     MAF = colMeans(G)/2
     MAFsum = colSums(G)
-    mafcutoff = CommonRare_Cutoff
+    mafcutoff = 0.01 
 
     maf_temp = which(MAF <= mafcutoff)
     if (length(maf_temp) > 0 & length(maf_temp) < length(MAF)) {
