@@ -210,7 +210,7 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
 
     
   }
-
+  list_myfun$Q=SKAT:::SKAT_META_Optimal_Get_Q(zscore.all_1, r.corr)$Q.r
   ##list_myfun$p.old = out_kernel$p.old
   list_myfun$p.value_singlevariant = out_kernel$p.new
   return(list_myfun)
