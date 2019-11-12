@@ -189,7 +189,7 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
     r = VarQ/VarQ_2
   }
   r = min(r, 1)
-  list_myfun$r = r
+  #list_myfun$r = r
   
   
   if (dim(G2_adj_n)[2]==1){Phi_temp=as.matrix(G2_adj_n *1/r)} else {Phi_temp=as.matrix(G2_adj_n %*% diag(rep(1/r, dim(G2_adj_n)[2])))}
@@ -199,8 +199,8 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
                                        r.corr = r.all, method = "optimal.adj", Score.Resampling = NULL),
             silent = TRUE)
   if (class(out) != "try-error") {
-    list_myfun$p_skato = out$p.value
-    list_myfun$p_each = out$param$p.val.each
+    list_myfun$p.value = out$p.value
+    list_myfun$p.value_each = out$param$p.val.each
   }     else {
     
     
@@ -212,7 +212,7 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   }
 
   ##list_myfun$p.old = out_kernel$p.old
-  list_myfun$p.value_single = out_kernel$p.new
+  list_myfun$p.value_singlevariant = out_kernel$p.new
   return(list_myfun)
 }
 
@@ -260,7 +260,7 @@ SKATBinary_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ...){
 #
 # Only SKAT_Null_Model obj can be used
 #
-SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
+SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
   
   N.Set<-SSD.INFO$nSets
   OUT.Pvalue<-rep(NA,N.Set)
