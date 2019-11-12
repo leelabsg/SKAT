@@ -213,7 +213,7 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   list_myfun$Q=SKAT:::SKAT_META_Optimal_Get_Q(zscore.all_1, r.corr)$Q.r
   ##list_myfun$p.old = out_kernel$p.old
   list_myfun$p.value_singlevariant = out_kernel$p.new
-  
+
   return(list_myfun)
 }
 
@@ -492,7 +492,7 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   
   re<-SKATBinary_spa(G=Z,obj=obj.res,weights = weights, method=method, r.corr=r.corr)
   
-  
+  if (length(r.corr)==0){r.corr= c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1)}
   is.run=TRUE
   
   re$param$n.marker<-m.org
