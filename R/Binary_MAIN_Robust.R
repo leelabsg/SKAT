@@ -204,8 +204,8 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   }     else {
     
     
-    list_myfun$p_each=c(p.value_burden)
-    list_myfun$p_skato=p.value_burden  ##2*min( list_myfun$p_each)
+    list_myfun$p.value_each=c(p.value_burden)
+    list_myfun$p.value=p.value_burden  ##2*min( list_myfun$p_each)
     cat("Try-error message from SKAT. Only report robust burden.\n")
 
     
@@ -213,6 +213,7 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   list_myfun$Q=SKAT:::SKAT_META_Optimal_Get_Q(zscore.all_1, r.corr)$Q.r
   ##list_myfun$p.old = out_kernel$p.old
   list_myfun$p.value_singlevariant = out_kernel$p.new
+  
   return(list_myfun)
 }
 
@@ -497,7 +498,9 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   re$param$n.marker<-m.org
   re$param$n.marker.test<-m.test
   re$param$n.marker.name<-colnames(Z)
-  
+  re$param$rho=r.corr
+  re$param$minp=min( re$p.value_each)
+  re$param$rho_est=r.corr[which(re$p.value_each==re$param$minp)]
   re$n.rare = n.rare
   re$mac.rare=mac.rare
   re$n.common = n.common
