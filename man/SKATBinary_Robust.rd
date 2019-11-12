@@ -9,9 +9,9 @@
  \usage{
  
 	SKATBinary_Robust(Z, obj, kernel = "linear.weighted", method="SKATO"
-	, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
-	, r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, impute.method = "bestguess"
-	, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
+	, r.corr=NULL,weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
+	, CommonRare_Cutoff=NULL, impute.method = "bestguess"
+	,  is_check_genotype=TRUE,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
 	, estimate_MAF=1)
 
 	SKATBinary_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
@@ -22,18 +22,17 @@
 \arguments{
       \item{Z}{a numeric genotype matrix with each row as a different individual and each column as a separate gene/snp. 
       Each genotype should be coded as 0, 1, 2, and 9 (or NA) for AA, Aa, aa, and missing, 
-      where A is a major allele and a is a minor allele. }
+      where A is a major allele and a is a minor allele. Now we support both matrix and sparse matrix. }
       \item{obj}{output object from SKAT_Null_Model. }
       \item{kernel}{type of kernel (default= "linear.weighted"). The possible choices are "linear" and "linear.weighted".}
       \item{method}{type of gene based test (default= "SKATO"). The possible choices are
       "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. }
-	\item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (MAF<=0.01). It is only used for weighted kernels. 
+      \item{r.corr}{the \eqn{\rho} parameter for all variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively.}
+      \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (MAF<=0.01). It is only used for weighted kernels. 
       If you want to use your own  weights, please specify the "weights" parameter.}
       \item{weights.beta.common}{a numeric vector of parameters of beta weights for common variants (MAF>0.01). It is only used for weighted kernels. 
       If you want to use your own  weights, please specify the "weights" parameter.}
       \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}
-      \item{r.corr.rare}{the \eqn{\rho} parameter for rare variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively}
-      \item{r.corr.common}{the \eqn{\rho} parameter for common variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively}
       \item{CommonRare_Cutoff}{MAF cutoff for common vs rare variants (default=NULL). It should be a numeric value between 
       0 and 0.5, or NULL. When it is NULL, \eqn{1/ \sqrt{2 SampleSize }} will be used. }	     	     
       \item{impute.method}{a method to impute missing genotypes (default= "bestguess"). "bestguess" imputes missing genotypes as most likely 
