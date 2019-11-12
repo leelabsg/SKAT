@@ -500,7 +500,7 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   re$param$n.marker.name<-colnames(Z)
   re$param$rho=r.corr
   re$param$minp=min( re$p.value_each)
-  re$param$rho_est=r.corr[which(re$p.value_each==re$param$minp)]
+  re$param$rho_est=r.corr[which.min(re$p.value_each)]
   re$n.rare = n.rare
   re$mac.rare=mac.rare
   re$n.common = n.common
