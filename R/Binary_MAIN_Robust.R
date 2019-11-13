@@ -261,7 +261,7 @@ SKATBinary_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ...){
 #
 # Only SKAT_Null_Model obj can be used
 #
-SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
+SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...){
   
   N.Set<-SSD.INFO$nSets
   OUT.Pvalue<-rep(NA,N.Set)
@@ -349,15 +349,14 @@ colMax <- function(data) apply(data,2, max, na.rm = TRUE)
 
 
 SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
-                            , r.corr=NULL, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
-                            , CommonRare_Cutoff=NULL, impute.method = "bestguess"
+                            , r.corr=NULL, weights.beta=c(1,25),  weights = NULL
+                            , impute.method = "bestguess",is_check_genotype=TRUE
                             ,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
                             , estimate_MAF=1){
   
   
   SetID1=NULL
   # This function only can be used for SNPs
-  is_check_genotype=TRUE
   
   if(class(obj) == "SKAT_NULL_Model_ADJ"){
     
@@ -383,15 +382,7 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   m <- dim(Z)[2]
   m.org<-m
   
-  
-  if(is.null(CommonRare_Cutoff)){
-    CommonRare_Cutoff<-1/sqrt(n * 2)
-  }
-  # Check Cutoff
-  if(CommonRare_Cutoff < 0 && CommonRare_Cutoff > 0.5){
-    stop("Error in CommonRare_Cutoff! It should be NULL or a numeric value between 0 to 0.5")
-  }
-  
+
   # for old version
   if(is.null(obj.res$n.all)){
     obj.res$n.all=n
@@ -406,15 +397,12 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
     
   }
   
-  out<-SKAT:::SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
+  out<-SKAT:::SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=weights.beta, 
                          impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, max_maf= max_maf, estimate_MAF=estimate_MAF)
   if(out$return ==1){
     out$param$n.marker<-m
-    out$n.rare = 0
-    out$n.common = 0
+    out$n= 0
     out$test.type= test.type
-    out$Cutoff = CommonRare_Cutoff
-    
     return(out)
   }
   
@@ -433,27 +421,13 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   obj.res$n.all =nrow(Z) 
   obj.res$id_include = 1:nrow(Z)	
 
-  mafcutoff=CommonRare_Cutoff
   MAF<-SKAT:::Get_MAF(Z)
-  maf_temp = which(MAF <= mafcutoff)
-  
+
   if (is.null(weights)){
-    weight=rep(0,length(MAF))
-    if (length(maf_temp) > 0 & length(maf_temp) < length(MAF)) {
-      weight[maf_temp] = Beta_Weight(MAF[maf_temp], weights.beta.rare)
-      weight[-maf_temp] =Beta_Weight(MAF[-maf_temp], weights.beta.common)
-    }    else {
-      if (length(maf_temp) == 0) {
-        weight = Beta_Weight(MAF,weights.beta.common)
-      }
-      if (length(maf_temp) == length(MAF)) {
-        weight = Beta_Weight(MAF,  weights.beta.rare)
-      }
-    }
+    weight = Beta_Weight(MAF,  weights.beta.rare)
     weights=weight
   }
-  
-
+ 
   
   if(class(obj) == "SKAT_NULL_Model_ADJ"){
     obj$re1$id_include = obj.res$id_include
@@ -477,18 +451,13 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   m.test<-ncol(Z)
   MAF<-SKAT:::Get_MAF(Z)  
     
-  id.rare<-intersect(which(MAF < CommonRare_Cutoff), which(MAF > 0))
-  id.common<-intersect(which(MAF >= CommonRare_Cutoff), which(MAF > 0))
+  #id.rare<-intersect(which(MAF < CommonRare_Cutoff), which(MAF > 0))
+  #id.common<-intersect(which(MAF >= CommonRare_Cutoff), which(MAF > 0))
   
-  n.rare= length(id.rare)
-  n.common= length(id.common)
-  if (length(id.rare)==0){mac.rare=0}else {mac.rare=sum(Z[,id.rare])}
-  if (length(id.common)==0){mac.common=0}else {mac.common=sum(Z[,id.common])}
-  
+  n.markers= length(MAF)
+  mac=sum(Z)  
   
   is.run<-FALSE
-  
-
   
   re<-SKATBinary_spa(G=Z,obj=obj.res,weights = weights, method=method, r.corr=r.corr)
   
@@ -501,12 +470,7 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   re$param$rho=r.corr
   re$param$minp=min( re$p.value_each)
   re$param$rho_est=r.corr[which.min(re$p.value_each)]
-  re$n.rare = n.rare
-  re$mac.rare=mac.rare
-  re$n.common = n.common
-  re$mac.common=mac.common
-  re$Cutoff = CommonRare_Cutoff
-  
+  re$mac=mac
   return(re)
   
 }
