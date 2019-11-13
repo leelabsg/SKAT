@@ -9,9 +9,9 @@
  \usage{
  
 	SKATBinary_Robust(Z, obj, kernel = "linear.weighted", method="SKATO"
-	, r.corr=NULL,weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
-	, CommonRare_Cutoff=NULL, impute.method = "bestguess"
-	,  is_check_genotype=TRUE,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
+	, r.corr=NULL,weights.beta=c(1,25), weights = NULL
+	,impute.method = "bestguess",  is_check_genotype=TRUE
+  	,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
 	, estimate_MAF=1)
 
 	SKATBinary_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
@@ -27,14 +27,10 @@
       \item{kernel}{type of kernel (default= "linear.weighted"). The possible choices are "linear" and "linear.weighted".}
       \item{method}{type of gene based test (default= "SKATO"). The possible choices are
       "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. }
-      \item{r.corr}{the \eqn{\rho} parameter for all variants (default= 0). \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively.}
-      \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants (MAF<=0.01). It is only used for weighted kernels. 
+      \item{r.corr}{the \eqn{\rho} parameter for all variants. \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively.}
+      \item{weights.beta.rare}{a numeric vector of parameters of beta weights for all variants. It is only used for weighted kernels. 
       If you want to use your own  weights, please specify the "weights" parameter.}
-      \item{weights.beta.common}{a numeric vector of parameters of beta weights for common variants (MAF>0.01). It is only used for weighted kernels. 
-      If you want to use your own  weights, please specify the "weights" parameter.}
-      \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}
-      \item{CommonRare_Cutoff}{MAF cutoff for common vs rare variants (default=NULL). It should be a numeric value between 
-      0 and 0.5, or NULL. When it is NULL, \eqn{1/ \sqrt{2 SampleSize }} will be used. }	     	     
+      \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}	     	     
       \item{impute.method}{a method to impute missing genotypes (default= "bestguess"). "bestguess" imputes missing genotypes as most likely 
       values (0,1,2), "random" imputes missing genotypes by generating binomial(2,p) random variables (p is the MAF), 
       and "fixed" imputes missing genotypes by assigning the mean genotype value (2p).}
@@ -50,50 +46,21 @@
       \item{\dots}{further arguments to be passed to ``SKATBinary_Robust'' }
 }
 \value{
-	\item{p.value}{p-value. It will be the mid p-value if ER or ER.A are used to compute the p-value.}
-	\item{p.value.standard}{(ER and ER.A only) standard p-value.}
-	\item{p.value.resampling}{p-values from resampled outcome. You can obtain it when n.Resampling (in SKAT_Null_Model) > 0. See SKAT_Null_Model page. }
-	\item{p.value.standard.resampling}{(ER and ER.A only)standard p-values from resampled outcomes.}
-	\item{m}{the number of individuals with minor alleles.}
-	\item{MAP}{minimum possible p-values. It is available when the method.bin="ER" and m is sufficiently small.}
-	\item{MAC}{total minor allele count (MAC).}
-	\item{n.total}{(ER only) the number of resampling to be generated to get the p-value. 
-	It can be smaller than N.Resampling when the total number of configurations of case-controls among individuals with minor alleles are smaller than
-	N.Resampling.}
-  	\item{is.accurate}{logical value for the accuracy of the p-value. If it is false, more resampling is needed to accurately estimate the p-value. }
-	\item{param$n.marker}{a number of SNPs in the genotype matrix}  
-	\item{param$n.marker.test}{a number of SNPs used for the test. It can be different from param$n.marker when 
-	some markers are monomorphic or have higher missing rates than the missing_cutoff. } 
-	\item{method.bin}{a type of method to be used to compute the p-value.}
-}
-\details{
-
-This function implements six methods (method.bin) to compute p-values: 1) Efficient resampling (ER);
-2) Quantile adjusted moment matching (QA); 3) Moment matching adjustment (MA);
-4) No adjustment (UA);  5) Adaptive ER (ER.A); and 6) Hybrid. 
-"Hybrid" selects a method based on the total minor allele count (MAC), the number of individuals with minor 
-alleles (m), and the degree of case-control imbalance. When method.bin="ER" or "ER.A", SKATBinary compute mid-p-values and minimum achievable 
-mid p-values. 
-
-If seednum is not NULL, set.seed(seednum) function is used to specify seeds to get the same p-values 
-of ER based methods for different runs. Therefore, please set seednum=NULL, if you do not want to set seeds. 
-
-SKATBinary uses impute.method="bestguess" as a default method for the imputation, which is different from SKAT that uses 
-impute.method="fixed" as a default method. We changed it because SKATBinary with impute.method="fixed" can yield false positives
-when variates are very rare and missing rates between cases and controls are unbalanced. 
-When missing rates between cases and controls are highly unbalanced, SKAT impute.method="fixed" can also yield false positives, 
-but it happens less likely. So we did not change the default imputation method in SKAT.
+	\item{p.value}{p-value. It will be the p-value based on robust methods. }
+  	\item{p.value_singlevariant}{p-value for each single variant in this region-based test.}
+	\item{mac}{total minor allele count (MAC).}
+  	\item{param$n.marker}{a number of SNPs in the genotype matrix.}  
+	\item{param$n.marker.test}{a number of SNPs used for the test. It can be different from param$n.marker when some markers are monomorphic or have higher missing rates than the missing_cutoff. } 
+  	\item{param$rho}{the \eqn{\rho} parameter for all variants. }
 
 }
 
 
-\author{Seunggeun Lee}
+\author{Zhangchen Zhao}
 
 \references{
 
-Lee, S., Fuchsberger, C., Kim, S., Scott, L. (2015) 
-An efficient resampling method for calibrating single and gene-based rare variant association analysis in case-control studies.
-\emph{Biostatistics}, in press.
+Zhao, Z., Bi, W., Zhou, W., VandeHaar, P., Fritsche, L. G., & Lee, S. (2019). UK-Biobank Whole Exome Sequence Binary Phenome Analysis with Robust Region-based Rare Variant Test. \emph{The American Journal of Human Genetics}, in press.
 
 }
 
@@ -107,45 +74,17 @@ attach(SKATBinary.example)
 obj<-SKAT_Null_Model(y ~ x1 + x2, out_type="D")
 
 # run SKAT (default method) with Hybrid
-out = SKATBinary(Z, obj)
+out = SKATBinary_Robust(Z, obj)
 
 # p-value
 out$p.value
 
-# MAP
-out$MAP
-
-# method used to compute p-value (method.bin)
-out$method.bin
-
-
 #
-#	Run burden and SKAT-O with Hybrid
+#	Run burden and SKAT
 
-SKATBinary(Z, obj, method="Burden")$p.value
-SKATBinary(Z, obj, method="SKATO")$p.value
-
-#
-#	Run with SKAT-QA, -MA and -UA
-
-SKATBinary(Z, obj, method.bin="QA")$p.value
-
-SKATBinary(Z, obj, method.bin="MA")$p.value
-
-SKATBinary(Z, obj, method.bin="UA")$p.value
-
-# UA from SKAT function
-SKAT(Z, obj)$p.value
+SKATBinary_Robust(Z, obj, method="Burden")$p.value
+SKATBinary_Robust(Z, obj, method="SKAT")$p.value
 
 
-#
-#	Run with Adaptive ER
-
-out =SKATBinary(Z, obj, method.bin="ER.A")
-
-out$p.value
-
-# the number of total resampling is smaller than 2*10^6 (default value)
-out$n.total 
 
 }
