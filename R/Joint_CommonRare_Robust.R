@@ -128,14 +128,14 @@ colMax <- function(data) apply(data,2, max, na.rm = TRUE)
 
 SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
                             , r.corr=NULL, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
-                            , CommonRare_Cutoff=NULL, impute.method = "bestguess"
+                            , CommonRare_Cutoff=NULL, impute.method = "bestguess",is_check_genotype=TRUE
                             ,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
                             , estimate_MAF=1){
   
   
   SetID1=NULL
   # This function only can be used for SNPs
-  is_check_genotype=TRUE
+  #is_check_genotype=TRUE
   
   if(class(obj) == "SKAT_NULL_Model_ADJ"){
     
