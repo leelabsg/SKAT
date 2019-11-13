@@ -149,7 +149,7 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   gc()
   
   if (method=="SKAT"){r.all=0;r.corr=0;} else {
-    if (method=="burden"){r.all=1;r.corr=1;} else{
+    if (method=="Burden"){r.all=1;r.corr=1;} else{
       if (method=="SKATO"){if (length(r.corr)==0) {    r.all = c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1);    r.corr = c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1) } else {r.all=r.corr}
       } else {stop("WARNING: wrong method!\n")}
     }
@@ -392,8 +392,8 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   
   if (kernel=="linear"){weights=rep(1,ncol(Z)) } else{if (kernel != "linear.weighted"){stop("Wrong kernel!")}}
   if (!is.null(weights)){if (length(weights)!=ncol(Z)) {stop("Incorrect length of weights!")}} else {
-    if (length(weights.beta.rare)!=2){stop("Incorrect length of weights.beta.rare!")}
-    if (length(weights.beta.common)!=2){stop("Incorrect length of weights.beta.common!")}
+    if (length(weights.beta)!=2){stop("Incorrect length of weights.beta!")}
+
     
   }
   
@@ -424,7 +424,7 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   MAF<-SKAT:::Get_MAF(Z)
 
   if (is.null(weights)){
-    weight = Beta_Weight(MAF,  weights.beta.rare)
+    weight = Beta_Weight(MAF,  weights.beta)
     weights=weight
   }
  
@@ -458,7 +458,8 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   mac=sum(Z)  
   
   is.run<-FALSE
-  
+  if ( method=="SKAT"){r.corr=0}
+  if ( method=="Burden"){r.corr=1}
   re<-SKATBinary_spa(G=Z,obj=obj.res,weights = weights, method=method, r.corr=r.corr)
   
   if (length(r.corr)==0){r.corr= c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1)}
@@ -468,8 +469,10 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   re$param$n.marker.test<-m.test
   re$param$n.marker.name<-colnames(Z)
   re$param$rho=r.corr
-  re$param$minp=min( re$p.value_each)
-  re$param$rho_est=r.corr[which.min(re$p.value_each)]
+  if (method=="SKATO"){
+    re$param$minp=min( re$p.value_each)
+    re$param$rho_est=r.corr[which.min(re$p.value_each)]
+  }
   re$mac=mac
   return(re)
   
