@@ -266,8 +266,8 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   
   is.run<-FALSE
   
-
-  
+  if ( method=="SKAT"){r.corr=0}
+  if ( method=="Burden"){r.corr=1}
   re<-SKATBinary_spa(G=Z,obj=obj.res,weights = weights, method=method, r.corr=r.corr)
   
   if (length(r.corr)==0){r.corr= c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1)}
@@ -277,8 +277,10 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   re$param$n.marker.test<-m.test
   re$param$n.marker.name<-colnames(Z)
   re$param$rho=r.corr
-  re$param$minp=min( re$p.value_each)
-  re$param$rho_est=r.corr[which.min(re$p.value_each)]
+  if (method=="SKATO"){
+    re$param$minp=min( re$p.value_each)
+    re$param$rho_est=r.corr[which.min(re$p.value_each)]
+  }
   re$n.rare = n.rare
   re$mac.rare=mac.rare
   re$n.common = n.common
