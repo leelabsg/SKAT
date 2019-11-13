@@ -51,11 +51,15 @@
 }
 \value{
 	\item{p.value}{p-value. It will be the p-value based on robust methods. }
-  \item{p.value_singlevariant}{p-value for each single variant in this region-based test.}
-	\item{mac}{total minor allele count (MAC).}
-  \item{param$n.marker}{a number of SNPs in the genotype matrix.}  
+  	\item{p.value_singlevariant}{p-value for each single variant in this region-based test.}
+
+  	\item{param$n.marker}{a number of SNPs in the genotype matrix.}  
 	\item{param$n.marker.test}{a number of SNPs used for the test. It can be different from param$n.marker when some markers are monomorphic or have higher missing rates than the missing_cutoff. } 
-  \item{param$rho}{the \eqn{\rho} parameter for all variants. }
+  	\item{param$rho}{the \eqn{\rho} parameter for all variants. }
+	\item{n.common}{A number of common markers used for the test. }
+	\item{mac.common}{The total minor allele count (MAC) of common markers used for the test.}
+	\item{n.rare}{A number of rare markers used for the test. }
+	\item{mac.rare}{The total minor allele count (MAC) of rare markers used for the test.}
 
 }
 
@@ -86,8 +90,8 @@ out$p.value
 #
 #	Run burden and SKAT
 
-SKATBinary(Z, obj, method="Burden")$p.value
-SKATBinary(Z, obj, method="SKAT")$p.value
+SKAT_CommonRare_Robust(Z, obj, method="Burden")$p.value
+SKAT_CommonRare_Robust(Z, obj, method="SKAT")$p.value
 
 
 
