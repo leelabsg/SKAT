@@ -397,7 +397,7 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
     
   }
   
-  out<-SKAT:::SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=weights.beta, 
+  out<-SKAT:::SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
                          impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, max_maf= max_maf, estimate_MAF=estimate_MAF)
   if(out$return ==1){
     out$param$n.marker<-m
