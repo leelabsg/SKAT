@@ -220,6 +220,18 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
     if (length(maf_temp) > 0 & length(maf_temp) < length(MAF)) {
       weight[maf_temp] = Beta_Weight(MAF[maf_temp], weights.beta.rare)
       weight[-maf_temp] =Beta_Weight(MAF[-maf_temp], weights.beta.common)
+      Z1=Z[,maf_temp]
+      Z2=Z[,-maf_temp]
+      pi_1=obj$pi_1
+      X1= obj$X1
+      Z1.1<- (Z1 * sqrt(pi_1)) - (X1 * sqrt(pi_1))%*%solve(t(X1)%*%(X1 * pi_1))%*% (t(X1) %*% (Z1 * pi_1))
+		  Z2.1<- (Z2 * sqrt(pi_1)) - (X1 * sqrt(pi_1))%*%solve(t(X1)%*%(X1 * pi_1))%*% (t(X1) %*% (Z2 * pi_1))
+  	  temp1<-t(Z1.1) %*% Z1.1
+	    temp2<-t(Z2.1) %*% Z2.1    
+      z1.var<-sum(temp1 * temp1)
+	    z2.var<-sum(temp2 * temp2)
+      weight[maf_temp] <- weight[maf_temp]/sqrt(sqrt(z1.var))
+	    weight[-maf_temp] <- weight[-maf_temp]/sqrt(sqrt(z2.var))
     }    else {
       if (length(maf_temp) == 0) {
         weight = Beta_Weight(MAF,weights.beta.common)
