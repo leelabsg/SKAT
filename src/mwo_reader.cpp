@@ -335,6 +335,166 @@ void MwoFileReader::get_set(size_t set_num,  int* Z,  size_t size, int* myerror,
 
 }
 
+
+
+void MwoFileReader::get_set_new(size_t set_num,  int* Z,  size_t size, int* myerror, int Is_MakeFile, char * SNPID, unsigned int * Pos, int N_snp)
+{
+	*myerror = NO_ERRORS;
+	if (set_num > 0 && set_num < this->m_total_num_of_sets + 1)
+	{
+		if (Z == NULL)
+		{
+			*myerror = WRONG_ALLOCATED_SIZE4OUTPUT_ARRAY;
+			return; //ERROR: THE ARRAY NOT ALLOCATED YET
+		}
+	}
+	else
+	{
+		*myerror = REQUESTED_SET_ID_DOESNOT_EXISTS;
+		return;  //ERROR: - WRONG SET NUMBER
+	}
+
+	
+	//base on this->m_offsetarr
+    string temp_snp_id;
+    temp_snp_id.reserve(1000);
+	//char temp_snp_id[SNP_ID_SIZE];
+	//memset(temp_snp_id,'\0',sizeof(temp_snp_id));
+	bool end_of_file = false;
+	char* buff = new char[1000];
+
+	bool flag_snpid_done = false;
+	bool flag_read_line_done = true;
+	size_t snp_ind = 0;
+	snpset* ss = new snpset;
+	snp* msnp = new snp;
+	//memset(msnp->m_name, '\0', sizeof(msnp->m_name));
+	
+	
+	char* ch = new char;
+	size_t char_counter = 0;
+	size_t snp_id_ch_ind = 0;
+	//==================================
+
+	// Changed by Seunggeun
+	if(this->m_file.eof()){
+		this->m_file.clear();
+	}
+	//std::cout<<"Hi"<<Pos[0]<<endl;
+	//for (int ijk=0; ijk<strlen(Pos);ijk++){
+	//	std::cout<<Pos[ijk];
+	//}
+	//std::cout<<endl;
+	//std::cout<<Pos<<endl;
+	unsigned int Pos_int=Pos[0];
+
+	//std::cout<<Pos_int<<endl;
+
+	this->m_file.seekg(Pos_int,std::ios::beg);//this part...
+	//==================================
+
+	while (!end_of_file)
+	{
+		memset(buff, '\0', 1000);
+		this->m_file.read(buff,1000);
+
+		for(int i=0; i<1000; i++)   //process the buff info
+		{
+			/* LSG changed */
+			/*
+			if(snp_ind == m_total_num_of_snps)
+			{
+ 				end_of_file = 1;size
+				break;
+			}
+			else
+			*/
+			Pos_int++;
+			if(!flag_snpid_done)
+			{
+				if(buff[i] == '\n' || snp_ind==N_snp)  // if first char in line == '\n' - next_snp_set  will start at next char
+				{	//std::cout<<"part 2 done"<<endl;
+					prepare_out_array_print_snpset_to_file_new(ss,set_num, Z,size, Is_MakeFile, myerror, SNPID);
+					if(*myerror != 0)
+						return;
+					//=============================
+					end_of_file = true; // stop it after current set - read just one set in the middle of the file
+					break;
+					//=============================
+					//ss = new snpset;size
+					//snp_id_ch_ind = 0;
+					//continue;
+				}//if first char in this line == '\n' - next_snp_set
+
+ 				/* changed by LSG */
+				if(snp_ind == m_total_num_of_snps)
+				{
+	 				end_of_file = true;
+					break;
+				}
+
+				if(buff[i] != ' ')
+				{
+					//temp_snp_id[snp_id_ch_ind] = buff[i];//TODO read + add to temp_snp_id until ' '
+					//snp_id_ch_ind++;
+                   			 temp_snp_id += buff[i];
+				}
+				else  // finished read snip_id - the string at the start of every line
+				{
+					//temp_snp_id[snp_id_ch_ind] = '\0';
+					//strncpy (msnp->m_name,temp_snp_id, SNP_ID_SIZE-1);
+					//memset(temp_snp_id,'\0',sizeof(temp_snp_id));
+                    
+                   	 		msnp->m_name= temp_snp_id;
+                 			temp_snp_id.clear();
+					snp_id_ch_ind = 0;
+					flag_snpid_done = 1;
+					flag_read_line_done = 0;
+
+				}
+
+			}
+			else if(!flag_read_line_done)  //read line of specific set
+			{
+				if(char_counter == m_num_of_bytes_per_line-1 && buff[i] == '\n')  //last char in curr line '\n'
+				{
+					flag_read_line_done = true;
+					flag_snpid_done = false;
+					ss->m_snp.Add(msnp);
+					msnp = new snp;
+					snp_ind++;
+					char_counter = 0;
+					//std::cout<<"part 1 done"<<endl;
+				}
+				else        // read items of specific line of specific set
+				{
+					*ch = buff[i];
+					msnp->m_char.Add(ch);
+                  		  	ch = new char;
+					char_counter++;
+				}
+			}
+
+		}
+	}
+//std::string s=std::to_string(Pos_int);
+  //  Pos=s.c_str();
+
+	//std::stringstream strs;
+	//strs<<Pos_int;
+	//std::string temp_str=strs.str();
+	Pos[0]=Pos_int;
+    // remove all 
+    for (size_t i = 0; i < ss->m_snp.GetSize(); ++i){
+        ss->m_snp.GetAt(i)->m_char.Free();        
+    }
+    ss->m_snp.Free();
+    delete ss;
+	return;
+
+
+
+}
 //=========================================================================
 //This function prepares output array Z, and printing to file genotype info
 //Inputs:
@@ -443,6 +603,105 @@ void MwoFileReader::prepare_out_array_print_snpset_to_file(snpset* ss, int set_n
 		myout.close();
 }
 
+
+
+void MwoFileReader::prepare_out_array_print_snpset_to_file_new(snpset* ss, int set_num, int* Z, size_t Zsize,  
+int Is_MakeFile, int* myerror, char * SNPID)
+{
+	//if (Zsize != (this->m_num_of_individuals * this->m_set_size[set_num - 1]))
+	//{
+	//	*myerror = WRONG_ALLOCATED_SIZE4OUTPUT_ARRAY;
+	//	return;
+
+	//}
+	size_t Zind = 0;
+    	std::string set_filename;
+	std::ofstream myout;
+
+	if (Is_MakeFile)
+	{
+        set_filename = this->m_filename;
+        set_filename += ".SET";
+		char buffer[1000];
+		sprintf(buffer,"%d",set_num);
+        set_filename += buffer;
+		myout.open(set_filename.c_str() , std::ios::binary);
+		if (!myout)
+		{
+			*myerror = WARNING_CANT_OPEN_FILE4WRITE_2PRINTSET;
+			Is_MakeFile = 0;
+		}
+
+	}
+	
+	int bits_val[MY_CHAR_BIT];
+	size_t ind_count = 0;
+	size_t ind_count_prev=0;
+	char buff[9];
+
+    /* modified by LSG */
+
+	for (size_t i = 0; i < ss->m_snp.GetSize(); ++i)
+	{
+
+
+		if (Is_MakeFile)
+				myout << ss->m_snp.GetAt(i)->m_name << " ";
+
+		if(SNPID != NULL){
+			int start_id = SNP_ID_SIZE_MAX * i;
+			strncpy(SNPID + start_id, ss->m_snp.GetAt(i)->m_name.c_str(), SNP_ID_SIZE_MAX-1);
+			//printf("NAME: %s\n", ss->m_snp.GetAt(i)->m_name);
+					
+		}
+		
+		for (size_t j = 0; j < ss->m_snp.GetAt(i)->m_char.GetSize(); ++j)
+		{
+			//DECODE HERE - PRINT DECODED
+			//===============================================================
+			//=== This part converts Byte "buff[i]" to bits values "bits_val"
+			//=== for example byte buff[0] = "w" ->  bits_val = 11101110
+			memset(bits_val, NULL, sizeof(bits_val));
+			int k = MY_CHAR_BIT;  //8
+			while (k > 0)
+			{
+				-- k;
+				bits_val[k] = (*(ss->m_snp.GetAt(i)->m_char.GetAt(j))&(1 << k) ? 1 : 0);
+			}
+			//here interpret Bit information "bits_val" to snps and count it - decode it
+			ind_count_prev = ind_count;
+			decode_byte(bits_val, buff, &ind_count );
+			if (Is_MakeFile)
+				myout << buff;
+
+			for(size_t m = 0; m < ind_count - ind_count_prev; ++ m)
+			{
+				try
+				{
+					Z[Zind] = atoi(&buff[m * 2]);
+					Zind ++;
+					
+				}
+				catch(...)
+				{
+					*myerror = WRONG_ALLOCATED_SIZE4OUTPUT_ARRAY;
+					return;
+
+				}
+
+			}
+
+
+		}
+
+        if (Is_MakeFile)
+			myout << std::endl;
+		ind_count = 0;
+
+	}
+	if (Is_MakeFile)
+		myout.close();
+}
 //==========================================================
 // This function interpret Bit information "bits_val" to snps
 // and count it - decode it

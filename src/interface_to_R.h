@@ -24,4 +24,5 @@ void Get_TotalNumberofInd(int* Total_Num_IND);
 void Get_NumberofSnps(int SetID,int *Num_SNP, int* Myerror);
 void Get_Genotypes( int Set_number, int* Z,int size, int Is_MakeFile, int* Myerror );
 void Get_Genotypes_withID( int Set_number, int* Z, char * SNPID,int size, int Is_MakeFile, int* myerror);
+void Get_Genotypes_withID_new( int Set_number, int* Z, char * SNPID, int size, int Is_MakeFile, int* myerror, unsigned int * Pos, int N_snp);
 #endif //_INTERFACE_TO_R_H

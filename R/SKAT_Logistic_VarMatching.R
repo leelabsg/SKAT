@@ -7,7 +7,9 @@ KMTest.logistic.Linear.VarMatching = function(res, Z, X1, kernel, weights = NULL
 , r.corr, mu, res.moments = NULL, Q.sim=NULL){
 
 	n<-length(pi_1)
-  	D  = diag(pi_1)   
+	D=Matrix(0 ,nrow=length(pi_1), ncol=length(pi_1),sparse=TRUE)
+	diag(D)=pi_1
+ 
 
 	# Weighted Linear Kernel 
 	if (kernel == "linear.weighted") {
@@ -27,7 +29,7 @@ KMTest.logistic.Linear.VarMatching = function(res, Z, X1, kernel, weights = NULL
 
   	Q.Temp = t(res)%*%Z
   	Q = Q.Temp %*% t(Q.Temp)/2
-
+	Q=as.numeric(Q)
   	Q.res = NULL
   	if(n.Resampling > 0){
   		Q.Temp.res = t(res.out)%*%Z
@@ -42,7 +44,9 @@ KMTest.logistic.Linear.VarMatching = function(res, Z, X1, kernel, weights = NULL
   		Q.sim = rowSums(rbind(Q.Temp.res1^2))/2
 
 	} 
-
+	
+	Q.res=as.numeric(Q.res)
+	
 	Q.all<-c(Q,Q.res)
 	p_all<-mu
 

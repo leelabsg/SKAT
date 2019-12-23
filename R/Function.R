@@ -107,7 +107,10 @@ Get_Liu_Params_Mod_Lambda<-function(lambda){
 }
 
 Get_Liu_PVal<-function(Q, W, Q.resampling = NULL){
-    
+	##added by Zhangchen, for sparse matrix, 12.17.2018
+    	Q=as.matrix(Q)
+	W=as.matrix(W)
+	if (length(Q.resampling)>0){Q.resampling=as.matrix(Q.resampling)}
 
 	Q.all<-c(Q,Q.resampling)
 
@@ -135,7 +138,11 @@ Get_Liu_PVal<-function(Q, W, Q.resampling = NULL){
 }
 
 Get_Liu_PVal.MOD<-function(Q, W, Q.resampling = NULL){
-    
+	##added by Zhangchen, for sparse matrix, 12.17.2018
+    	Q=as.matrix(Q)
+	W=as.matrix(W)
+	if (length(Q.resampling)>0){Q.resampling=as.matrix(Q.resampling)}
+	
 	Q.all<-c(Q,Q.resampling)
 
 	A1<-W/2
@@ -195,7 +202,11 @@ Get_Liu_PVal.MOD.Lambda.Zero<-function(Q, muQ, muX, sigmaQ, sigmaX, l, d){
 
 
 Get_Davies_PVal<-function(Q, W, Q.resampling = NULL){
-    
+    	##added by Zhangchen, for sparse matrix, 12.17.2018
+    	Q=as.matrix(Q)
+	W=as.matrix(W)
+	if (length(Q.resampling)>0){Q.resampling=as.matrix(Q.resampling)}
+	
 	K<-W/2
 	
 	Q.all<-c(Q,Q.resampling)

@@ -17,6 +17,7 @@ void Get_TotalNumberofInd( int* Total_Num_IND);
 void Get_NumberofSnps(int SetID,int *Num_SNP,int* myerror);
 void Get_Genotypes( int Set_number, int* Z, int size, int Is_MakeFile,int* myerror);
 void Get_Genotypes_withID( int Set_number, int* Z, char * SNPID,int size, int Is_MakeFile, int* myerror);
+void Get_Genotypes_withID_new( int Set_number, int* Z, char * SNPID, int size, int Is_MakeFile, int* myerror, unsigned int * Pos, int N_snp); // set_number base on INFO file. The result will be printed to file.
 
 void Kernel_IBS_1(int * Z, int * pn, int * pp, double * Kernel);
 void Kernel_IBS_Weight_1(int * Z, int * pn, int * pp, int *UseGivenWeight ,  double * weight, double * Kernel);
@@ -111,6 +112,12 @@ void R_Get_Genotypes_withID( int *Set_number, int * Z , char * SNPID, int * size
 	Get_Genotypes_withID( *Set_number, Z, SNPID,  *size,  * Is_MakeFile, err);
 }	
 
+void R_Get_Genotypes_withID_new( int *Set_number, int * Z , char * SNPID, int * size, int *Is_MakeFile, int * err, unsigned int *Pos, int * N_snp) // set_number base on INFO file. The result will be printed to file.
+{
+	Get_Genotypes_withID_new( *Set_number, Z, SNPID,  *size,  * Is_MakeFile, err, Pos,* N_snp);
+}	
+	
+	
 /********************************************************************
   Kernel
 ********************************************************************/
@@ -205,6 +212,7 @@ static R_NativePrimitiveArgType type4[] = { INTSXP };
 static R_NativePrimitiveArgType type5[] = {INTSXP,INTSXP,INTSXP};
 static R_NativePrimitiveArgType type6[] = {INTSXP, INTSXP, INTSXP, INTSXP,INTSXP};
 static R_NativePrimitiveArgType type7[] = {INTSXP, INTSXP, RAWSXP, INTSXP, INTSXP,INTSXP};
+static R_NativePrimitiveArgType type71[] = {INTSXP, INTSXP, RAWSXP, INTSXP, INTSXP,INTSXP,INTSXP,INTSXP};
 
 static R_NativePrimitiveArgType type8[] = {INTSXP, INTSXP, INTSXP, REALSXP, REALSXP, INTSXP, INTSXP, INTSXP, INTSXP, REALSXP,  REALSXP, REALSXP, INTSXP, REALSXP,REALSXP,REALSXP,INTSXP, REALSXP};
 static R_NativePrimitiveArgType type9[] = {INTSXP, INTSXP, INTSXP, REALSXP, REALSXP, REALSXP, INTSXP, REALSXP, INTSXP, INTSXP,  INTSXP, INTSXP, REALSXP, REALSXP, REALSXP, INTSXP, REALSXP, REALSXP, REALSXP, INTSXP, REALSXP};
@@ -235,6 +243,7 @@ R_CMethodDef cMethods[] = {
 //
    {"R_Get_Genotypes", (DL_FUNC) &R_Get_Genotypes, 5, type6},
    {"R_Get_Genotypes_withID", (DL_FUNC) &R_Get_Genotypes_withID, 6, type7},
+   {"R_Get_Genotypes_withID_new", (DL_FUNC) &R_Get_Genotypes_withID_new, 8, type71},
 //   
    {"RSKATExact", (DL_FUNC) &RSKATExact, 18, type8},
    {"RSKATOExact", (DL_FUNC) &RSKATOExact, 21, type9},

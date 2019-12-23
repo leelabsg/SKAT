@@ -62,9 +62,11 @@ public:
 	MwoFileReader(char* filename, int* myerror, char* info = NULL);
 	~MwoFileReader();
 	void prepare_out_array_print_snpset_to_file(snpset* ss, int n, int* Z,size_t size, int Is_MakeFile, int* myerror, char * SNPID=NULL);
+	void prepare_out_array_print_snpset_to_file_new(snpset* ss, int n, int* Z,size_t size, int Is_MakeFile, int* myerror, char * SNPID=NULL);
 	void upload_offsets_table();
 	void get_set(size_t set_num, int* Z, size_t size, int* myerror,int Is_MakeFile = 1 , char * SNPID=NULL );
-
+	void get_set_new(size_t Set_number,int* Z, size_t size,int* myerror, int Is_MakeFile=1, char * SNPID=NULL, unsigned int * Pos=0, int N_snp=1);
+	
 	//======================================================
 	//This function returns Total number of SNP Sets in current ".mwa"
 	//RETURN VALUE: Total Number of SNP Sets in the MWA file. 

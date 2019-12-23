@@ -9,13 +9,15 @@ export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights,
        	SKAT_Null_Model, SKAT_Null_Model_MomentAdjust,
        	Power_Continuous, Power_Logistic,
        	Power_Continuous_R, Power_Logistic_R,
-       	Generate_SSD_SetID, Close_SSD, Open_SSD,Get_Genotypes_SSD,
+       	Generate_SSD_SetID, Close_SSD, Open_SSD,Get_Genotypes_SSD,Get_Genotypes_SSD_New,
 	Read_Plink_FAM, Read_Plink_FAM_Cov, SKAT_CommonRare,Read_SNP_WeightFile,
 	SKAT_CommonRare.SSD.OneSet, SKAT_CommonRare.SSD.OneSet_SetIndex, SKAT_CommonRare.SSD.All, 
 	SKAT_NULL_emmaX,
 	SKATBinary, SKATBinary_Single, Get_EffectiveNumberTest, QQPlot_Adj,
 	SKATBinary.SSD.OneSet, SKATBinary.SSD.OneSet_SetIndex, SKATBinary.SSD.All,
-	SKAT_Null_Model_ChrX, SKAT_ChrX)
+	SKAT_Null_Model_ChrX, SKAT_ChrX,
+	SKATBinary_Robust,SKATBinary_Robust.SSD.OneSet ,SKATBinary_Robust.SSD.OneSet_SetIndex, SKATBinary_Robust.SSD.All ,
+	SKAT_CommonRare_Robust,SKAT_CommonRare_Robust.SSD.OneSet ,SKAT_CommonRare_Robust.SSD.OneSet_SetIndex, SKAT_CommonRare_Robust.SSD.All)
 
      importFrom("graphics", "abline", "legend", "plot", "points")
      importFrom("stats", "approxfun", "dbeta", "dchisq", "get_all_vars",
@@ -26,6 +28,7 @@ export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights,
      "smooth.spline", "uniroot", "var")
      importFrom("utils", "data", "read.delim", "read.table", "write.table", "txtProgressBar", "setTxtProgressBar")
      import(Matrix)
+     import(SPAtest)
 # variables
 #export(SSD_FILE_OPEN.isOpen,SSD_FILE_OPEN.FileName)
 
