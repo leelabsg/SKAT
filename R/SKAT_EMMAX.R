@@ -101,7 +101,7 @@ SKAT_NULL_emmaX<- function(formula, data=NULL, K=NULL, Kin.File=NULL, ngrids=100
 		cat("Read complete. ", Kin.File, " has ", t, " rows! \n")
 	}
 	
-	if(class(K) != "matrix"){
+	if(!is.matrix(K)){
 		stop("K is not a matrix!")
 	}
 	
@@ -115,7 +115,7 @@ SKAT_NULL_emmaX<- function(formula, data=NULL, K=NULL, Kin.File=NULL, ngrids=100
 	# Estimate parameters
 			
     eig.R <- emma.eigen.R.wo.Z(K,X)
-    #eig.R<-SKAT:::SKAT.emma.eigen.R.wo.Z(K,X) # This code sometimes makes an error!
+    #eig.R<-SKAT.emma.eigen.R.wo.Z(K,X) # This code sometimes makes an error!
 	
     etas <- crossprod(eig.R$vectors,y)
     #etas<-crossprod(eig.R$vectors,res)

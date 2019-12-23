@@ -2,21 +2,24 @@
  \alias{SKATBinary_Robust}
  \alias{SKATBinary_Robust.SSD.OneSet}
  \alias{SKATBinary_Robust.SSD.OneSet_SetIndex}
+ \alias{SKATBinary_Robust.SSD.All}
  \title{SNP set test for binary traits with robust region-based methods}
  \description{
      This function computes p-values of robust burden test, SKAT, and SKAT-O for binary traits using SPA and ER.   
  }
  \usage{
  
-	SKATBinary_Robust(Z, obj, kernel = "linear.weighted", method="SKATO"
-	, r.corr=NULL,weights.beta=c(1,25), weights = NULL
-	,impute.method = "bestguess",  is_check_genotype=TRUE
-  	,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
+	SKATBinary_Robust(Z, obj, kernel = "linear.weighted", method="SKAT"
+	, r.corr=NULL, weights.beta=c(1,25), weights = NULL
+	, impute.method = "bestguess",  is_check_genotype=TRUE
+  , is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
 	, estimate_MAF=1)
 
 	SKATBinary_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
 
 	SKATBinary_Robust.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
+	
+	SKATBinary_Robust.SSD.All(SSD.INFO, obj, \dots)
 
  }
 \arguments{
@@ -25,11 +28,12 @@
       where A is a major allele and a is a minor allele. Now we support both matrix and sparse matrix. }
       \item{obj}{output object from SKAT_Null_Model. }
       \item{kernel}{type of kernel (default= "linear.weighted"). The possible choices are "linear" and "linear.weighted".}
-      \item{method}{type of gene based test (default= "SKATO"). The possible choices are
+      \item{method}{type of gene based test (default= "SKAT"). The possible choices are
       "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. }
       \item{r.corr}{the \eqn{\rho} parameter for all variants. \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively.}
-      \item{weights.beta.rare}{a numeric vector of parameters of beta weights for all variants. It is only used for weighted kernels. 
-      If you want to use your own  weights, please specify the "weights" parameter.}
+      \item{weights.beta}{a numeric vector of parameters of beta weights. 
+      It is only used for weighted kernels. 
+      If you want to use your own  weights, please specify the ``weights'' parameter.}
       \item{weights}{a numeric vector of weights for the weighted kernels. See SKAT page for details.}	     	     
       \item{impute.method}{a method to impute missing genotypes (default= "bestguess"). "bestguess" imputes missing genotypes as most likely 
       values (0,1,2), "random" imputes missing genotypes by generating binomial(2,p) random variables (p is the MAF), 

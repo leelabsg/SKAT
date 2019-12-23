@@ -100,7 +100,7 @@ SKAT.linear.Other = function(res,Z,X1, kernel, weights = NULL, s2, method,res.ou
   
   n<-nrow(Z)
   m = ncol(Z) 
-  if (class(kernel) == "matrix") {
+  if (is.matrix(kernel)) {
 
     K = kernel
 

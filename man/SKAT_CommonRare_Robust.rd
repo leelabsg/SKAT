@@ -2,21 +2,25 @@
  \alias{SKAT_CommonRare_Robust}
  \alias{SKAT_CommonRare_Robust.SSD.OneSet}
  \alias{SKAT_CommonRare_Robust.SSD.OneSet_SetIndex}
+ \alias{SKAT_CommonRare_Robust.SSD.All}
  \title{SNP set test (both common and rare variants) for binary traits with robust region-based methods}
  \description{
      This function computes p-values of robust burden test, SKAT, and SKAT-O for binary traits using SPA and ER.   
  }
  \usage{
  
-	SKAT_CommonRare_Robust(Z, obj, kernel = "linear.weighted", method="SKATO"
-	, r.corr=NULL,weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
+	SKAT_CommonRare_Robust(Z, obj, kernel = "linear.weighted"
+	, method="SKATO", r.corr=NULL,weights.beta.rare=c(1,25)
+	, weights.beta.common=c(0.5,0.5), weights = NULL
 	, CommonRare_Cutoff=NULL, impute.method = "bestguess"
-	,  is_check_genotype=TRUE,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
-	, estimate_MAF=1)
+	, is_check_genotype=TRUE,is_dosage = FALSE, missing_cutoff=0.15
+	, max_maf=1, estimate_MAF=1)
 
 	SKAT_CommonRare_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
 
 	SKAT_CommonRare_Robust.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
+	
+	SKAT_CommonRare_Robust.SSD.All(SSD.INFO, obj, \dots)
 
  }
 \arguments{

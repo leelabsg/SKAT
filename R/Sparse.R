@@ -19,7 +19,9 @@ Sparse_Phi<-function(G,obj, weight,temp1=NULL){
 ##Get Sparse Matrix From SSD file
 ##Can save much memory compared with Get_Genotype_SSD
 ##################################################################
-Get_Genotypes_SSD_New<-function(SSD_INFO, Set_Index){
+
+#Changed by SLEE 12/23, change the name from Get_Genotypes_SSD_New to Get_Genotypes_SSD_Sparse
+Get_Genotypes_SSD_Sparse<-function(SSD_INFO, Set_Index){
 
 	SNP_ID_SIZE=1024 # it should be the same as SNP_ID_SIZE_MAX in error_messages.h 
 	

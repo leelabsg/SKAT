@@ -67,6 +67,7 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
         qtemp_id1 = qtemp[jj, id1]
         p_temp1_id1 = c()
         for (jjk in 1:length(qtemp_id1)) {
+          # changed by SLEE 12/23/2019, removed ::: -- but currently cannot remove it
           p_temp1_id1[jjk] = SPAtest:::Saddle_Prob(qtemp_id1[jjk],
                                                    mu = mu.qtemp, g = g.qtemp, Cutoff = Cutoff,
                                                    alpha = 5 * 10^-8)$p.value
@@ -175,6 +176,8 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   mu = out_kernel$mu
   g.sum = out_kernel$g.sum
   q.sum = out_kernel$q.sum
+  
+  # changed by SLEE 12/23/2019, removed SPAtest::: -- but currently cannot remove it
   p.value_burden <- SPAtest:::Saddle_Prob(q.sum, mu = mu, g = g.sum,
                                           Cutoff = 2, alpha = 2.5 * 10^-6)$p.value
   v1 = rep(1, dim(G2_adj_n)[1])
@@ -191,10 +194,10 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   r = min(r, 1)
   #list_myfun$r = r
   
-  
   if (dim(G2_adj_n)[2]==1){Phi_temp=as.matrix(G2_adj_n *1/r)} else {Phi_temp=as.matrix(G2_adj_n %*% diag(rep(1/r, dim(G2_adj_n)[2])))}
   
-  out = try(SKAT:::Met_SKAT_Get_Pvalue(Score = zscore.all_1,
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  out = try(Met_SKAT_Get_Pvalue(Score = zscore.all_1,
                                        Phi = Phi_temp,
                                        r.corr = r.all, method = "optimal.adj", Score.Resampling = NULL),
             silent = TRUE)
@@ -210,7 +213,9 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
 
     
   }
-  list_myfun$Q=SKAT:::SKAT_META_Optimal_Get_Q(zscore.all_1, r.corr)$Q.r
+
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  list_myfun$Q=SKAT_META_Optimal_Get_Q(zscore.all_1, r.corr)$Q.r
   ##list_myfun$p.old = out_kernel$p.old
   list_myfun$p.value_singlevariant = out_kernel$p.new
 
@@ -348,12 +353,16 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...){
 colMax <- function(data) apply(data,2, max, na.rm = TRUE)
 
 
-SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
+# changed by SLEE, 12/23/2019, change the default method to SKAT
+SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKAT"
                             , r.corr=NULL, weights.beta=c(1,25),  weights = NULL
                             , impute.method = "bestguess",is_check_genotype=TRUE
                             ,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
                             , estimate_MAF=1){
   
+  
+  # Added by SLEE 12/23/2019
+  test.type="Robust"
   
   SetID1=NULL
   # This function only can be used for SNPs
@@ -371,11 +380,11 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   }
   
   
-  
-  if(is.matrix(Z) != TRUE  && class(Z)!="dgCMatrix" && class(Z)!="dgeMatrix"){
+  # changed by SLEE 12/23/2019
+  if(!any(class(Z) %in% c("matrix", "dgCMatrix", "dgeMatrix"))){
     stop("Z should be a matrix")
   }
-
+  
 
   # Compute common and rare
   n <- dim(Z)[1]
@@ -396,8 +405,9 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
 
     
   }
-  
-  out<-SKAT:::SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
+
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  out<-SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
                          impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, max_maf= max_maf, estimate_MAF=estimate_MAF)
   if(out$return ==1){
     out$param$n.marker<-m
@@ -421,7 +431,8 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   obj.res$n.all =nrow(Z) 
   obj.res$id_include = 1:nrow(Z)	
 
-  MAF<-SKAT:::Get_MAF(Z)
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  MAF<-Get_MAF(Z)
 
   if (is.null(weights)){
     weight = Beta_Weight(MAF,  weights.beta)
@@ -441,7 +452,8 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   list_tiny=which(colmax_Z<=0.2)
   if (length(list_tiny)>=1 ){
     if (length(list_tiny)<dim(Z)[2]){
-      Z=Z[,-list_tiny];weights=weigths[-list_tiny];
+      # changed by SLEE 12/23/2019, weigths changed to weights
+      Z=Z[,-list_tiny];weights=weights[-list_tiny];
       }else { stop("all genotypes are close to 0!")
     }
   }
@@ -449,7 +461,9 @@ SKATBinary_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
   if (max(Z)>2 | min(Z)<0) {stop("Z is out of bounds[0,2]!")}
   
   m.test<-ncol(Z)
-  MAF<-SKAT:::Get_MAF(Z)  
+
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  MAF<-Get_MAF(Z)  
     
   #id.rare<-intersect(which(MAF < CommonRare_Cutoff), which(MAF > 0))
   #id.common<-intersect(which(MAF >= CommonRare_Cutoff), which(MAF > 0))

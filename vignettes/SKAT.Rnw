@@ -79,8 +79,8 @@ SKAT(Z[IDX,], obj.s, kernel = "linear.weighted")$p.value
 @
 
 
-We recently developed an efficient resampling method to compute p-values for binary traits, 
-and the methods are implemented in SKATBinary function. When you use the SKATBinary function, Adjustment=TRUE in SKAT\_Null\_Model is not necessary.
+Resampling based approaches to adjust for binary traits have been developed and 
+implemented in SKATBinary function. When you use the SKATBinary function, Adjustment=TRUE in SKAT\_Null\_Model is not necessary.
 Implemented methods are 1) Efficient resampling (ER); 2) ER with adaptive resampling (ER.A);
 3) Quantile adjusted moment matching (QA); 4) Moment matching adjustment (MA);
 5) No adjustment (UA);  and 6) Hybrid. 
@@ -95,6 +95,20 @@ An efficient resampling method for calibrating single and gene-based rare varian
 
 # default hybrid approach 
 out<-SKATBinary(Z[IDX,], obj.s, kernel = "linear.weighted")
+out$p.value
+
+@
+
+We have recently developed more scalable and accurate method for binary traits, which is implemented in SKATBinary\_Robust function. Detailed description of these methods can be found in the following reference: \\
+
+Zhao, Z., Bi, W., Zhou, W., VanderHaar, P., Fritsche, L.G., Lee, S. (2019)
+UK Biobank Whole-Exome Sequence Binary Phenome Analysis with Robust Region-based Rare-Variant Test. \textit{AJHG}, in press, doi:https://doi.org/10.1016/j.ajhg.2019.11.012
+
+ 
+<<SKAT23>>=
+
+# Robust approach
+out<-SKATBinary_Robust(Z[IDX,], obj.s, kernel = "linear.weighted")
 out$p.value
 
 @

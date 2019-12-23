@@ -152,7 +152,11 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 	#############################################
 	# Check parameters
 
-	if (class(Z)!= "matrix" && class(Z)!="dgCMatrix") stop("Z is not a matrix")
+  # changed by SLEE 12/23/2019
+  if(!any(class(Z) %in% c("matrix", "dgCMatrix"))){
+    stop("Z is not a matrix")
+  }
+	#if (class(Z)!= "matrix" && class(Z)!="dgCMatrix") 
 	if (nrow(Z)!=n) stop("Dimensions of y and Z do not match")
  	if(is_dosage ==TRUE){
 		impute.method="fixed"
@@ -164,7 +168,9 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 
 	if(!is_check_genotype && !is_dosage){
 		Z.test<-Z[id_include,]
-		if(class(Z.test)!= "matrix" && class(Z.test)!="dgCMatrix"){
+		
+		# changed by SLEE 12/23/2019
+		if(!any(class(Z.test) %in% c("matrix", "dgCMatrix"))){
 			Z.test<-as.matrix(Z.test)
 		}
 		return(list(Z.test=Z.test,weights=weights, MAF=rep(0, ncol(Z)), return=0) )

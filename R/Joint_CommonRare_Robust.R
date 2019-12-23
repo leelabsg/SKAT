@@ -132,6 +132,9 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
                             ,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
                             , estimate_MAF=1){
   
+  # Added by SLEE 12/23/2019. Currently only joint is used
+  test.type="Joint"
+  
   
   SetID1=NULL
   # This function only can be used for SNPs
@@ -149,13 +152,11 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
     stop("Wrong obj!")
   }
   
-  
-  
-  if(is.matrix(Z) != TRUE  && class(Z)!="dgCMatrix" && class(Z)!="dgeMatrix"){
+  # changed by SLEE 12/23/2019
+  if(!any(class(Z) %in% c("matrix", "dgCMatrix", "dgeMatrix"))){
     stop("Z should be a matrix")
   }
-
-
+  
   # Compute common and rare
   n <- dim(Z)[1]
   m <- dim(Z)[2]
@@ -183,8 +184,9 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
     if (length(weights.beta.common)!=2){stop("Incorrect length of weights.beta.common!")}
     
   }
-  
-  out<-SKAT:::SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
+
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  out<-SKAT_MAIN_Check_Z(Z, obj.res$n.all, id_include=obj.res$id_include, SetID=SetID1, weights=weights, weights.beta=c(1,1), 
                          impute.method="fixed", is_check_genotype=is_check_genotype, is_dosage=is_dosage, missing_cutoff, max_maf= max_maf, estimate_MAF=estimate_MAF)
   if(out$return ==1){
     out$param$n.marker<-m
@@ -212,7 +214,9 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   obj.res$id_include = 1:nrow(Z)	
 
   mafcutoff=CommonRare_Cutoff
-  MAF<-SKAT:::Get_MAF(Z)
+
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  MAF<-Get_MAF(Z)
   maf_temp = which(MAF <= mafcutoff)
   
   if (is.null(weights)){
@@ -257,7 +261,8 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   list_tiny=which(colmax_Z<=0.2)
   if (length(list_tiny)>=1 ){
     if (length(list_tiny)<dim(Z)[2]){
-      Z=Z[,-list_tiny];weights=weigths[-list_tiny];
+      # changed by SLEE 12/23/2019, weigths changed to weights
+      Z=Z[,-list_tiny];weights=weights[-list_tiny];
       }else { stop("all genotypes are close to 0!")
     }
   }
@@ -265,7 +270,9 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   if (max(Z)>2 | min(Z)<0) {stop("Z is out of bounds[0,2]!")}
   
   m.test<-ncol(Z)
-  MAF<-SKAT:::Get_MAF(Z)  
+  
+  # changed by SLEE 12/23/2019, removed SKAT::: 
+  MAF<-Get_MAF(Z)  
     
   id.rare<-intersect(which(MAF < CommonRare_Cutoff), which(MAF > 0))
   id.common<-intersect(which(MAF >= CommonRare_Cutoff), which(MAF > 0))
