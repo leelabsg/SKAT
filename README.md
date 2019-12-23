@@ -10,23 +10,27 @@ Following are main functions and key references. For details, please refer the p
     * Lee, S., Wu, M. and Lin, X. (2012). Optimal tests for rare variant effects in sequencing association studies. *Biostatistics*, 13, 762-775 
     * Wu, M., Lee, S., Cai, T., Li, Y., Boehnke, M. and Lin, X. (2011). Rare Variant Association Testing for Sequencing Data Using the Sequence Kernel Association Test (SKAT). *AJHG*, 89, 82-93. 
 
-2. SKATBinary function: Burden test, SKAT, and SKAT-O with efficient resampling for binary traits
+2. Robust approaches functions for binary traits: SKATBinary_Robust and SKAT_CommonRare_Robust
+   * Zhao, Z., Bi, W., Zhou, W., VanderHaar, P., Fritsche, L.G., Lee, S. (2019) UK Biobank Whole-Exome Sequence Binary Phenome Analysis with Robust Region-based Rare-Variant Test. *AJHG*, in press, doi:https://doi.org/10.1016/j.ajhg.2019.11.012
+
+
+3. SKATBinary function: Burden test, SKAT, and SKAT-O with efficient resampling for binary traits
 
     * Lee, S., Fuchsberger, C., Kim, S., Scott, L. (2016) An efficient resampling method for calibrating single and gene-based rare variant association analysis in case-control studies, *Biostatistics*, 17, 1-15.
 
-3. SKAT_CommonRare function: joint test for common and rare variants
+4. SKAT_CommonRare function: joint test for common and rare variants
 
     * Ionita-Laza, I., Lee, S., Makarov, V., Buxbaum, J. Lin, X. (2013). Sequence kernel association tests for the combined effect of rare and common variants. *AJHG*, 92, 841-853. 
 
-4. SKAT_ChrX function: X-chromosome test
+5. SKAT_ChrX function: X-chromosome test
 
     * Ma, C., Boehnke, M., Lee, S. and the GoT2D investigators (2015) Evaluating the calibration and power of three gene-based association tests for the X chromosome, *Genetic Epidemiology*, 39, 499-508.
  
-5. SKAT_NULL_emmaX function: Kinship adjustment 
+6. SKAT_NULL_emmaX function: Kinship adjustment 
 
-6. SSD functions: plink binary file related functions
+7. SSD functions: plink binary file related functions
 
-7. Power_Continuous, ...: power calculation functions 
+8. Power_Continuous, ...: power calculation functions 
 
 ## Link
 * SKAT CRAN: [Link](https://cran.r-project.org/web/packages/SKAT/index.html)
