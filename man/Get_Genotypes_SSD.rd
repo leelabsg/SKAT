@@ -1,11 +1,14 @@
  \name{Get_Genotypes_SSD}
  \alias{Get_Genotypes_SSD}
+ \alias{Get_Genotypes_SSD_Sparse}
  \title{Get Genotype data from SSD file}
  \description{
 	Read a SSD file and return a genotype matrix.
  }
  \usage{
 	Get_Genotypes_SSD(SSD_INFO, Set_Index, is_ID = FALSE)
+	
+	Get_Genotypes_SSD_Sparse(SSD_INFO, Set_Index)
  }
 \arguments{
       \item{SSD_INFO}{SSD_INFO object returned from Open_SSD.}
@@ -13,7 +16,7 @@
       \item{is_ID}{a logical value indicating whether to read SNP ID (default=FALSE). If TRUE, it reads SNP IDs and use them as column names.}
 }
 \value{
- 	A genotype matrix with n rows and m columns, where n is the number of samples and m is the number of SNPs.
+ 	A genotype matrix with n rows and m columns, where n is the number of samples and m is the number of SNPs. Get_Genotypes_SSD_Sparse returns a sparse matrix. Get_Genotypes_SSD_Sparse always returns SNP IDs as the column names, so does not have is_ID parameter. 
 }
 \author{Seunggeun Lee, Larisa Miropolsky}
 
