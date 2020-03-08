@@ -67,8 +67,8 @@ SPA_ER_kernel<-function(G, obj,  u, Cutoff, variancematrix, weight){
         qtemp_id1 = qtemp[jj, id1]
         p_temp1_id1 = c()
         for (jjk in 1:length(qtemp_id1)) {
-          # changed by SLEE 12/23/2019, removed ::: -- but currently cannot remove it
-          p_temp1_id1[jjk] = SPAtest:::Saddle_Prob(qtemp_id1[jjk],
+          # changed by SLEE 1/13/2020, removed ::: 
+          p_temp1_id1[jjk] = Saddle_Prob(qtemp_id1[jjk],
                                                    mu = mu.qtemp, g = g.qtemp, Cutoff = Cutoff,
                                                    alpha = 5 * 10^-8)$p.value
           if (p_temp1_id1[jjk] != 0) {
@@ -177,8 +177,8 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
   g.sum = out_kernel$g.sum
   q.sum = out_kernel$q.sum
   
-  # changed by SLEE 12/23/2019, removed SPAtest::: -- but currently cannot remove it
-  p.value_burden <- SPAtest:::Saddle_Prob(q.sum, mu = mu, g = g.sum,
+  # changed by SLEE 01/13/2020, removed SPAtest::: -- but currently cannot remove it
+  p.value_burden <- Saddle_Prob(q.sum, mu = mu, g = g.sum,
                                           Cutoff = 2, alpha = 2.5 * 10^-6)$p.value
   v1 = rep(1, dim(G2_adj_n)[1])
   VarQ = t(v1) %*% G2_adj_n %*% v1
