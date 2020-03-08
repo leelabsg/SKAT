@@ -56,7 +56,7 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
   Is.Resampling = FALSE
   n.Resampling = 0
   
-  if(class(obj) == "SKAT_NULL_Model"){
+  if(Check_Class(obj, "SKAT_NULL_Model")){
     if(obj$n.Resampling > 0){
       Is.Resampling = TRUE
       n.Resampling = obj$n.Resampling
@@ -68,7 +68,7 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
   for(i in 1:N.Set){
     Is.Error<-TRUE
     try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
-    if(class(try1) != "try-error"){
+    if(!Is_TryError(try1)){
       Z<-try1
       Is.Error<-FALSE
       
@@ -83,7 +83,7 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
       Is.Error<-TRUE
       try2<-try(SKAT_CommonRare_Robust(Z, obj, ...),silent = TRUE)
       
-      if(class(try2) != "try-error"){
+      if(!Is_TryError(try2)){
         re<-try2
         Is.Error<-FALSE
       } else {
@@ -140,11 +140,11 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   # This function only can be used for SNPs
   #is_check_genotype=TRUE
   
-  if(class(obj) == "SKAT_NULL_Model_ADJ"){
+  if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
     
     obj.res=obj$re1
     
-  } else if(class(obj) == "SKAT_NULL_Model"){
+  } else if(Check_Class(obj, "SKAT_NULL_Model")){
     
     obj.res=obj
     
@@ -153,7 +153,7 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   }
   
   # changed by SLEE 12/23/2019
-  if(!any(class(Z) %in% c("matrix", "dgCMatrix", "dgeMatrix"))){
+  if(!Check_Class(Z,  c("matrix", "dgCMatrix", "dgeMatrix"))){
     stop("Z should be a matrix")
   }
   
@@ -249,7 +249,7 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   
 
   
-  if(class(obj) == "SKAT_NULL_Model_ADJ"){
+  if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
     obj$re1$id_include = obj.res$id_include
     obj$re1$n.all = obj.res$n.all
   } else {

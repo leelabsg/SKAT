@@ -104,7 +104,7 @@ SKAT.logistic.Other = function(res, Z, X1, kernel , weights = NULL, pi_1, method
   # If m >> p and ( linear or linear.weight) kernel than call 
   # Linear function
 
-  if (class(kernel) == "matrix") {
+  if (Check_Class(kernel, "matrix")) {
     K = kernel
   } else {
     K = lskmTest.GetKernel(Z, kernel, weights,n,m)

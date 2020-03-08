@@ -213,7 +213,7 @@ SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weigh
 , r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=max_maf, estimate_MAF=1, SetID = NULL){
 
 
-	if(class(obj) != "SKAT_NULL_Model_EMMAX"){
+	if(!Check_Class(obj, "SKAT_NULL_Model_EMMAX")){
 		stop("ERROR: obj is not an returned object from SKAT.emmaX.null")
 	} 
 	#if(method=="optimal.adj"){
@@ -372,7 +372,7 @@ SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ...){
 	for(i in 1:N.Set){
 		Is.Error<-TRUE
 		try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
-		if(class(try1) != "try-error"){
+		if(!Is_TryError(try1)){
 			Z<-try1
 			Is.Error<-FALSE
 			
@@ -387,7 +387,7 @@ SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ...){
 			Is.Error<-TRUE
 			try2<-try(SKAT_emmaX(Z,obj, ...),silent = TRUE)
 			
-			if(class(try2) != "try-error"){
+			if(!Is_TryError(try2)){
 				re<-try2
 				Is.Error<-FALSE
 			} else {

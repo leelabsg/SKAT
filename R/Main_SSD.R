@@ -149,7 +149,7 @@ SKAT.SSD.GetSNP_Weight<-function(SSD.INFO, SetIndex, obj.SNPWeight=NULL){
 	}
 
 	try1<-try(Get_Genotypes_SSD(SSD.INFO, SetIndex, is_ID=is_ID),silent = TRUE)
-	if(class(try1) != "try-error"){
+	if(!Is_TryError(try1)){
 		Z<-try1
 		Is.Error<-FALSE	
 	} else {
@@ -222,7 +222,7 @@ SKAT.SSD.OneSet_SetIndex_OLD = function(SSD.INFO, SetIndex, obj, ..., obj.SNPWei
 		is_ID = TRUE
 	}
 	try1<-try(Get_Genotypes_SSD(SSD.INFO, SetIndex, is_ID=is_ID),silent = TRUE)
-	if(class(try1) != "try-error"){
+	if(!Is_TryError(try1)){
 		Z<-try1
 		Is.Error<-FALSE	
 	} else {
@@ -273,14 +273,14 @@ SKAT.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	Is.Resampling = FALSE
 	n.Resampling = 0
 	
-	if(class(obj) == "SKAT_NULL_Model"){
+	if(Check_Class(obj, "SKAT_NULL_Model")){
 		if(obj$n.Resampling > 0){
 			Is.Resampling = TRUE
 			n.Resampling = obj$n.Resampling
 
 			OUT.Pvalue.Resampling<-matrix(rep(0,n.Resampling*N.Set),ncol=n.Resampling)
 		}
-	} else if(class(obj) == "SKAT_NULL_Model_ADJ"){
+	} else if(Check_Class(obj,  "SKAT_NULL_Model_ADJ")){
 		if(obj$re1$n.Resampling > 0){
 			Is.Resampling = TRUE
 			n.Resampling = obj$re1$n.Resampling
@@ -295,7 +295,7 @@ SKAT.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 		try1 = try(SKAT.SSD.OneSet_SetIndex(SSD.INFO=SSD.INFO, SetIndex=i, obj=obj, ..., obj.SNPWeight=obj.SNPWeight))
 
 		
-		if(class(try1) != "try-error"){
+		if(!Is_TryError(try1)){
 			re<-try1
 			Is.Error<-FALSE
 		} else {

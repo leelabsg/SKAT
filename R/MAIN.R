@@ -5,7 +5,7 @@ SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta
 
 	if(kernel != "linear" && kernel != "linear.weighted"){
 
-		if(class(obj) == "SKAT_NULL_Model_ADJ"){
+		if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 			msg<-sprintf("The small sample adjustment only can be applied for linear and linear.weighted kernel in the current version of SKAT! No adjustment is applied")
 			warning(msg,call.=FALSE)
 			obj<-obj$re1
@@ -13,15 +13,15 @@ SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta
 
 	}
 
-	if(class(obj) == "SKAT_NULL_Model_EMMAX"){
+	if(Check_Class(obj, "SKAT_NULL_Model_EMMAX")){
 
 		re = SKAT_emmaX(Z, obj, kernel = kernel, method=method, weights.beta=weights.beta, weights = weights, impute.method = impute.method,  r.corr=r.corr, is_check_genotype=is_check_genotype, is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
 
-	} else if(class(obj) == "SKAT_NULL_Model_ADJ"){
+	} else if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 
 		re<-SKAT_With_NullModel_ADJ(Z, obj, kernel = kernel, method=method, weights.beta=weights.beta, weights = weights, impute.method = impute.method,  r.corr=r.corr, is_check_genotype=is_check_genotype, is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
 
-	} else if(class(obj) == "SKAT_NULL_Model"){
+	} else if(Check_Class(obj,"SKAT_NULL_Model")){
 
 		re<-SKAT_With_NullModel(Z,obj, kernel = kernel, method=method, weights.beta=weights.beta, weights = weights, impute.method = impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype, is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
 
@@ -36,11 +36,11 @@ SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta
 
 SKAT_1 = function(Z,obj, ...){
 
-	if(class(obj) == "SKAT_NULL_Model_EMMAX"){
+	if(Check_Class(obj, "SKAT_NULL_Model_EMMAX")){
 		re<-SKAT_emmaX( Z, obj, ...)
-	} else if(class(obj) == "SKAT_NULL_Model_ADJ"){
+	} else if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 		re<-SKAT_With_NullModel_ADJ(Z,obj, ...)
-	} else if(class(obj) == "SKAT_NULL_Model"){
+	} else if(Check_Class(obj, "SKAT_NULL_Model")){
 		re<-SKAT_With_NullModel(Z,obj, ...)
 	} else {
 		#re<-SKAT_MAIN(Z,obj, ...)
@@ -153,10 +153,9 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 	# Check parameters
 
   # changed by SLEE 12/23/2019
-  if(!any(class(Z) %in% c("matrix", "dgCMatrix"))){
+  if(!Check_Class(Z, c("matrix", "dgCMatrix"))){
     stop("Z is not a matrix")
   }
-	#if (class(Z)!= "matrix" && class(Z)!="dgCMatrix") 
 	if (nrow(Z)!=n) stop("Dimensions of y and Z do not match")
  	if(is_dosage ==TRUE){
 		impute.method="fixed"
@@ -170,7 +169,7 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 		Z.test<-Z[id_include,]
 		
 		# changed by SLEE 12/23/2019
-		if(!any(class(Z.test) %in% c("matrix", "dgCMatrix"))){
+		if(!Check_Class(Z.test, c("matrix", "dgCMatrix"))){
 			Z.test<-as.matrix(Z.test)
 		}
 		return(list(Z.test=Z.test,weights=weights, MAF=rep(0, ncol(Z)), return=0) )

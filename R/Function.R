@@ -278,7 +278,7 @@ Get_Lambda_U_From_Z<-function(Z1){
 
 	try1<-try(svd(Z1),silent = TRUE)
 	
-	if(class(try1) == "try-error"){
+	if(Is_TryError(try1)){
 		stop("SVD error!");
 	} else {
 		out.svd = try1
@@ -538,4 +538,20 @@ Get_Resampling_Bin<-function(ncase, prob, n.Resampling){
 	return(out)
 
 }
+
+Check_Class<-function(obj, class_type){
+  re<-TRUE
+  if(!any(class(obj) %in% class_type)){
+    re<-FALSE
+  }
+  return(re)
+}
+
+Is_TryError<-function(obj){
+  
+  re<-Check_Class(obj, "try-error")
+  return(re)
+}
+
+# obj<-Z; class_type=c("matrix", "temp1"); Check_Class(obj, class_type)
 

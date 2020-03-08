@@ -141,14 +141,14 @@ SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
 	Is.Resampling = FALSE
 	n.Resampling = 0
 	
-	if(class(obj) == "SKAT_NULL_Model"){
+	if(Check_Class(obj, "SKAT_NULL_Model")){
 		if(obj$n.Resampling > 0){
 			Is.Resampling = TRUE
 			n.Resampling = obj$n.Resampling
 
 			OUT.Pvalue.Resampling<-matrix(rep(0,n.Resampling*N.Set),ncol=n.Resampling)
 		}
-	} else if(class(obj) == "SKAT_NULL_Model_ADJ"){
+	} else if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 		if(obj$re1$n.Resampling > 0){
 			Is.Resampling = TRUE
 			n.Resampling = obj$re1$n.Resampling
@@ -161,7 +161,7 @@ SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
 	for(i in 1:N.Set){
 		Is.Error<-TRUE
 		try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
-		if(class(try1) != "try-error"){
+		if(!Is_TryError(try1)){
 			Z<-try1
 			Is.Error<-FALSE
 			
@@ -176,7 +176,7 @@ SKAT_CommonRare.SSD.All = function(SSD.INFO, obj, ...){
 			Is.Error<-TRUE
 			try2<-try(SKAT_CommonRare(Z,obj, ...),silent = TRUE)
 			
-			if(class(try2) != "try-error"){
+			if(!Is_TryError(try2)){
 				re<-try2
 				Is.Error<-FALSE
 			} else {
@@ -224,11 +224,11 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 	# This function only can be used for SNPs
 	is_check_genotype=TRUE
 	
-	if(class(obj) == "SKAT_NULL_Model_ADJ"){
+	if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 
 		obj.res=obj$re1
 
-	} else if(class(obj) == "SKAT_NULL_Model"){
+	} else if(Check_Class(obj,  "SKAT_NULL_Model")){
 
 		obj.res=obj
 		
@@ -282,7 +282,7 @@ r.corr.rare=0, r.corr.common=0, CommonRare_Cutoff=NULL, test.type="Joint", is_do
 	obj.res$n.all =nrow(Z) 
 	obj.res$id_include = 1:nrow(Z)	
 	
-	if(class(obj) == "SKAT_NULL_Model_ADJ"){
+	if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 		obj$re1$id_include = obj.res$id_include
 		obj$re1$n.all = obj.res$n.all
 	} else {
@@ -736,7 +736,7 @@ SKAT_CR_Optimal = function(res,Z1, Z2, X1, s2 = 0, pi_1=NULL, res.out=NULL, n.Re
 	Z1.Q<-try(as.matrix(qr.Q(out.QR)), silent = TRUE)
 	Z1.R<-try(as.matrix(qr.R(out.QR)), silent = TRUE)
 	
-	if(class(Z1.Q) == "try-error" || class(Z1.R) == "try_error"){
+	if(Is_TryError(Z1.Q) || Is_TryError(Z1.R)){
 
 		cat("A")
 		out.QR<-qr(Z1, LAPACK = TRUE)	
@@ -744,7 +744,7 @@ SKAT_CR_Optimal = function(res,Z1, Z2, X1, s2 = 0, pi_1=NULL, res.out=NULL, n.Re
 		Z1.Q<-try(as.matrix(qr.Q(out.QR)), silent = TRUE)
 		Z1.R<-try(as.matrix(qr.R(out.QR)), silent = TRUE)
 
-		if(class(Z1.Q) == "try-error" || class(Z1.R) == "try_error"){
+		if(Is_TryError(Z1.Q) || Is_TryError(Z1.R)){
 
 			stop("QR decomposition error!")	
 		

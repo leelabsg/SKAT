@@ -98,9 +98,9 @@ seednum=100, epsilon=10^-6, SetID=NULL){
        	is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)	
        	
        	re$method.bin=method.bin
-		if(class(obj) == "SKAT_NULL_Model_ADJ"){
+		if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 			re$method.bin="MA"
-		} else if(class(obj) == "SKAT_NULL_Model"){
+		} else if(Check_Class(obj, "SKAT_NULL_Model")){
 			re$method.bin="UA"
 		}
 		
@@ -145,7 +145,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
        	impute.method=impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype,
        	is_dosage = is_dosage, missing_cutoff=missing_cutoff , max_maf=max_maf, estimate_MAF=estimate_MAF)	
 		
-		if (class(obj) == "SKAT_NULL_Model_ADJ") {
+		if (Check_Class(obj, "SKAT_NULL_Model_ADJ")) {
         	method.bin = "MA"
     	} else {
     		method.bin = "UA"
@@ -391,7 +391,7 @@ SKATBinary.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	for(i in 1:N.Set){
 		Is.Error<-TRUE
 		try1<-try(SKATBinary.SSD.OneSet_SetIndex(SSD.INFO, i, obj, ..., obj.SNPWeight=obj.SNPWeight) ,silent = TRUE)
-		if(class(try1) == "try-error"){
+		if(Is_TryError(try1)){
 			
 				err.msg<-geterrmessage()
 				msg<-sprintf("Error to run SKATBinary for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)

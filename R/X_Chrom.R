@@ -149,7 +149,7 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 	
 	if(kernel != "linear" && kernel != "linear.weighted"){
 
-		if(class(obj) == "SKAT_NULL_Model_Adj_ChrX"){
+		if(Check_Class(obj,  "SKAT_NULL_Model_Adj_ChrX")){
 			msg<-sprintf("The small sample adjustment only can be applied for linear and linear.weighted kernel in the current version of SKAT! No adjustment is applied")
 			warning(msg,call.=FALSE)
 			obj<-obj$re1
@@ -157,7 +157,7 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 
 	}
 	
-	if(class(obj) != "SKAT_NULL_Model_Adj_ChrX" && class(obj) != "SKAT_NULL_Model_ChrX"){
+	if(!Check_Class(obj, "SKAT_NULL_Model_Adj_ChrX") && !Check_Class(obj, "SKAT_NULL_Model_ChrX")){
 		msg<-sprintf("The obj parameter should be a returned object from SKAT_Null_Model_ChrX!")
 		stop(msg)
 	}
@@ -166,12 +166,12 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 	SexVar = obj$SexVar
 	n.all=obj$n.all
 
- 	if(class(obj) == "SKAT_NULL_Model_Adj_ChrX"){
+ 	if(Check_Class(obj, "SKAT_NULL_Model_Adj_ChrX")){
 		
 		id_include = obj$re1$id_include
 	
 
-	} else if(class(obj) == "SKAT_NULL_Model_ChrX"){
+	} else if(Check_Class(obj, "SKAT_NULL_Model_ChrX")){
 
 		id_include = obj$id_include
 
@@ -187,14 +187,14 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 	out.z$Z.test<-SKAT_Code_XChr(out.z$Z.test, is_X.inact=is_X.inact, SexVar=SexVar[out.z$id_include.test])
 	
 	
- 	if(class(obj) == "SKAT_NULL_Model_Adj_ChrX"){
+ 	if(Check_Class(obj, "SKAT_NULL_Model_Adj_ChrX")){
 		
 	
 		re<-SKAT_With_NullModel_ADJ(Z, obj, kernel = kernel, method=method, weights.beta=weights.beta
 		, weights = weights, impute.method = impute.method,  r.corr=r.corr, is_check_genotype=is_check_genotype
 		, is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF, out.z=out.z)
 
-	} else if(class(obj) == "SKAT_NULL_Model_ChrX"){
+	} else if(Check_Class(obj, "SKAT_NULL_Model_ChrX")){
 
 		re<-SKAT_With_NullModel(Z,obj, kernel = kernel, method=method, weights.beta=weights.beta
 		, weights = weights, impute.method = impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype

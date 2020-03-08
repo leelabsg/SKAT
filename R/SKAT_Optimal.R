@@ -149,7 +149,7 @@ SKAT_Optimal_PValue_Davies<-function(pmin.q,param.m,r.all, pmin=NULL){
 
 	re<-try(integrate(SKAT_Optimal_Integrate_Func_Davies, lower=0, upper=40, subdivisions=1000, pmin.q=pmin.q,param.m=param.m,r.all=r.all,abs.tol = 10^-25), silent = TRUE)
 
-	if(class(re) == "try-error"){
+	if(Is_TryError(re)){
 		re<-SKAT_Optimal_PValue_Liu(pmin.q,param.m,r.all, pmin)
 		return(re)
 	} 

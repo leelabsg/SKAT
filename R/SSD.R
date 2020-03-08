@@ -108,7 +108,7 @@ Check_ID_Length<-function(FileName){
 	
 
 	SSD.Info<-try(read.table(FileName, header=FALSE, stringsAsFactors=FALSE), silent=TRUE)
-	if(class(SSD.Info)=="try-error"){
+	if(Is_TryError(SSD.Info)){
 		stop("Error in SetID file!") 
 	}
 
@@ -216,7 +216,7 @@ Create_Temporaly_SetID<-function(FileName){
 
 	FileName.out<-sprintf("%s.temp",FileName)
 	SSD.Info<-try(read.table(FileName, header=FALSE, stringsAsFactors=FALSE), silent=TRUE)
-	if(class(SSD.Info)=="try-error"){
+	if(Is_TryError(SSD.Info)){
 		stop("Error in SepID file!") 
 	}
 

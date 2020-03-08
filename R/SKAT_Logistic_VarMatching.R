@@ -104,7 +104,7 @@ SKAT_PValue_Logistic_VarMatching<-function(Q, Z1, p_all, Q.sim, type="Other"){
 	if(param$varQ == 0){
 		p.value<-rep(1, length(Q))
 	
-	} else if(class(param) == "QuantileAdj"){
+	} else if(Check_Class(param,  "QuantileAdj")){
 		p.value<-SKAT_Logistic_PVal_QuantileAdj(Q, param)
 	} else {
 		Q.Norm<-(Q - param$muQ)/sqrt(param$varQ)
@@ -191,7 +191,7 @@ SKAT_Logistic_VarMatching_GetParam1<-function(Z1, p_all, Q.sim, type="Other"){
 	if(type != "OnlySim"){
 
 		try1<-try(Get_Lambda_U_From_Z(Z1),silent = TRUE)
-		if(class(try1) == "try-error"){
+		if(Is_TryError(try1)){
 			type="OnlySim"
 		} else {
 			out.svd = try1
@@ -280,7 +280,7 @@ SKAT_Logistic_VarMatching_QuantileAdj_Param<-function(Q.sim, param){
 	#ratio<-mean(max(Quant1[1:5]/Quant2[1:5]), Quant[1]/Quant[2])
 	ratio<-mean(c(max(Quant1[1:5]/Quant2[1:5]), Quant1[1]/Quant2[1]))
 	
-	if(class(fun1) == "try-error"){
+	if(Is_TryError(fun1)){
 		out.s = NULL
 	} else {
 		out.s<-list(fun1=fun1, maxq=maxq, minq=minq, ratio=ratio)

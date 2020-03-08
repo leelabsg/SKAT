@@ -17,9 +17,9 @@ SKATExactBin_CheckAccuracy<-function(pval, total, r.critical=25 ){
 
 SKATExactBin_CheckObj<-function(obj.res){
 
-	if(class(obj.res) == "SKAT_NULL_Model_ADJ"){
+	if(Check_Class(obj.res, "SKAT_NULL_Model_ADJ")){
 		obj.res = obj.res$re1
-	} else if(class(obj.res) == "SKAT_NULL_Model"){
+	} else if(Check_Class(obj.res, "SKAT_NULL_Model")){
 		if(obj.res$out_type !="D"){
 			stop("out_type in SKAT_Null_Model should be D!")
 		}
