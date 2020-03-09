@@ -661,7 +661,7 @@ int Is_MakeFile, int* myerror, char * SNPID)
 			//===============================================================
 			//=== This part converts Byte "buff[i]" to bits values "bits_val"
 			//=== for example byte buff[0] = "w" ->  bits_val = 11101110
-			memset(bits_val, NULL, sizeof(bits_val));
+			memset(bits_val, 0, sizeof(bits_val));
 			int k = MY_CHAR_BIT;  //8
 			while (k > 0)
 			{
