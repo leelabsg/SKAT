@@ -171,7 +171,8 @@ SKATBinary_spa<-function (G, obj, weights, method="SKATO",r.corr=NULL){
     G2_adj_n[,vars_inf]=0
   }
   if (length(VarS)==1){G2_adj_n = G2_adj_n *VarS/VarS_org} else{
-    G2_adj_n = G2_adj_n %*% diag(VarS/VarS_org)
+    #chang by Zhangchen 09/06/2020, adjust the formula. The previous one is wrong, G2_adj_n = G2_adj_n %*% diag(VarS/VarS_org)
+    G2_adj_n =diag(sqrt(VarS/VarS_org)) %*% G2_adj_n %*% diag(sqrt(VarS/VarS_org))
   }
   mu = out_kernel$mu
   g.sum = out_kernel$g.sum
