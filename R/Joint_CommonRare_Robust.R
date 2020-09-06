@@ -126,7 +126,8 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
 
 colMax <- function(data) apply(data,2, max, na.rm = TRUE)
 
-SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKATO"
+##Changed by Zhangchen 09/06/2020, the default method is changed to SKAT instead of SKATO. 
+SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKAT"
                             , r.corr=NULL, weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weights = NULL
                             , CommonRare_Cutoff=NULL, impute.method = "bestguess",is_check_genotype=TRUE
                             ,is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
