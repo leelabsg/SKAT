@@ -10,7 +10,7 @@
  \usage{
  
 	SKAT_CommonRare_Robust(Z, obj, kernel = "linear.weighted"
-	, method="SKATO", r.corr=NULL,weights.beta.rare=c(1,25)
+	, method="SKAT", r.corr=NULL,weights.beta.rare=c(1,25)
 	, weights.beta.common=c(0.5,0.5), weights = NULL
 	, CommonRare_Cutoff=NULL, impute.method = "bestguess"
 	, is_check_genotype=TRUE,is_dosage = FALSE, missing_cutoff=0.15
@@ -29,7 +29,7 @@
       where A is a major allele and a is a minor allele. Now we support both matrix and sparse matrix. }
       \item{obj}{output object from SKAT_Null_Model. }
       \item{kernel}{type of kernel (default= "linear.weighted"). The possible choices are "linear" and "linear.weighted".}
-      \item{method}{type of gene based test (default= "SKATO"). The possible choices are
+      \item{method}{type of gene based test (default= "SKAT"). The possible choices are
       "SKAT", "Burden" and "SKATO", which represents robust SKAT, Burden and SKAT-O tests, respectively. }
       \item{r.corr}{the \eqn{\rho} parameter for all variants. \eqn{\rho} =0 and 1 indicate SKAT and Burden test, respectively.}
       \item{weights.beta.rare}{a numeric vector of parameters of beta weights for rare variants. It is only used for weighted kernels. 

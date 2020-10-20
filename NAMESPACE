@@ -17,7 +17,9 @@ export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights,
 	SKATBinary.SSD.OneSet, SKATBinary.SSD.OneSet_SetIndex, SKATBinary.SSD.All,
 	SKAT_Null_Model_ChrX, SKAT_ChrX,
 	SKATBinary_Robust,SKATBinary_Robust.SSD.OneSet ,SKATBinary_Robust.SSD.OneSet_SetIndex, SKATBinary_Robust.SSD.All ,
-	SKAT_CommonRare_Robust,SKAT_CommonRare_Robust.SSD.OneSet ,SKAT_CommonRare_Robust.SSD.OneSet_SetIndex, SKAT_CommonRare_Robust.SSD.All)
+	SKAT_CommonRare_Robust,SKAT_CommonRare_Robust.SSD.OneSet ,SKAT_CommonRare_Robust.SSD.OneSet_SetIndex, SKAT_CommonRare_Robust.SSD.All,
+	Get_Davies_PVal, Get_Lambda, Get_Liu_PVal, SKAT_Check_Method,
+	SKAT_Optimal_Each_Q, SKAT_Optimal_PValue_Davies, SKAT_Optimal_PValue_Liu)
 
      importFrom("graphics", "abline", "legend", "plot", "points")
      importFrom("stats", "approxfun", "dbeta", "dchisq", "get_all_vars",

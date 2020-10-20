@@ -1,6 +1,8 @@
 .git
 .gitignore
 .*~$
+.Rproj.user*
+SKAT/.Rproj.user*
 temp
 test_ssd
 test_vcf
