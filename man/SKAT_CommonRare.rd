@@ -2,7 +2,6 @@
  \alias{SKAT_CommonRare}
  \alias{SKAT_CommonRare.SSD.OneSet}
  \alias{SKAT_CommonRare.SSD.OneSet_SetIndex}
- \alias{SKAT_CommonRare.SSD.All}
  \title{SKAT for the combined effect of common and rare variants}
  \description{
      Sequence Kernel association test for the combined effect of common and rare variants.      
@@ -16,11 +15,13 @@
 	, estimate_MAF=1, SetID1=NULL)
 
 
-	SKAT_CommonRare.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
+	SKAT_CommonRare.SSD.OneSet(SSD.INFO
+	, SetID, obj, \dots, obj.SNPWeight=NULL)
 
-	SKAT_CommonRare.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
+	SKAT_CommonRare.SSD.OneSet_SetIndex(SSD.INFO
+	, SetIndex, obj, \dots, obj.SNPWeight=NULL )
 
-	SKAT_CommonRare.SSD.All(SSD.INFO, obj, \dots)
+
 	
  }
 \arguments{
@@ -51,7 +52,8 @@
       \item{SSD.INFO}{an SSD_INFO object returned from Open_SSD. }
       \item{SetID}{a character value of Set ID. You can find a set ID of each set from SetInfo object of SSD.INFO}
       \item{SetIndex}{a numeric value of Set index. You can find a set index of each set from SetInfo object of SSD.INFO  }
-      
+      \item{obj.SNPWeight}{output object from Read_SNP_WeightFile (default=NULL). 
+      If NULL, the beta weight with the ``weights.beta'' parameter will be used.  }
       \item{\dots}{ furthuer arguments to be passed to ``SKAT_CommonRare'' }
       
 }
@@ -69,12 +71,7 @@
 	\item{param$n.marker}{a number of SNPs in the genotype matrix}  
 	\item{param$n.marker.test}{a number of SNPs used for the test. It can be different from param$n.marker when 
 	some markers are monomorphic or have higher missing rates than the missing_cutoff. } 
-	
-	\item{results}{(SKAT_CommonRare.SSD.All only) the dataframe that contains SetID, p-values (P.value), 
-	the number of markers in the SNP sets (N.Marker.All), 
-	the number of markers to test for an association after excluding non-polymorphic or high missing rates markers (N.Marker.Test), 
-	and the number of rare (N.Marker.Rare) and common (N.Marker.Common) variants used for association tests.  }
-	\item{P.value.Resampling}{(SKAT_CommonRare.SSD.All only) the matrix that contains p-values of resampled phenotypes. }
+	\item{test.snp.mac}{a vector of minor allele count (MAC) of the snps tested. The name is SNP-ID. } 
 	
 }
 \details{

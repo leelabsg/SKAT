@@ -243,6 +243,7 @@ seednum=100, epsilon=10^-6, SetID=NULL){
 	re$m = m
 		
 	re$method.bin = method.bin
+	
 	class(re)<-"SKATBinary_OUT"
 	return(re)
 	 
@@ -334,7 +335,7 @@ SKATBinary.SSD.OneSet = function(SSD.INFO, SetID, obj, ..., obj.SNPWeight=NULL){
 	}	
 	SetIndex<-SSD.INFO$SetInfo$SetIndex[id1]
 
-	re = SKATBinary.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, ...)
+	re = SKATBinary.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=obj.SNPWeight)
 	
 	return(re)
 }
@@ -369,6 +370,7 @@ SKATBinary.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	OUT.Marker.Test<-rep(NA,N.Set)
 	OUT.Error<-rep(-1,N.Set)
 	OUT.Pvalue.Resampling<-NULL
+	OUT.snp.mac<-list()
 
 	OUT.MAC<-rep(NA,N.Set)
 	OUT.MAP<-rep(NA,N.Set)
@@ -409,6 +411,9 @@ SKATBinary.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 			if(Is.Resampling){
 				OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
 			}
+			
+			SetID<-SSD.INFO$SetInfo$SetID[i]
+			OUT.snp.mac[[SetID]]<-re$test.snp.mac
 		}
 		#if(floor(i/100)*100 == i){
 		#	cat("\r", i, "/", N.Set, "were done");
@@ -423,7 +428,7 @@ SKATBinary.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	, MAC=OUT.MAC, m=OUT.m
 	, Method.bin = OUT.Method.bin
 	, MAP = OUT.MAP )
-	re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling)
+	re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling, OUT.snp.mac=OUT.snp.mac)
 	class(re)<-"SKATBinary_SSD_ALL"
 
 	return(re)	

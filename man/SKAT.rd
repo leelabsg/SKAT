@@ -71,6 +71,10 @@ SKAT.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots ,obj.SNPWeight=NULL)
 	\item{param$n.marker}{a number of SNPs in the genotype matrix.}  
 	\item{param$n.marker.test}{a number of SNPs used for the test. It can be different from param$n.marker when 
 	some markers are monomorphic or have higher missing rates than the missing_cutoff. } 
+	\item{test.snp.mac}{a vector of minor allele count (MAC) of the snps tested. The name is SNP-ID. } 
+	
+	
+	
 	
 }
 \details{

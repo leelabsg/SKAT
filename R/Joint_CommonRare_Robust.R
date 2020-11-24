@@ -1,37 +1,32 @@
-#
-# x is either y or SKAT_NULL_Model 
-#
-SKAT_CommonRare_Robust.SSD.OneSet = function(SSD.INFO, SetID, obj, ...){
+
+
+SKAT_CommonRare_Robust.SSD.OneSet = function(SSD.INFO, SetID, obj, ..., obj.SNPWeight=NULL){
   
   id1<-which(SSD.INFO$SetInfo$SetID == SetID)
   if(length(id1) == 0){
     MSG<-sprintf("Error: cannot find set id [%s] from SSD!", SetID)
     stop(MSG)
   }	
-  Set_Index<-SSD.INFO$SetInfo$SetIndex[id1]
+  SetIndex<-SSD.INFO$SetInfo$SetIndex[id1]
   
-  Z<-Get_Genotypes_SSD(SSD.INFO, Set_Index)
-  re<-SKAT_CommonRare_Robust(Z, obj, ...)
+  re = SKAT_CommonRare_Robust.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=obj.SNPWeight)
   
   return(re)
 }
 
-#
-# x is either y or SKAT_NULL_Model 
-#
-SKAT_CommonRare_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ...){
+SKAT_CommonRare_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=NULL){
   
-  id1<-which(SSD.INFO$SetInfo$SetIndex == SetIndex)
-  if(length(id1) == 0){
-    MSG<-sprintf("Error: cannot find set index [%d] from SSD!", SetIndex)
-    stop(MSG)
-  }	
-  SetID<-SSD.INFO$SetInfo$SetID[id1]
+  re1 = SKAT.SSD.GetSNP_Weight(SSD.INFO, SetIndex, obj.SNPWeight=obj.SNPWeight)
+  SetID = SSD.INFO$SetInfo$SetID[SetIndex]
+  if(!re1$Is.weights){
+    re<-SKAT_CommonRare_Robust(re1$Z, obj, ...)
+  } else {
+    
+    re<-SKAT_CommonRare_Robust(re1$Z, obj, weights=re1$weights, ...)
+  }
   
-  
-  Z<-Get_Genotypes_SSD(SSD.INFO, SetIndex)
-  re<-SKAT_CommonRare_Robust(Z, obj, ...)
   return(re)
+  
 }
 
 
@@ -40,7 +35,7 @@ SKAT_CommonRare_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, .
 #
 # Only SKAT_Null_Model obj can be used
 #
-SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
+SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
   
   N.Set<-SSD.INFO$nSets
   OUT.Pvalue<-rep(NA,N.Set)
@@ -49,6 +44,7 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
   OUT.Error<-rep(-1,N.Set)
   OUT.Pvalue.Resampling<-NULL
   OUT.Q<-rep(NA,N.Set)
+  OUT.snp.mac<-list()
   
   OUT.nRare<-rep(NA,N.Set)
   OUT.nCommon<-rep(NA,N.Set)
@@ -67,35 +63,16 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
   pb <- txtProgressBar(min=0, max=N.Set, style=3)
   for(i in 1:N.Set){
     Is.Error<-TRUE
-    try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
-    if(!Is_TryError(try1)){
-      Z<-try1
-      Is.Error<-FALSE
+    try1<-try(SKAT_CommonRare_Robust.SSD.OneSet_SetIndex(SSD.INFO, i, obj, ..., obj.SNPWeight=obj.SNPWeight) ,silent = TRUE)
+    if(Is_TryError(try1)){
       
+      err.msg<-geterrmessage()
+      msg<-sprintf("Error to run SKATBinary for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
+      warning(msg,call.=FALSE)
       
     } else {
-      err.msg<-geterrmessage()
-      msg<-sprintf("Error to get genotypes of %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
-      warning(msg,call.=FALSE)
-    }
-    
-    if(!Is.Error){
-      Is.Error<-TRUE
-      try2<-try(SKAT_CommonRare_Robust(Z, obj, ...),silent = TRUE)
       
-      if(!Is_TryError(try2)){
-        re<-try2
-        Is.Error<-FALSE
-      } else {
-        
-        err.msg<-geterrmessage()
-        msg<-sprintf("Error to run SKATBinary_Robust for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
-        warning(msg,call.=FALSE)
-      }
-    }
-    
-    if(!Is.Error){
-      
+      re<-try1
       OUT.Pvalue[i]<-re$p.value
       OUT.Marker[i]<-re$param$n.marker
       OUT.Marker.Test[i]<-re$param$n.marker.test
@@ -105,6 +82,8 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
       if(Is.Resampling){
         OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
       }
+      SetID<-SSD.INFO$SetInfo$SetID[i]
+      OUT.snp.mac[[SetID]]<-re$test.snp.mac
     }
     #if(floor(i/100)*100 == i){
     #	cat("\r", i, "/", N.Set, "were done");
@@ -116,7 +95,7 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...){
   close(pb)	
   out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, Q=OUT.Q
                       , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, N.Marker.Rare=OUT.nRare, N.Marker.Common=OUT.nCommon)
-  re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling)
+  re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling,OUT.snp.mac=OUT.snp.mac)
   class(re)<-"SKAT_SSD_ALL"
   
   return(re)	
@@ -295,7 +274,8 @@ SKAT_CommonRare_Robust<-function(Z, obj, kernel = "linear.weighted", method="SKA
   
   re$param$n.marker<-m.org
   re$param$n.marker.test<-m.test
-  re$param$n.marker.name<-colnames(Z)
+  re$test.snp.mac<-SingleSNP_INFO(out$Z.test)
+  
   re$param$rho=r.corr
   if (method=="SKATO"){
     re$param$minp=min( re$p.value_each)

@@ -143,12 +143,13 @@ SKAT.SSD.GetSNP_Weight<-function(SSD.INFO, SetIndex, obj.SNPWeight=NULL){
 	}	
 	SetID<-SSD.INFO$SetInfo$SetID[id1]
 	
-	is_ID = FALSE
+	# Get SNPID always!!
+	is_Weight = FALSE
 	if(!is.null(obj.SNPWeight)){
-		is_ID = TRUE
+	  is_Weight = TRUE
 	}
 
-	try1<-try(Get_Genotypes_SSD(SSD.INFO, SetIndex, is_ID=is_ID),silent = TRUE)
+	try1<-try(Get_Genotypes_SSD(SSD.INFO, SetIndex, is_ID=TRUE),silent = TRUE)
 	if(!Is_TryError(try1)){
 		Z<-try1
 		Is.Error<-FALSE	
@@ -158,7 +159,7 @@ SKAT.SSD.GetSNP_Weight<-function(SSD.INFO, SetIndex, obj.SNPWeight=NULL){
 		stop(msg)
 	}
 
-	if(!is_ID){
+	if(!is_Weight){
 		re=list(Z=Z, Is.weights=FALSE)
 		return(re)
 	}
@@ -204,59 +205,6 @@ SKAT.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=
 
 
 
-#
-# x is either y or SKAT_NULL_Model 
-#
-SKAT.SSD.OneSet_SetIndex_OLD = function(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=NULL){
-	
-	id1<-which(SSD.INFO$SetInfo$SetIndex == SetIndex)
-	#id1 = SetIndex
-	if(length(id1) == 0){
-		MSG<-sprintf("Error: cannot find set index [%d] from SSD!", SetIndex)
-		stop(MSG)
-	}	
-	SetID<-SSD.INFO$SetInfo$SetID[id1]
-	
-	is_ID = FALSE
-	if(!is.null(obj.SNPWeight)){
-		is_ID = TRUE
-	}
-	try1<-try(Get_Genotypes_SSD(SSD.INFO, SetIndex, is_ID=is_ID),silent = TRUE)
-	if(!Is_TryError(try1)){
-		Z<-try1
-		Is.Error<-FALSE	
-	} else {
-		err.msg<-geterrmessage()
-		msg<-sprintf("Error to get genotypes of %s: %s",SetID, err.msg)
-		stop(msg)
-	}
-		
-	
-	if(is.null(obj.SNPWeight)){
-
-		re<-SKAT(Z, obj, ...)
-	} else {
-	
-		SNP_ID<-colnames(Z)
-		p<-ncol(Z)
-		weights<-rep(0, p)
-		for(i in 1:p){
-			val1<-SNP_ID[i]			
-			val2<-obj.SNPWeight$hashset[[val1]]
-			
-			if(is.null(val2)){
-				msg<-sprintf("SNP %s is not found in obj.SNPWeight!", val1)
-				stop(msg)
-			}
-
-			weights[i]<-val2
-		}
-		re<-SKAT(Z, obj, weights=weights, ...)
-	}
-	
-	return(re)
-}
-
 
 #
 # Only SKAT_Null_Model obj can be used
@@ -269,6 +217,7 @@ SKAT.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	OUT.Marker.Test<-rep(NA,N.Set)
 	OUT.Error<-rep(-1,N.Set)
 	OUT.Pvalue.Resampling<-NULL
+	OUT.snp.mac<-list()
 
 	Is.Resampling = FALSE
 	n.Resampling = 0
@@ -314,6 +263,8 @@ SKAT.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 			if(Is.Resampling){
 				OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
 			}
+			SetID<-SSD.INFO$SetInfo$SetID[i]
+			OUT.snp.mac[[SetID]]<-re$test.snp.mac
 		}
 		
 		#if(floor(i/100)*100 == i){
@@ -326,7 +277,7 @@ SKAT.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 
 	
 	out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test)
-	re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling)
+	re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling, OUT.snp.mac=OUT.snp.mac)
 	class(re)<-"SKAT_SSD_ALL"
 
 	return(re)	

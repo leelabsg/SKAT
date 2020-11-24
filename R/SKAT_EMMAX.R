@@ -262,7 +262,8 @@ SKAT_emmaX = function( Z, obj, kernel= "linear.weighted", method="davies", weigh
 
   	re$param$n.marker<-m
   	re$param$n.marker.test<-ncol(Z)
-	
+  	re$test.snp.mac<-SingleSNP_INFO(out.z$Z.test)
+  	
 	return(re)
 }
 
@@ -319,44 +320,40 @@ SKAT_emmaX_work = function( res, Z, obj, kernel, method, weights=NULL, r.corr=0)
 #
 # x is either y or SKAT_NULL_Model 
 #
-SKAT_emmaX.SSD.OneSet = function(SSD.INFO, SetID, obj, ...){
-	
-	id1<-which(SSD.INFO$SetInfo$SetID == SetID)
-	if(length(id1) == 0){
-		MSG<-sprintf("Error: cannot find set id [%s] from SSD!", SetID)
-		stop(MSG)
-	}	
-	Set_Index<-SSD.INFO$SetInfo$SetIndex[id1]
 
-	Z<-Get_Genotypes_SSD(SSD.INFO, Set_Index)
-	re<-SKAT_emmaX(Z, obj, ...)
-	
-	return(re)
+SKAT_emmaX.SSD.OneSet = function(SSD.INFO, SetID, obj, ..., obj.SNPWeight=NULL){
+  
+  id1<-which(SSD.INFO$SetInfo$SetID == SetID)
+  if(length(id1) == 0){
+    MSG<-sprintf("Error: cannot find set id [%s] from SSD!", SetID)
+    stop(MSG)
+  }	
+  SetIndex<-SSD.INFO$SetInfo$SetIndex[id1]
+  
+  re = SKAT_emmaX.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=obj.SNPWeight)
+  
+  return(re)
 }
 
-#
-# x is either y or SKAT_NULL_Model 
-#
-SKAT_emmaX.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ...){
-	
-	id1<-which(SSD.INFO$SetInfo$SetIndex == SetIndex)
-	if(length(id1) == 0){
-		MSG<-sprintf("Error: cannot find set index [%d] from SSD!", SetIndex)
-		stop(MSG)
-	}	
-	SetID<-SSD.INFO$SetInfo$SetID[id1]
-
-
-	Z<-Get_Genotypes_SSD(SSD.INFO, SetIndex)
-	re<-SKAT_emmaX(Z, obj, ...)
-	return(re)
+SKAT_emmaX.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ..., obj.SNPWeight=NULL){
+  
+  re1 = SKAT.SSD.GetSNP_Weight(SSD.INFO, SetIndex, obj.SNPWeight=obj.SNPWeight)
+  SetID = SSD.INFO$SetInfo$SetID[SetIndex]
+  if(!re1$Is.weights){
+    re<-SKAT_emmaX(re1$Z, obj, ...)
+  } else {
+    
+    re<-SKAT_emmaX(re1$Z, obj, weights=re1$weights, ...)
+  }
+  
+  return(re)
+  
 }
-
 
 #
 # Only SKAT_Null_Model obj can be used
 #
-SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ...){
+SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ..., obj.SNPWeight=NULL){
 	
 	N.Set<-SSD.INFO$nSets
 	OUT.Pvalue<-rep(NA,N.Set)
@@ -370,35 +367,15 @@ SKAT_emmaX.SSD.All = function(SSD.INFO, obj, ...){
 	
 	pb <- txtProgressBar(min=0, max=N.Set, style=3)
 	for(i in 1:N.Set){
-		Is.Error<-TRUE
-		try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
-		if(!Is_TryError(try1)){
-			Z<-try1
-			Is.Error<-FALSE
-			
-			
-		} else {
-			err.msg<-geterrmessage()
-			msg<-sprintf("Error to get genotypes of %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
-			warning(msg,call.=FALSE)
-		}
-	
-		if(!Is.Error){
-			Is.Error<-TRUE
-			try2<-try(SKAT_emmaX(Z,obj, ...),silent = TRUE)
-			
-			if(!Is_TryError(try2)){
-				re<-try2
-				Is.Error<-FALSE
-			} else {
 
-				err.msg<-geterrmessage()
-				msg<-sprintf("Error to run SKAT for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
-				warning(msg,call.=FALSE)
-			}
-		}
-		
-		if(!Is.Error){
+		try1 = try(SKAT_emmaX.SSD.OneSet_SetIndex(SSD.INFO=SSD.INFO, SetIndex=i, obj=obj, ..., obj.SNPWeight=obj.SNPWeight))
+		if(!Is_TryError(try1)){
+
+		  err.msg<-geterrmessage()
+		  msg<-sprintf("Error to run SKAT for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
+		  warning(msg,call.=FALSE)
+		  
+		} else {
 
 			OUT.Pvalue[i]<-re$p.value
 			OUT.Marker[i]<-re$param$n.marker

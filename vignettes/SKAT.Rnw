@@ -41,17 +41,28 @@ names(SKAT.example)
 attach(SKAT.example)
 @
 
-To test for associations, SKAT\_Null\_Model function should be used in prior to run SKAT to estimate parameters
-under the null model of no associations.
+To test for associations, SKAT\_Null\_Model function should be used in prior to run SKAT to estimate parameters under the null model of no associations.
 
 <<SKAT1>>=
 # continuous trait 
 obj<-SKAT_Null_Model(y.c ~ X, out_type="C")
-SKAT(Z, obj)$p.value
+out.c<-SKAT(Z, obj)
+out.c$p.value
 
 # dichotomous trait 
 obj<-SKAT_Null_Model(y.b ~ X, out_type="D")
-SKAT(Z, obj)$p.value
+out.b<-SKAT(Z, obj)
+out.b$p.value
+
+@
+
+
+The returned object from SKAT has many information, such as number of markers in Z and number of markers to be used for the test. The version 2.1.0 has test.snp.mac which has MAC of each markers used in the test. 
+<<SKAT111>>=
+
+out.c$param
+
+out.c$test.snp.mac
 
 @
 
@@ -101,8 +112,8 @@ out$p.value
 
 We have recently developed more scalable and accurate method for binary traits, which is implemented in SKATBinary\_Robust function. Detailed description of these methods can be found in the following reference: \\
 
-Zhao, Z., Bi, W., Zhou, W., VanderHaar, P., Fritsche, L.G., Lee, S. (2019)
-UK Biobank Whole-Exome Sequence Binary Phenome Analysis with Robust Region-based Rare-Variant Test. \textit{AJHG}, in press, doi:https://doi.org/10.1016/j.ajhg.2019.11.012
+Zhao, Z., Bi, W., Zhou, W., VanderHaar, P., Fritsche, L.G., Lee, S. (2020)
+UK Biobank Whole-Exome Sequence Binary Phenome Analysis with Robust Region-based Rare-Variant Test. \textit{AJHG}, 106: 3-12, doi:https://doi.org/10.1016/j.ajhg.2019.11.012
 
  
 <<SKAT23>>=

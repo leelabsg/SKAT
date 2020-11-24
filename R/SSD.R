@@ -380,7 +380,7 @@ Open_SSD<-function(File.SSD, File.Info){
 #
 #	Get Genotype Matrix
 
-Get_Genotypes_SSD<-function(SSD_INFO, Set_Index, is_ID = FALSE){
+Get_Genotypes_SSD<-function(SSD_INFO, Set_Index, is_ID = TRUE){
 
 	SNP_ID_SIZE=1024 # it should be the same as SNP_ID_SIZE_MAX in error_messages.h 
 	

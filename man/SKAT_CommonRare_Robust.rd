@@ -2,7 +2,6 @@
  \alias{SKAT_CommonRare_Robust}
  \alias{SKAT_CommonRare_Robust.SSD.OneSet}
  \alias{SKAT_CommonRare_Robust.SSD.OneSet_SetIndex}
- \alias{SKAT_CommonRare_Robust.SSD.All}
  \title{SNP set test (both common and rare variants) for binary traits with robust region-based methods}
  \description{
      This function computes p-values of robust burden test, SKAT, and SKAT-O for binary traits using SPA and ER.   
@@ -16,11 +15,12 @@
 	, is_check_genotype=TRUE,is_dosage = FALSE, missing_cutoff=0.15
 	, max_maf=1, estimate_MAF=1)
 
-	SKAT_CommonRare_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
+	SKAT_CommonRare_Robust.SSD.OneSet(SSD.INFO
+	, SetID, obj, \dots, obj.SNPWeight=NULL)
 
-	SKAT_CommonRare_Robust.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
+	SKAT_CommonRare_Robust.SSD.OneSet_SetIndex(SSD.INFO
+	, SetIndex, obj, \dots, obj.SNPWeight=NULL )
 	
-	SKAT_CommonRare_Robust.SSD.All(SSD.INFO, obj, \dots)
 
  }
 \arguments{
@@ -51,6 +51,8 @@
       \item{SSD.INFO}{an SSD_INFO object returned from Open_SSD. }
       \item{SetID}{a character value of Set ID. You can find a set ID of each set from SetInfo object of SSD.INFO. In SKATBinary_Robust function, this parameter is for the internal use only.}
       \item{SetIndex}{a numeric value of Set index. You can find a set index of each set from SetInfo object of SSD.INFO  }
+        \item{obj.SNPWeight}{output object from Read_SNP_WeightFile (default=NULL). 
+      If NULL, the beta weight with the ``weights.beta'' parameter will be used.  }
       \item{\dots}{further arguments to be passed to ``SKATBinary_Robust'' }
 }
 \value{

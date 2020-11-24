@@ -1,6 +1,7 @@
 
 SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta=c(1,25)
-, weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf = 1, estimate_MAF=1){
+, weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE
+, missing_cutoff=0.15, max_maf = 1, estimate_MAF=1){
 
 
 	if(kernel != "linear" && kernel != "linear.weighted"){
@@ -152,6 +153,7 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 	#############################################
 	# Check parameters
 
+
   # changed by SLEE 12/23/2019
   if(!Check_Class(Z, c("matrix", "dgCMatrix"))){
     stop("Z is not a matrix")
@@ -161,6 +163,10 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 		impute.method="fixed"
 	}
 
+  if(is.null(colnames(Z))){
+    colnames(Z)<-sprintf("VAR%d", 1:ncol(Z))
+  }
+  
 
 	#####################################################
 	# Check Z
@@ -395,7 +401,15 @@ SKAT_Check_Method<-function(method,r.corr, n=NULL, m=NULL){
 
 }
 
+SingleSNP_INFO<-function(Z){
+  
 
+  snplist<-colSums(Z)
+  names(snplist)<-colnames(Z)
+
+  return(snplist)
+  
+}
 
 
 SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="davies", weights.beta=c(1,25), weights = NULL
@@ -468,6 +482,8 @@ SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="d
 
 	re$param$n.marker<-m
 	re$param$n.marker.test<-dim(out.z$Z.test)[2]
+  re$test.snp.mac<-SingleSNP_INFO(out.z$Z.test)
+    
 	return(re)
 
 }
@@ -542,6 +558,8 @@ impute.method = "fixed", r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, mi
 
 	re$param$n.marker<-m
 	re$param$n.marker.test<-dim(out.z$Z.test)[2]
+	re$test.snp.mac<-SingleSNP_INFO(out.z$Z.test)
+	
 	return(re)
 
 

@@ -77,6 +77,7 @@ SKATExactBin.Adaptive<-function(Z, obj, kernel = "linear.weighted", weights.beta
 	re$m = length(obj$idx)
 	re$MAC= obj$MAC
 	re$MAP = -1
+	re$test.snp.mac<-SingleSNP_INFO(obj$Z1)
 	
 
 	return(re)
@@ -145,7 +146,8 @@ N.Resampling=10^7, ExactMax=10000, test_type=1, Is.testdata=FALSE, File=NULL, Is
 	}
 	re$m = length(obj$idx)
 	re$MAC= obj$MAC
-		
+	re$test.snp.mac<-SingleSNP_INFO(obj$Z1)
+	
 	return(re)
 }
 
@@ -198,6 +200,7 @@ SKATExactBin.Firth<-function(Z, obj, kernel = "linear.weighted", method.bin="ER"
     re=list(p.value=pval, MAP=0, p.value.resampling=NULL, n.total=NULL)
     re$m = length(obj$idx)
 	re$MAC= obj$MAC
+	re$test.snp.mac<-SingleSNP_INFO(obj$Z1)
 	
     return(re)
     

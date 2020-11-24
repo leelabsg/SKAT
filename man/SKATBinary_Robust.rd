@@ -2,7 +2,6 @@
  \alias{SKATBinary_Robust}
  \alias{SKATBinary_Robust.SSD.OneSet}
  \alias{SKATBinary_Robust.SSD.OneSet_SetIndex}
- \alias{SKATBinary_Robust.SSD.All}
  \title{SNP set test for binary traits with robust region-based methods}
  \description{
      This function computes p-values of robust burden test, SKAT, and SKAT-O for binary traits using SPA and ER.   
@@ -15,11 +14,12 @@
   , is_dosage = FALSE, missing_cutoff=0.15, max_maf=1
 	, estimate_MAF=1)
 
-	SKATBinary_Robust.SSD.OneSet(SSD.INFO, SetID, obj, \dots)
+	SKATBinary_Robust.SSD.OneSet(SSD.INFO
+	, SetID, obj, \dots,obj.SNPWeight=NULL)
 
-	SKATBinary_Robust.SSD.OneSet_SetIndex(SSD.INFO, SetIndex, obj, \dots )
+	SKATBinary_Robust.SSD.OneSet_SetIndex(SSD.INFO
+	, SetIndex, obj, \dots ,obj.SNPWeight=NULL)
 	
-	SKATBinary_Robust.SSD.All(SSD.INFO, obj, \dots)
 
  }
 \arguments{
@@ -47,6 +47,8 @@
       \item{SSD.INFO}{an SSD_INFO object returned from Open_SSD. }
       \item{SetID}{a character value of Set ID. You can find a set ID of each set from SetInfo object of SSD.INFO. In SKATBinary_Robust function, this parameter is for the internal use only.}
       \item{SetIndex}{a numeric value of Set index. You can find a set index of each set from SetInfo object of SSD.INFO  }
+      \item{obj.SNPWeight}{output object from Read_SNP_WeightFile (default=NULL). 
+      If NULL, the beta weight with the ``weights.beta'' parameter will be used.  }
       \item{\dots}{further arguments to be passed to ``SKATBinary_Robust'' }
 }
 \value{
@@ -56,6 +58,8 @@
   	\item{param$n.marker}{a number of SNPs in the genotype matrix.}  
 	\item{param$n.marker.test}{a number of SNPs used for the test. It can be different from param$n.marker when some markers are monomorphic or have higher missing rates than the missing_cutoff. } 
   	\item{param$rho}{the \eqn{\rho} parameter for all variants. }
+	\item{test.snp.mac}{a vector of minor allele count (MAC) of the snps tested. The name is SNP-ID. } 
+
 
 }
 
