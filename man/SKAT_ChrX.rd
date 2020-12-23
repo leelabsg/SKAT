@@ -1,6 +1,7 @@
  \name{SKAT_ChrX}
  \alias{SKAT_ChrX}
- \title{SNP-set (Sequence) Kernel Association Test for  X chromosome variables}
+ \alias{SKAT_ChrY}
+ \title{SNP-set (Sequence) Kernel Association Test for  X and Y chromosome variables}
  \description{
      Test for association between a set of SNPS/genes in the X chromosome and continuous or dichotomous outcomes using the kernel machine.      
  }
@@ -11,13 +12,17 @@ SKAT_ChrX(Z, obj, is_X.inact =TRUE
 , weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE
 , is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID=NULL)
 
+SKAT_ChrY(Z, obj, kernel = "linear.weighted", method="davies", weights.beta=c(1,25)
+, weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE
+, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID=NULL)
+
 
  }
 \arguments{
       \item{Z}{a numeric genotype matrix with each row as a different individual and each column as a separate gene/snp. 
       Each genotype should be coded as 0, 1, 2, and 9 (or NA) for AA, Aa, aa, and missing, where A is a major allele and a is a minor allele. 
       Missing genotypes will be imputed by the simple Hardy-Weinberg equilibrium (HWE) based imputation. }
-      \item{obj}{output object of the SKAT_Null_Model_ChrX function. }
+      \item{obj}{output object of the SKAT_Null_Model_ChrX function. For SKAT_ChrY, SKAT_Null_Model_ChrX function should be  used with Model.Y=FALSE}
       \item{is_X.inact}{an indicator variable for the X-inactivation coding (default=TRUE). 
       Male genotypes are coded as g=(0,2) when it is TRUE, and  g=(0,1) when it is false.}
       \item{kernel}{a type of kernel (default= "linear.weighted"). }
@@ -86,6 +91,14 @@ SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", r.corr=1)
 # SKAT-O
 SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", method="SKATO")
 
+#############################################################
+# Fit the Y chromosome function
+# In this example, since male has only one copy of X (and Y), we reuse X chromosome genotype matrix.
+
+# binary trait
+obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", Model.Y=TRUE)
+
+SKAT_ChrY(Z, obj.x, kernel = "linear.weighted", method="SKATO")
 
 
 

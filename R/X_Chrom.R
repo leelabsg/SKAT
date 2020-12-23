@@ -51,6 +51,8 @@ SKAT_Code_XChr<-function(Z, is_X.inact, SexVar){
 
 }
 
+
+
 #
 # Return Sex variable
 #
@@ -91,10 +93,10 @@ Check_Sex_Var = function(formula, SexVar, data=NULL){
 
 
 
-SKAT_Null_Model_ChrX = function(formula, SexVar, data=NULL, out_type="C", n.Resampling=0, type.Resampling="bootstrap", Adjustment=TRUE){
+SKAT_Null_Model_ChrX = function(formula, SexVar, data=NULL, out_type="C", n.Resampling=0, type.Resampling="bootstrap", Adjustment=TRUE, Model.Y=FALSE){
 	
 	SKAT_MAIN_Check_OutType(out_type)
-	SexVar=Check_Sex_Var(formula, SexVar, data=NULL)
+	SexVar=Check_Sex_Var(formula, SexVar, data=data)
 
 	
 	# check missing 
@@ -131,11 +133,44 @@ SKAT_Null_Model_ChrX = function(formula, SexVar, data=NULL, out_type="C", n.Resa
 	} else {
 		re<-Get_SKAT_Residuals.logistic (formula, data, n.Resampling, type.Resampling, id_include )
 	}
+	
+	obj.Y=NULL
+	if(Model.Y==TRUE){
+	  # Run with Male only
+	  id.male<-which(SexVar==1)
+	  
+	  if(length(id.male)==0){
+	    stop("No male subject!!") 
+	  }
+	  
+	  datY<-model.frame(formula, na.action = na.pass,data)[id.male,]
+	  obj.Y = SKAT_Null_Model(formula, data=datY, 
+	                              out_type=out_type, n.Resampling=n.Resampling, type.Resampling=type.Resampling, Adjustment=Adjustment )
+	  
+	  
+	  #if(Check_Class(obj.Y, "SKAT_NULL_Model_ADJ")){
+	  #  id_include1 = obj.Y$re1$id_include
+	  #} else if(Check_Class(obj.Y, "SKAT_NULL_Model")){
+	  #  id_include1 = obj.Y$id_include
+	  #} else {
+	  #  msg<-sprintf("Class error %s", class(obj.Y))
+	  #  stop(msg)
+	  #}
+	  
+	  #check number of individuals
+	  #if(length(id_include1) != length(subset_male) ){
+	  #  msg<-sprintf("ChrY phenotype processing, numbers do not match[%d], [%d]", length(id_include1),length(subset_male) )
+	  #  stop(msg) 
+	  #}
+	 
+	  obj.Y$id.male = id.male
+	}
 
 
 	class(re)<-"SKAT_NULL_Model_ChrX"
 	re$SexVar=SexVar
 	re$n.all<-n
+	re$obj.Y = obj.Y
 	return(re)
 	
 }
@@ -206,3 +241,82 @@ SKAT_ChrX<-function(Z, obj, is_X.inact =TRUE, kernel = "linear.weighted", method
 	return(re)
 
 }
+
+
+
+SKAT_ChrY<-function(Z, obj, kernel = "linear.weighted", method="davies", weights.beta=c(1,25)
+                    , weights = NULL, impute.method = "fixed", r.corr=0, is_check_genotype=TRUE
+                    , is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID=NULL){
+  
+  
+  if(kernel != "linear" && kernel != "linear.weighted"){
+    
+    if(Check_Class(obj,  "SKAT_NULL_Model_Adj_ChrX")){
+      msg<-sprintf("The small sample adjustment only can be applied for linear and linear.weighted kernel in the current version of SKAT! No adjustment is applied")
+      warning(msg,call.=FALSE)
+      obj<-obj$re1
+    }
+    
+  }
+  
+  if(!Check_Class(obj, "SKAT_NULL_Model_Adj_ChrX") && !Check_Class(obj, "SKAT_NULL_Model_ChrX")){
+    msg<-sprintf("The obj parameter should be a returned object from SKAT_Null_Model_ChrX!")
+    stop(msg)
+  }
+
+  if(is.null(obj$obj.Y)){
+    msg<-sprintf("SKAT_Null_Model_ChrX is not fitted with Model.Y==TRUE")
+    stop(msg)
+  }  
+  
+  obj.Y = obj$obj.Y
+  id.male<-obj.Y$id.male
+  SexVar = obj$SexVar[id.male]
+
+  if(Check_Class(obj.Y, "SKAT_NULL_Model_ADJ")){
+    id_include = obj.Y$re1$id_include
+  } else if(Check_Class(obj.Y, "SKAT_NULL_Model")){
+    id_include = obj.Y$id_include
+  } else {
+      msg<-sprintf("Class error in SKAT_ChrY %s", class(obj.Y))
+      stop(msg)
+  }
+    
+
+
+  if(length(id.male)==0){
+    stop("No male subject!!") 
+  }
+  
+  Z_male<-as.matrix(Z[id.male,])
+  n.all<-length(id.male)
+  
+  out.z<-SKAT_MAIN_Check_Z(Z_male, n.all, id_include, SetID
+                           , weights, weights.beta, impute.method, is_check_genotype
+                           , is_dosage, missing_cutoff,max_maf=max_maf, estimate_MAF=estimate_MAF, Is.chrX=TRUE, SexVar=SexVar)
+  
+
+  if(Check_Class(obj.Y, "SKAT_NULL_Model_ADJ")){
+    
+    
+    re<-SKAT_With_NullModel_ADJ(Z_male, obj.Y, kernel = kernel, method=method, weights.beta=weights.beta
+                                , weights = weights, impute.method = impute.method,  r.corr=r.corr, is_check_genotype=is_check_genotype
+                                , is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF, out.z=out.z)
+    
+  } else if(Check_Class(obj.Y, "SKAT_NULL_Model")){
+    
+    re<-SKAT_With_NullModel(Z_male,obj.Y, kernel = kernel, method=method, weights.beta=weights.beta
+                            , weights = weights, impute.method = impute.method, r.corr=r.corr, is_check_genotype=is_check_genotype
+                            , is_dosage = is_dosage, missing_cutoff=missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF, out.z=out.z)
+    
+  }  else {
+    msg<-sprintf("Class error in SKAT_ChrY %s", class(obj.Y))
+    stop(msg)
+  }
+  class(re)<-"SKAT_OUT"
+  return(re)
+  
+}
+
+
+

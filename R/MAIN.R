@@ -131,6 +131,7 @@ SKAT_MAIN_Check_Z_Impute<-function(Z, id_include,impute.method, SetID, Is.chrX=F
 	IDX.Err<-which(MAF > 0.5)	
 	if(length(IDX.Err) > 0){
 		
+	  warning(MAF[IDX.Err])
 		msg<-sprintf("ERROR! genotype flipping")
 		stop(msg)
 		
@@ -148,7 +149,7 @@ SKAT_MAIN_Check_Z_Impute<-function(Z, id_include,impute.method, SetID, Is.chrX=F
 
 
 SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impute.method, is_check_genotype
-, is_dosage, missing_cutoff, max_maf, estimate_MAF=1, Is.chrX=FALSE, SexVar=NULL){
+, is_dosage, missing_cutoff, max_maf, estimate_MAF=1, Is.chrX=FALSE, SexVar=NULL, Is.ChrY=FALSE){
 
 	#############################################
 	# Check parameters
@@ -186,6 +187,7 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 		id_include<-1:length(id_include)
 	}
 
+ 
 	##############################################
 	# Check Missing 
 
@@ -247,7 +249,8 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 
 	MAF<-SKAT_Get_MAF(Z, id_include=NULL, Is.chrX=Is.chrX, SexVar=SexVar)
 	MAF1<-SKAT_Get_MAF(Z, id_include=id_include, Is.chrX=Is.chrX, SexVar=SexVar)
-	
+
+
 	###########################################
 	# Check non-polymorphic
 	if(length(which(MAF1 > 0)) == 0){
@@ -299,7 +302,7 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 		}
 
 	}	
-	
+
 	if( dim(Z)[2] == 1){
 
 		if(is.null(SetID)){

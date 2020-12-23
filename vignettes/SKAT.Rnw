@@ -315,8 +315,28 @@ obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", 
 
 # run SKAT-O
 SKAT_ChrX(Z, obj.x, method="SKATO")$p.value
+
+
+
+@
+
+For Y chromosome, you can use the same null model function for X with Model.Y=TRUE. 
+The p-value can be calculated with SKAT\_ChrY function. 
+The following example use the same genotype matrix previously used to show how these functions can be used. 
+
+<<SKATY1>>=
+
+#############################################################
+#	Compute the P-value of SKAT 
+
+# binary trait
+obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", data=SKAT.example.ChrX, Model.Y=TRUE)
+
+# run SKAT-O
+SKAT_ChrY(Z, obj.x, method="SKATO")$p.value
 detach(SKAT.example.ChrX)
 @
+
 
 \section{Plink Binary format files}
 
