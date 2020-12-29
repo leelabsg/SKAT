@@ -11,7 +11,7 @@ Following are main functions and key references. For details, please refer the p
     * Wu, M., Lee, S., Cai, T., Li, Y., Boehnke, M. and Lin, X. (2011). Rare Variant Association Testing for Sequencing Data Using the Sequence Kernel Association Test (SKAT). *AJHG*, 89, 82-93. 
 
 2. Robust approaches functions for binary traits: SKATBinary_Robust and SKAT_CommonRare_Robust
-   * Zhao, Z., Bi, W., Zhou, W., VanderHaar, P., Fritsche, L.G., Lee, S. (2019) UK Biobank Whole-Exome Sequence Binary Phenome Analysis with Robust Region-based Rare-Variant Test. *AJHG*, in press, doi:https://doi.org/10.1016/j.ajhg.2019.11.012
+   * Zhao, Z., Bi, W., Zhou, W., VanderHaar, P., Fritsche, L.G., Lee, S. (2020) UK Biobank Whole-Exome Sequence Binary Phenome Analysis with Robust Region-based Rare-Variant Test. *AJHG*, 2020, 3-12.
 
 
 3. SKATBinary function: Burden test, SKAT, and SKAT-O with efficient resampling for binary traits
