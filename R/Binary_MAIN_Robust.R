@@ -267,6 +267,7 @@ SKATBinary_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ..., o
 #
 # Only SKAT_Null_Model obj can be used
 #
+
 SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
   
   N.Set<-SSD.INFO$nSets
@@ -279,6 +280,7 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
   
   OUT.nRare<-rep(NA,N.Set)
   OUT.nCommon<-rep(NA,N.Set)
+  OUT.MAC<-rep(NA,N.Set)
   OUT.snp.mac<-list()
   
   Is.Resampling = FALSE
@@ -307,10 +309,8 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
       OUT.Pvalue[i]<-re$p.value
       OUT.Marker[i]<-re$param$n.marker
       OUT.Marker.Test[i]<-re$param$n.marker.test
-      OUT.MAC[i]<-re$MAC
-      OUT.Method.bin[i]<-re$method.bin
-      OUT.MAP[i]<-re$MAP
-      OUT.m[i]<-re$m
+      OUT.MAC[i]<-re$mac
+      OUT.Q[i]<-re$Q
       if(Is.Resampling){
         OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
       }
@@ -327,12 +327,13 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
   
   close(pb)	
   out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, Q=OUT.Q
-                      , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, N.Marker.Rare=OUT.nRare, N.Marker.Common=OUT.nCommon)
+                      , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, MAC=OUT.MAC)
   re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling,OUT.snp.mac=OUT.snp.mac)
   class(re)<-"SKAT_SSD_ALL"
   
   return(re)	
 }
+
 
 
 
