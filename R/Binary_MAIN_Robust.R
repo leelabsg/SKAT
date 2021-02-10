@@ -261,7 +261,8 @@ SKATBinary_Robust.SSD.OneSet_SetIndex = function(SSD.INFO, SetIndex, obj, ...){
 #
 # Only SKAT_Null_Model obj can be used
 #
-SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...){
+
+SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
   
   N.Set<-SSD.INFO$nSets
   OUT.Pvalue<-rep(NA,N.Set)
@@ -273,11 +274,13 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...){
   
   OUT.nRare<-rep(NA,N.Set)
   OUT.nCommon<-rep(NA,N.Set)
+  OUT.MAC<-rep(NA,N.Set)
+  OUT.snp.mac<-list()
   
   Is.Resampling = FALSE
   n.Resampling = 0
   
-  if(class(obj) == "SKAT_NULL_Model"){
+  if(Check_Class(obj, "SKAT_NULL_Model")){
     if(obj$n.Resampling > 0){
       Is.Resampling = TRUE
       n.Resampling = obj$n.Resampling
@@ -288,44 +291,26 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...){
   pb <- txtProgressBar(min=0, max=N.Set, style=3)
   for(i in 1:N.Set){
     Is.Error<-TRUE
-    try1<-try(Get_Genotypes_SSD(SSD.INFO, i),silent = TRUE)
-    if(class(try1) != "try-error"){
-      Z<-try1
-      Is.Error<-FALSE
+    try1<-try(SKATBinary_Robust.SSD.OneSet_SetIndex(SSD.INFO, i, obj, ..., obj.SNPWeight=obj.SNPWeight) ,silent = TRUE)
+    if(Is_TryError(try1)){
       
+      err.msg<-geterrmessage()
+      msg<-sprintf("Error to run SKATBinary for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
+      warning(msg,call.=FALSE)
       
     } else {
-      err.msg<-geterrmessage()
-      msg<-sprintf("Error to get genotypes of %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
-      warning(msg,call.=FALSE)
-    }
-    
-    if(!Is.Error){
-      Is.Error<-TRUE
-      try2<-try(SKATBinary_Robust(Z, obj, ...),silent = TRUE)
-      
-      if(class(try2) != "try-error"){
-        re<-try2
-        Is.Error<-FALSE
-      } else {
-        
-        err.msg<-geterrmessage()
-        msg<-sprintf("Error to run SKATBinary_Robust for %s: %s",SSD.INFO$SetInfo$SetID[i], err.msg)
-        warning(msg,call.=FALSE)
-      }
-    }
-    
-    if(!Is.Error){
-      
+      re =try1
       OUT.Pvalue[i]<-re$p.value
       OUT.Marker[i]<-re$param$n.marker
       OUT.Marker.Test[i]<-re$param$n.marker.test
-      OUT.nRare[i]<-re$n.rare
-      OUT.nCommon[i]<-re$n.common
+      OUT.MAC[i]<-re$mac
       OUT.Q[i]<-re$Q
       if(Is.Resampling){
         OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
       }
+      SetID<-SSD.INFO$SetInfo$SetID[i]
+      OUT.snp.mac[[SetID]]<-re$test.snp.mac
+      
     }
     #if(floor(i/100)*100 == i){
     #	cat("\r", i, "/", N.Set, "were done");
@@ -336,8 +321,8 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...){
   
   close(pb)	
   out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, Q=OUT.Q
-                      , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, N.Marker.Rare=OUT.nRare, N.Marker.Common=OUT.nCommon)
-  re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling)
+                      , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test)
+  re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling,OUT.snp.mac=OUT.snp.mac)
   class(re)<-"SKAT_SSD_ALL"
   
   return(re)	
