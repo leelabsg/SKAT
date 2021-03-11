@@ -311,9 +311,9 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
       OUT.Marker.Test[i]<-re$param$n.marker.test
       OUT.MAC[i]<-re$mac
       OUT.Q[i]<-re$Q
-      if(Is.Resampling){
-        OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
-      }
+      #if(Is.Resampling){
+      #  OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
+      #}
       SetID<-SSD.INFO$SetInfo$SetID[i]
       OUT.snp.mac[[SetID]]<-re$test.snp.mac
       
@@ -328,7 +328,7 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
   close(pb)	
   out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, Q=OUT.Q
                       , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, MAC=OUT.MAC)
-  re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling,OUT.snp.mac=OUT.snp.mac)
+  re<-list(results=out.tbl,OUT.snp.mac=OUT.snp.mac)
   class(re)<-"SKAT_SSD_ALL"
   
   return(re)	
