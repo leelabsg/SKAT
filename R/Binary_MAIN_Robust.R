@@ -305,18 +305,19 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
       warning(msg,call.=FALSE)
       
     } else {
-      re =try1
-      OUT.Pvalue[i]<-re$p.value
-      OUT.Marker[i]<-re$param$n.marker
-      OUT.Marker.Test[i]<-re$param$n.marker.test
-      OUT.MAC[i]<-re$mac
-      OUT.Q[i]<-re$Q
+      if (min(try1$mac,0,na.rm=T)>=1){
+        re =try1
+        OUT.Pvalue[i]<-re$p.value
+        OUT.Marker[i]<-re$param$n.marker
+        OUT.Marker.Test[i]<-re$param$n.marker.test
+        OUT.MAC[i]<-re$mac
+        OUT.Q[i]<-re$Q
       #if(Is.Resampling){
       #  OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
       #}
-      SetID<-SSD.INFO$SetInfo$SetID[i]
-      OUT.snp.mac[[SetID]]<-re$test.snp.mac
-      
+        SetID<-SSD.INFO$SetInfo$SetID[i]
+        OUT.snp.mac[[SetID]]<-re$test.snp.mac
+      }
     }
     #if(floor(i/100)*100 == i){
     #	cat("\r", i, "/", N.Set, "were done");
