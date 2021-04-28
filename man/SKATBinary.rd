@@ -115,10 +115,9 @@ An efficient resampling method for calibrating single and gene-based rare varian
 
 
 data(SKATBinary.example)
-attach(SKATBinary.example)
+Z<-SKATBinary.example$Z
 
-
-obj<-SKAT_Null_Model(y ~ x1 + x2, out_type="D")
+obj<-SKAT_Null_Model(y ~ x1 + x2, out_type="D", data=SKATBinary.example)
 
 # run SKAT (default method) with Hybrid
 out = SKATBinary(Z, obj)

@@ -40,14 +40,14 @@
 
 
 data(SKAT.example)
-attach(SKAT.example)
 
 
 #############################################################
 #	Compute the P-value of SKAT with the logistic Weight (par1=0.07, par2=150)
 
 # Use logistic weight
-obj<-SKAT_Null_Model(y.c ~ X, out_type="C")
+Z<-SKAT.example$Z
+obj<-SKAT_Null_Model(y.c ~ X, out_type="C", data=SKAT.example)
 weights<-Get_Logistic_Weights(Z, par1=0.07, par2=150)
 SKAT(Z, obj, kernel = "linear.weighted", weights=weights)$p.value
 

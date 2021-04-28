@@ -82,10 +82,9 @@ Zhao, Z., Bi, W., Zhou, W., VandeHaar, P., Fritsche, L. G., & Lee, S. (2019). UK
 
 
 data(SKATBinary.example)
-attach(SKATBinary.example)
+Z<-SKATBinary.example$Z
 
-
-obj<-SKAT_Null_Model(y ~ x1 + x2, out_type="D")
+obj<-SKAT_Null_Model(y ~ x1 + x2, out_type="D", data=SKATBinary.example)
 
 # run SKAT (default method) with Hybrid
 out = SKAT_CommonRare_Robust(Z, obj)

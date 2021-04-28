@@ -37,10 +37,10 @@ Resampling is not implemented.
 
 
 data(SKAT.fam.example)
-attach(SKAT.fam.example)
 
-
-obj<-SKAT_NULL_emmaX(y ~ X, K=K)
+K = SKAT.fam.example$K
+Z = SKAT.fam.example$Z
+obj<-SKAT_NULL_emmaX(y ~ X, K=K, data=SKAT.fam.example)
 SKAT(Z, obj)$p.value
 
 # SKAT-O

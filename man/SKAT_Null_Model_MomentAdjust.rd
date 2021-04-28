@@ -48,15 +48,14 @@ using set.seed function in R.
 
 
 data(SKAT.example)
-attach(SKAT.example)
-
+Z<-SKAT.example$Z
 #############################################################
 #	Compute the P-value of SKAT 
 
 IDX<-c(1:100,1001:1100)
 
 # binary trait
-obj<-SKAT_Null_Model_MomentAdjust(y.b[IDX] ~ X[IDX,])
+obj<-SKAT_Null_Model_MomentAdjust(y.b[IDX] ~ X[IDX,], data=SKAT.example)
 SKAT(Z[IDX,], obj, kernel = "linear.weighted")$p.value
 
 

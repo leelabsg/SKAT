@@ -96,19 +96,18 @@ Sequence kernel association tests for the combined effect of rare and common var
 
 
 data(SKAT.example)
-attach(SKAT.example)
-
+Z<-SKAT.example$Z
 
 
 # continuous trait
-obj<-SKAT_Null_Model(y.c ~ X, out_type="C")
+obj<-SKAT_Null_Model(y.c ~ X, out_type="C", data=SKAT.example)
 SKAT_CommonRare(Z, obj)$p.value
 SKAT_CommonRare(Z, obj, method="A")$p.value
 SKAT_CommonRare(Z, obj, method="AR")$p.value
 
 
 # dichotomous trait 
-obj<-SKAT_Null_Model(y.b ~ X, out_type="D")
+obj<-SKAT_Null_Model(y.b ~ X, out_type="D", data=SKAT.example)
 
 # Combined sum test in the manuscript (SKAT-C and Burden-C)
 SKAT_CommonRare(Z, obj)$p.value

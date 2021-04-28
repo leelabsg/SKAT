@@ -74,13 +74,13 @@ For details of parameters, please see SKAT page.
 
 
 data(SKAT.example.ChrX)
-attach(SKAT.example.ChrX)
+Z<-SKAT.example.ChrX$Z
 
 #############################################################
 #	Compute the P-value of SKAT 
 
 # binary trait
-obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D")
+obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", data=SKAT.example.ChrX)
 
 # SKAT
 SKAT_ChrX(Z, obj.x, kernel = "linear.weighted")
@@ -96,7 +96,7 @@ SKAT_ChrX(Z, obj.x, kernel = "linear.weighted", method="SKATO")
 # In this example, since male has only one copy of X (and Y), we reuse X chromosome genotype matrix.
 
 # binary trait
-obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", Model.Y=TRUE)
+obj.x<-SKAT_Null_Model_ChrX(y ~ x1 +x2 + Gender, SexVar="Gender", out_type="D", Model.Y=TRUE, data=SKAT.example.ChrX)
 
 SKAT_ChrY(Z, obj.x, kernel = "linear.weighted", method="SKATO")
 

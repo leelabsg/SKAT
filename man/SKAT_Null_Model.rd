@@ -60,13 +60,12 @@ SKATBinary. We recommend to use SKATBinary function instead of SKAT when your tr
 
 
 data(SKAT.example)
-attach(SKAT.example)
-
+Z<-SKAT.example$Z
 #############################################################
 #	Compute the P-value of SKAT 
 
 # binary trait
-obj<-SKAT_Null_Model(y.b ~ X, out_type="D")
+obj<-SKAT_Null_Model(y.b ~ X, out_type="D", data=SKAT.example)
 SKAT(Z, obj, kernel = "linear.weighted")$p.value
 
 
@@ -74,7 +73,7 @@ SKAT(Z, obj, kernel = "linear.weighted")$p.value
 # 	When you have no covariate to adjust.
 
 # binary trait
-obj<-SKAT_Null_Model(y.b ~ 1, out_type="D")
+obj<-SKAT_Null_Model(y.b ~ 1, out_type="D", data=SKAT.example)
 SKAT(Z, obj, kernel = "linear.weighted")$p.value
 
 
@@ -84,11 +83,11 @@ SKAT(Z, obj, kernel = "linear.weighted")$p.value
 IDX<-c(1:100,1001:1100)
 
 # With-adjustment
-obj<-SKAT_Null_Model(y.b[IDX] ~ X[IDX,],out_type="D")
+obj<-SKAT_Null_Model(y.b[IDX] ~ X[IDX,],out_type="D", data=SKAT.example)
 SKAT(Z[IDX,], obj, kernel = "linear.weighted")$p.value
 
 # Without-adjustment
-obj<-SKAT_Null_Model(y.b[IDX] ~ X[IDX,],out_type="D", Adjustment=FALSE)
+obj<-SKAT_Null_Model(y.b[IDX] ~ X[IDX,],out_type="D", Adjustment=FALSE, data=SKAT.example)
 SKAT(Z[IDX,], obj, kernel = "linear.weighted")$p.value
 
 #########################################################

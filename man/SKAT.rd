@@ -160,20 +160,18 @@ Duchesne, P. and Lafaye De Micheaux, P. (2010) Computing the distribution of qua
 
 
 data(SKAT.example)
-attach(SKAT.example)
-
 
 
 #############################################################
 #	SKAT with default Beta(1,25) Weights 
 #		- without covariates
-
+Z<-SKAT.example$Z
 # continuous trait
-obj<-SKAT_Null_Model(y.c ~ 1, out_type="C")
+obj<-SKAT_Null_Model(y.c ~ 1, out_type="C", data=SKAT.example)
 SKAT(Z, obj)$p.value
 
 # dichotomous trait 
-obj<-SKAT_Null_Model(y.b ~ 1, out_type="D")
+obj<-SKAT_Null_Model(y.b ~ 1, out_type="D", data=SKAT.example)
 SKAT(Z, obj)$p.value
 
 
@@ -182,10 +180,10 @@ SKAT(Z, obj)$p.value
 #		- with covariates
 
 # continuous trait
-obj<-SKAT_Null_Model(y.c ~ X, out_type="C")
+obj<-SKAT_Null_Model(y.c ~ X, out_type="C", data=SKAT.example)
 SKAT(Z, obj)$p.value
 
-obj.b<-SKAT_Null_Model(y.b ~ X, out_type="D")
+obj.b<-SKAT_Null_Model(y.b ~ X, out_type="D", data=SKAT.example)
 SKAT(Z, obj.b)$p.value
 
 ##################################################
