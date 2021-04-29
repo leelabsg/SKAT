@@ -305,7 +305,7 @@ SKATBinary_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL){
       warning(msg,call.=FALSE)
       
     } else {
-      if (min(try1$mac,0,na.rm=T)>=1){
+      if (max(try1$mac,0,na.rm=T)>=1){
         re =try1
         OUT.Pvalue[i]<-re$p.value
         OUT.Marker[i]<-re$param$n.marker
