@@ -71,19 +71,21 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL)
       warning(msg,call.=FALSE)
       
     } else {
-      
-      re<-try1
-      OUT.Pvalue[i]<-re$p.value
-      OUT.Marker[i]<-re$param$n.marker
-      OUT.Marker.Test[i]<-re$param$n.marker.test
-      OUT.nRare[i]<-re$n.rare
-      OUT.nCommon[i]<-re$n.common
-      OUT.Q[i]<-re$Q
-      if(Is.Resampling){
-        OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
+	  ##Changed by Zhangchen 05/19/2021, remove the situation where there is no variation in the gene. 
+      if (max(try1$mac.rare+try1$mac.common,0,na.rm=T)>=1){
+     	 re<-try1
+     	 OUT.Pvalue[i]<-re$p.value
+     	 OUT.Marker[i]<-re$param$n.marker
+     	 OUT.Marker.Test[i]<-re$param$n.marker.test
+      	 OUT.nRare[i]<-re$n.rare
+     	 OUT.nCommon[i]<-re$n.common
+     	 OUT.Q[i]<-re$Q
+     # if(Is.Resampling){
+     #   OUT.Pvalue.Resampling[i,]<-re$p.value.resampling
+     # }
+      	SetID<-SSD.INFO$SetInfo$SetID[i]
+      	OUT.snp.mac[[SetID]]<-re$test.snp.mac
       }
-      SetID<-SSD.INFO$SetInfo$SetID[i]
-      OUT.snp.mac[[SetID]]<-re$test.snp.mac
     }
     #if(floor(i/100)*100 == i){
     #	cat("\r", i, "/", N.Set, "were done");
@@ -95,7 +97,7 @@ SKAT_CommonRare_Robust.SSD.All = function(SSD.INFO, obj, ...,obj.SNPWeight=NULL)
   close(pb)	
   out.tbl<-data.frame(SetID=SSD.INFO$SetInfo$SetID, P.value=OUT.Pvalue, Q=OUT.Q
                       , N.Marker.All=OUT.Marker, N.Marker.Test=OUT.Marker.Test, N.Marker.Rare=OUT.nRare, N.Marker.Common=OUT.nCommon)
-  re<-list(results=out.tbl,P.value.Resampling=OUT.Pvalue.Resampling,OUT.snp.mac=OUT.snp.mac)
+  re<-list(results=out.tbl,OUT.snp.mac=OUT.snp.mac)
   class(re)<-"SKAT_SSD_ALL"
   
   return(re)	
