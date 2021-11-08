@@ -71,39 +71,43 @@ Get_Liu_Params_Mod<-function(c1){
 }
 
 
-Get_Liu_Params_Mod_Lambda<-function(lambda){
+Get_Liu_Params_Mod_Lambda<-function(lambda, df1=NULL){
   ## Helper function for getting the parameters for the null approximation
 
-  c1<-rep(0,4)
-  for(i in 1:4){
-	c1[i]<-sum(lambda^i)
-  }
+	if(is.null(df1)){
+		df1=rep(1, length(lambda))
+	}
+  	c1<-rep(0,4)
+  	for(i in 1:4){
+  		# changed... multiply df1
+		c1[i]<-sum(lambda^i * df1)
+  	}
 
-  muQ<-c1[1]
-  sigmaQ<-sqrt(2 *c1[2])
-  s1 = c1[3] / c1[2]^(3/2)
-  s2 = c1[4] / c1[2]^2
+  	muQ<-c1[1]
+  	sigmaQ<-sqrt(2 *c1[2])
+  	s1 = c1[3] / c1[2]^(3/2)
+  	s2 = c1[4] / c1[2]^2
 
-  beta1<-sqrt(8)*s1
-  beta2<-12*s2
-  type1<-0
+  	beta1<-sqrt(8)*s1
+  	beta2<-12*s2
+  	type1<-0
 
-  #print(c(s1^2,s2))
-  if(s1^2 > s2){
-    a = 1/(s1 - sqrt(s1^2 - s2))
-    d = s1 *a^3 - a^2
-    l = a^2 - 2*d
-  } else {
-    type1<-1
-    l = 1/s2
-    a = sqrt(l)
-    d = 0
-  }
-  muX <-l+d
-  sigmaX<-sqrt(2) *a
+  	#print(c(s1^2,s2))
+  	if(s1^2 > s2){
+    	a = 1/(s1 - sqrt(s1^2 - s2))
+    	d = s1 *a^3 - a^2
+    	l = a^2 - 2*d
+  	} else {
+    	type1<-1
+    	l = 1/s2
+    	a = sqrt(l)
+    	d = 0
+  	}
+  	muX <-l+d
+  	sigmaX<-sqrt(2) *a
 
-  re<-list(l=l,d=d,muQ=muQ,muX=muX,sigmaQ=sigmaQ,sigmaX=sigmaX)
-  return(re)
+  	re<-list(l=l,d=d,muQ=muQ,muX=muX,sigmaQ=sigmaQ,sigmaX=sigmaX)
+  	return(re)
 }
 
 Get_Liu_PVal<-function(Q, W, Q.resampling = NULL){
@@ -169,9 +173,9 @@ Get_Liu_PVal.MOD<-function(Q, W, Q.resampling = NULL){
 	return(re)
 }
 
-Get_Liu_PVal.MOD.Lambda<-function(Q.all, lambda, log.p=FALSE){
+Get_Liu_PVal.MOD.Lambda<-function(Q.all, lambda, df1=NULL, log.p=FALSE){
 
-	param<-Get_Liu_Params_Mod_Lambda(lambda)
+	param<-Get_Liu_Params_Mod_Lambda(lambda, df1=df1)
 
 	Q.Norm<-(Q.all - param$muQ)/param$sigmaQ
 	Q.Norm1<-Q.Norm * param$sigmaX + param$muX
@@ -201,9 +205,10 @@ Get_Liu_PVal.MOD.Lambda.Zero<-function(Q, muQ, muX, sigmaQ, sigmaX, l, d){
 }
 
 
-Get_Davies_PVal<-function(Q, W, Q.resampling = NULL){
-    	##added by Zhangchen, for sparse matrix, 12.17.2018
-    	Q=as.matrix(Q)
+Get_Davies_PVal<-function(Q, W, Q.resampling = NULL, isFast=FALSE){
+    
+    ##added by Zhangchen, for sparse matrix, 12.17.2018
+    Q=as.matrix(Q)
 	W=as.matrix(W)
 	if (length(Q.resampling)>0){Q.resampling=as.matrix(Q.resampling)}
 	
@@ -211,7 +216,7 @@ Get_Davies_PVal<-function(Q, W, Q.resampling = NULL){
 	
 	Q.all<-c(Q,Q.resampling)
 
-	re<-Get_PValue(K,Q.all)
+	re<-Get_PValue(K,Q.all, isFast=isFast)
 	param<-list()
 	param$liu_pval<-re$p.val.liu[1]
 	param$Is_Converged<-re$is_converge[1]
@@ -233,29 +238,77 @@ Get_Davies_PVal<-function(Q, W, Q.resampling = NULL){
 
 
 
-Get_Lambda<-function(K){
+Get_Lambda_Approx<-function(K, maxK=100){
+
+	#maxK=200
+	lambda<-NULL
+	p1<-ncol(K)
+
+	lambda_sum = sum(diag(K))
+	lambda2_sum = sum(K*K)
+		
+	lambda<-rep(0, p1)
+	k1<-floor(p1/10)
+	if(k1 > maxK){
+		k1=maxK
+	}
+	
+	out.s<-RSpectra::eigs_sym(K, k=k1, which = "LM")
+	lambda1<-out.s$values
+		
+	IDX1<-which(lambda1 >= 0)
+	IDX2<-which(lambda1 > mean(lambda1[IDX1])/100000)
+	if(length(IDX2) == 0){
+		stop("No Eigenvalue is bigger than 0!!")
+	} 
+		
+	if(length(lambda) <=k1){
+		lambda1<-lambda1[IDX2]
+	}  
+		
+	lambda_sum = lambda_sum - sum(lambda1)
+	lambda2_sum = lambda2_sum - sum(lambda1^2)
+		
+	
+	df1 = lambda_sum^2/ lambda2_sum
+	df1 = round(df1)
+	
+	# make df1 as integer
+	
+	lambda_last = lambda_sum/df1
+	
+	lambda = c(lambda1, lambda_last)
+	
+	df1 = c(rep(1, length(lambda1)), df1)
+	out_lambda = list(lambda=lambda, df1=df1)
+	
+	
+	return(out_lambda)
+
+}
+
+
+Get_Lambda<-function(K, isFast=FALSE, maxK=100){
+
+	lambda<-NULL
 
 	out.s<-eigen(K,symmetric=TRUE, only.values = TRUE)
-	#print(out.s$values)
 
-	#out.s1<-eigen(K,symmetric=TRUE)
-	#print(out.s1$values)
-	
 	lambda1<-out.s$values
 	IDX1<-which(lambda1 >= 0)
 
 	# eigenvalue bigger than sum(eigenvalues)/1000
 	IDX2<-which(lambda1 > mean(lambda1[IDX1])/100000)
-	#cat("Lambda:", lambda1, "\n")
-	#K1<<-K
 	
 	if(length(IDX2) == 0){
 		stop("No Eigenvalue is bigger than 0!!")
 	}
 	lambda<-lambda1[IDX2]
+
 	return(lambda)
 
 }
+
 
 
 
@@ -297,15 +350,28 @@ Get_Lambda_U_From_Z<-function(Z1){
 }
 
 
-Get_PValue<-function(K,Q){
+Get_PValue<-function(K,Q, isFast=FALSE){
 	
-	lambda<-Get_Lambda(K)
-	re<-Get_PValue.Lambda(lambda,Q)
+	
+	df1=NULL
+	p1<-ncol(K)
+	if(!isFast || p1 < 2000){
+		lambda<-Get_Lambda(K)
+		re<-Get_PValue.Lambda(lambda,Q)
+		
+	} else {
+
+		out_lambda=Get_Lambda_Approx(K)
+		lambda = out_lambda$lambda
+		df1=out_lambda$df1
+		re<-Get_PValue.Lambda(lambda,Q, df1=df1)
+	}
+	
 	return(re)
 }
 
 
-Get_PValue.Lambda<-function(lambda,Q){
+Get_PValue.Lambda<-function(lambda,Q, df1=NULL){
 	
 	#print(lambda)
 	n1<-length(Q)
@@ -313,11 +379,15 @@ Get_PValue.Lambda<-function(lambda,Q){
 	p.val<-rep(0,n1)
 	p.val.liu<-rep(0,n1)
 	is_converge<-rep(0,n1)
-	p.val.liu<-Get_Liu_PVal.MOD.Lambda(Q, lambda)
-
+	p.val.liu<-Get_Liu_PVal.MOD.Lambda(Q, lambda, df1)
+	
 	for(i in 1:n1){
-		out<-SKAT_davies(Q[i],lambda,acc=10^(-6))
-
+		
+		if(is.null(df1)){
+			out<-SKAT:::SKAT_davies(Q[i],lambda, acc=10^(-6))
+		} else {
+			out<-SKAT:::SKAT_davies(Q[i],lambda, h=df1, acc=10^(-6))
+		}
 		p.val[i]<-out$Qq
 		#p.val.liu[i]<-SKAT_liu(Q[i],lambda)
 
@@ -342,7 +412,7 @@ Get_PValue.Lambda<-function(lambda,Q){
 	#cat(p.val[1])
 	if(p.val[1] == 0){
 
-		param<-Get_Liu_Params_Mod_Lambda(lambda)
+		param<-Get_Liu_Params_Mod_Lambda(lambda, df1)
 		p.val.msg<-Get_Liu_PVal.MOD.Lambda.Zero(Q[1], param$muQ, param$muX, param$sigmaQ, param$sigmaX, param$l, param$d)
 		p.val.log<-Get_Liu_PVal.MOD.Lambda(Q[1], lambda, log.p=TRUE)[1]
 

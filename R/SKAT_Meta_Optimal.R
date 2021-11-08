@@ -37,7 +37,7 @@ SKAT_META_Optimal_Get_Q_Res<-function(Score.res, r.all){
 
 }
 
-SKAT_META_Optimal_Get_Pvalue<-function(Q.all, Phi, r.all, method){
+SKAT_META_Optimal_Get_Pvalue<-function(Q.all, Phi, r.all, method, isFast=FALSE){
 
 	n.r<-length(r.all)
 	n.q<-dim(Q.all)[1]
@@ -49,7 +49,7 @@ SKAT_META_Optimal_Get_Pvalue<-function(Q.all, Phi, r.all, method){
 		R.M<-diag(rep(1-r.corr,p.m)) + matrix(rep(r.corr,p.m*p.m),ncol=p.m)
 		L<-chol(R.M,pivot=TRUE)
 		Phi_rho<- L %*% (Phi %*% t(L))
-		lambda.all[[i]]<-Get_Lambda(Phi_rho)
+		lambda.all[[i]]<-Get_Lambda(Phi_rho, isFast=isFast)
 		 
 	}
 
@@ -171,7 +171,7 @@ tau.2= p.m*z_mean_2 )
 #######################################################33
 #	Linear and Logistic
 
-SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampling){
+SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampling, isFast=FALSE){
 
 	# if r.all >=0.999 ,then r.all = 0.999
 	IDX<-which(r.all >= 0.999)
@@ -197,7 +197,7 @@ SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampli
 	# Compute P-values 
 	#################################################
 
-	out<-SKAT_META_Optimal_Get_Pvalue(Q.all, Phi/2, r.all, method)
+	out<-SKAT_META_Optimal_Get_Pvalue(Q.all, Phi/2, r.all, method, isFast=isFast)
 
 	param<-list(p.val.each=NULL,q.val.each=NULL)
 	param$p.val.each<-out$p.val.each[1,]
@@ -227,8 +227,9 @@ SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampli
 
 ##################################################################
 #
+# Note: fastOption cannot be used for Optimal test
 
-Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL){
+Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL, isFast=FALSE){
 
 	#Score.Resampling1<<-Score.Resampling
 	p.m<-nrow(Phi)
@@ -257,7 +258,7 @@ Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL)
 
 	if(length(r.corr) > 1){
 		
-		re = SKAT_META_Optimal(Score, Phi, r.corr, method=method, Score.Resampling)
+		re = SKAT_META_Optimal(Score, Phi, r.corr, method=method, Score.Resampling=Score.Resampling)
 		return(re)
 	} 
 	
@@ -291,7 +292,7 @@ Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL)
 		
 	}
 
-	re<-Get_Davies_PVal(Q, Phi, Q.res)
+	re<-Get_Davies_PVal(Q, Phi, Q.res, isFast=isFast)
 	if(length(r.corr)==1){
 		re$Q = Q
 	}
@@ -303,7 +304,7 @@ Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL)
 #		C: continuous, D:binary, V: Kinship
 #
 #
-SKAT_RunFrom_MetaSKAT<-function(res,Z, X1, kernel, weights=NULL, s2=NULL, pi_1=NULL, P0=NULL, out_type="C", method, res.out, n.Resampling, r.corr){
+SKAT_RunFrom_MetaSKAT<-function(res,Z, X1, kernel, weights=NULL, s2=NULL, pi_1=NULL, P0=NULL, out_type="C", method, res.out, n.Resampling, r.corr, isFast=FALSE){
 	
 	if (kernel == "linear.weighted") {
     	Z = t(t(Z) * (weights))
@@ -331,7 +332,7 @@ SKAT_RunFrom_MetaSKAT<-function(res,Z, X1, kernel, weights=NULL, s2=NULL, pi_1=N
   		stop("SKAT_RunFrom_MetaSKAT: no-known out_type!")
   	}
   	
-	re = Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=Score.Resampling)
+	re = Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=Score.Resampling, isFast=isFast)
 	re$IsMeta=TRUE
 	return(re)
 	
