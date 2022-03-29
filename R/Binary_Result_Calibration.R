@@ -10,8 +10,10 @@ SKATExactBin_SingleMAP<-function(z, obj.res){
 
 	if(Check_Class(obj.res, "SKAT_NULL_Model_ADJ")){
 		obj.res = obj.res$re1
-	} else if(class(obj.res) == "SKAT_NULL_Model"){
-		if(obj.res$out_type !="D"){
+	} else if(Check_Class(obj.res, "SKAT_NULL_Model")){
+	  #class(obj.res) == "SKAT_NULL_Model"){
+		
+	  if(obj.res$out_type !="D"){
 			stop("out_type in SKAT_Null_Model should be D!")
 		}
 	} else {

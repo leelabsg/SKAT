@@ -624,7 +624,10 @@ Get_Resampling_Bin<-function(ncase, prob, n.Resampling){
 
 Check_Class<-function(obj, class_type){
   re<-TRUE
-  if(!any(class(obj) %in% class_type)){
+  
+  #change to use inherits
+  #if(!any(class(obj) %in% class_type)){
+  if(!inherits(obj, class_type)){
     re<-FALSE
   }
   return(re)
