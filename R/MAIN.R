@@ -4,7 +4,7 @@ SKAT = function(Z,obj, kernel = "linear.weighted", method="davies", weights.beta
 , missing_cutoff=0.15, max_maf = 1, estimate_MAF=1){
 
 
-	if(kernel != "linear" && kernel != "linear.weighted"){
+	if(any(kernel != "linear") && any(kernel != "linear.weighted")){
 
 		if(Check_Class(obj, "SKAT_NULL_Model_ADJ")){
 			msg<-sprintf("The small sample adjustment only can be applied for linear and linear.weighted kernel in the current version of SKAT! No adjustment is applied")
@@ -331,7 +331,7 @@ SKAT_Check_RCorr<-function(kernel, r.corr){
 	if(length(r.corr) == 1 && r.corr[1] == 0){
 		return(1)
 	}
-	if(kernel != "linear" && kernel != "linear.weighted"){
+	if(any(kernel != "linear") && any(kernel != "linear.weighted")){
 		stop("Error: non-zero r.corr only can be used with linear or linear.weighted kernels")
 	}
 
@@ -459,8 +459,8 @@ SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="d
 
 
 	if(obj.res$out_type == "C"){
-		  #if( (kernel =="linear" || kernel == "linear.weighted") && n > m){
-		  if( kernel =="linear" || kernel == "linear.weighted"){
+
+		  if( any(kernel =="linear") || any(kernel == "linear.weighted")){
 		    re = SKAT.linear.Linear(obj.res$res,out.z$Z.test
 			,obj.res$X1, kernel, out.z$weights,obj.res$s2,method
 			,obj.res$res.out, obj.res$n.Resampling,r.corr=r.corr, IsMeta=IsMeta)
@@ -471,8 +471,7 @@ SKAT_With_NullModel = function(Z, obj.res, kernel = "linear.weighted", method="d
 		  }
 	} else if (obj.res$out_type == "D"){
 
-		#if( (kernel =="linear" || kernel == "linear.weighted") && n > m){
-		if( kernel =="linear" || kernel == "linear.weighted"){
+		if( any(kernel =="linear") || any(kernel == "linear.weighted")){
 			re = SKAT.logistic.Linear(obj.res$res, out.z$Z.test
 			,obj.res$X1, kernel, out.z$weights, obj.res$pi_1,method
 			,obj.res$res.out, obj.res$n.Resampling,r.corr=r.corr, IsMeta=IsMeta)

@@ -273,7 +273,7 @@ SKAT_emmaX_work = function( res, Z, obj, kernel, method, weights=NULL, r.corr=0)
 	n = nrow(Z)
 	
   	# Weighted Linear Kernel 
-  	if (kernel == "linear.weighted") {
+  	if (any(kernel == "linear.weighted")) {
     	Z = t(t(Z) * (weights))
   	}
   

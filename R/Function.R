@@ -384,9 +384,9 @@ Get_PValue.Lambda<-function(lambda,Q, df1=NULL){
 	for(i in 1:n1){
 		
 		if(is.null(df1)){
-			out<-SKAT:::SKAT_davies(Q[i],lambda, acc=10^(-6))
+			out<-SKAT_davies(Q[i],lambda, acc=10^(-6))
 		} else {
-			out<-SKAT:::SKAT_davies(Q[i],lambda, h=df1, acc=10^(-6))
+			out<-SKAT_davies(Q[i],lambda, h=df1, acc=10^(-6))
 		}
 		p.val[i]<-out$Qq
 		#p.val.liu[i]<-SKAT_liu(Q[i],lambda)

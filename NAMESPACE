@@ -31,6 +31,7 @@ export(SKAT, Get_Logistic_Weights_MAF, Get_Logistic_Weights,
      importFrom("utils", "data", "read.delim", "read.table", "write.table", "txtProgressBar", "setTxtProgressBar")
      import(Matrix)
      import(SPAtest)
+     import(RSpectra)
 # variables
 #export(SSD_FILE_OPEN.isOpen,SSD_FILE_OPEN.FileName)
 
