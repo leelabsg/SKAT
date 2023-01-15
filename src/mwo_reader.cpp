@@ -16,6 +16,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <stdlib.h>
 #include "mwo_reader.h"
 //==========================================================
 //Constructor
@@ -523,8 +524,12 @@ void MwoFileReader::prepare_out_array_print_snpset_to_file(snpset* ss, int set_n
 	{
         set_filename = this->m_filename;
         set_filename += ".SET";
-		char buffer[1000];
-		sprintf(buffer,"%d",set_num);
+        
+        // Change SLEE 2023-01-12, remove sprintf
+        //char buffer[1000];
+        //sprintf(buffer,"%d",set_num);   
+        std::string buffer = std::to_string(set_num);
+     
         set_filename += buffer;
 		myout.open(set_filename.c_str() , std::ios::binary);
 		if (!myout)
@@ -622,8 +627,12 @@ int Is_MakeFile, int* myerror, char * SNPID)
 	{
         set_filename = this->m_filename;
         set_filename += ".SET";
-		char buffer[1000];
-		sprintf(buffer,"%d",set_num);
+        
+        // Change SLEE 2023-01-12, remove sprintf
+        //char buffer[1000];
+        //sprintf(buffer,"%d",set_num);   
+        std::string buffer = std::to_string(set_num);
+        
         set_filename += buffer;
 		myout.open(set_filename.c_str() , std::ios::binary);
 		if (!myout)
