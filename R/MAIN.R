@@ -404,14 +404,20 @@ SKAT_Check_Method<-function(method,r.corr, n=NULL, m=NULL){
 
 }
 
-SingleSNP_INFO<-function(Z){
+SingleSNP_INFO <- function(Z) {
+  snplist <- colSums(Z)
   
-
-  snplist<-colSums(Z)
-  names(snplist)<-colnames(Z)
-
+  # Assign SNP IDs as the names of snplist
+  if (is.null(dim(Z))) {  # This is a new conditional check to see if Z is a vector
+    # When Z has only one column, it's treated as a vector and doesn't have column names
+    # In this case, the SNP ID should be the name of Z itself
+    names(snplist) <- names(Z)  # Assigning the name of Z to snplist when Z is a vector
+  } else {
+    # In general, SNP IDs are the column names of Z
+    names(snplist) <- colnames(Z)  # This is the original assignment from the previous version
+  }
+  
   return(snplist)
-  
 }
 
 
