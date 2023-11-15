@@ -1,14 +1,14 @@
-#ifndef _STAND_ALONE_
-
-    #include <R.h>
-    #include <Rmath.h>
-    
-#endif
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "Binary_global.h"
 #include "Binary_Permu_SKAT.h"
+
+#ifndef _STAND_ALONE_
+    #include <R.h>
+    #include <Rmath.h>
+#endif
 
 /*********************************************************************
 

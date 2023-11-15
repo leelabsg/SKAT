@@ -1,6 +1,6 @@
+#include <math.h>
 #include <R.h>
 #include <Rmath.h>
-#include <math.h>
 /********************************************************
 *
 *	Kernel function ver 0.2
