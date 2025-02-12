@@ -205,7 +205,7 @@ Get_Liu_PVal.MOD.Lambda.Zero<-function(Q, muQ, muX, sigmaQ, sigmaX, l, d){
 }
 
 
-Get_Davies_PVal<-function(Q, W, Q.resampling = NULL, isFast=FALSE){
+Get_Davies_PVal<-function(Q, W, Q.resampling = NULL, isFast=FALSE, FastCutoff=2000){
     
     ##added by Zhangchen, for sparse matrix, 12.17.2018
     Q=as.matrix(Q)
@@ -216,7 +216,7 @@ Get_Davies_PVal<-function(Q, W, Q.resampling = NULL, isFast=FALSE){
 	
 	Q.all<-c(Q,Q.resampling)
 
-	re<-Get_PValue(K,Q.all, isFast=isFast)
+	re<-Get_PValue(K,Q.all, isFast=isFast, FastCutoff=FastCutoff)
 	param<-list()
 	param$liu_pval<-re$p.val.liu[1]
 	param$Is_Converged<-re$is_converge[1]
@@ -288,10 +288,12 @@ Get_Lambda_Approx<-function(K, maxK=100){
 }
 
 
-Get_Lambda<-function(K, isFast=FALSE, maxK=100){
 
+Get_Lambda_Org<-function(K){
+
+  
 	lambda<-NULL
-
+	
 	out.s<-eigen(K,symmetric=TRUE, only.values = TRUE)
 
 	lambda1<-out.s$values
@@ -309,7 +311,27 @@ Get_Lambda<-function(K, isFast=FALSE, maxK=100){
 
 }
 
-
+# Currently many functions are involved, so only use lambda
+Get_Lambda<-function(K,isFast=FALSE, FastCutoff=2000){
+  
+  p1<-ncol(K)
+  lambda=NULL; lambda_fast=NULL; df1=NULL
+  if(!isFast || p1 < FastCutoff){
+    lambda<-Get_Lambda_Org(K)
+    
+  } else {
+    
+    # create lambda which has p1 element. so p1-p2 element has the same value 
+    out_lambda=Get_Lambda_Approx(K)
+    lambda_fast = out_lambda$lambda
+    df1=out_lambda$df1
+    p2<-length(out_lambda$lambda)
+    lambda<-c(lambda_fast[-p2], rep(lambda_fast[p2], df1[p2]))
+  }
+  
+  return(lambda)
+  
+}
 
 
 Get_Lambda_U_From_Z<-function(Z1){
@@ -350,28 +372,19 @@ Get_Lambda_U_From_Z<-function(Z1){
 }
 
 
-Get_PValue<-function(K,Q, isFast=FALSE){
+Get_PValue<-function(K,Q, isFast=FALSE, FastCutoff=2000){
 	
 	
 	df1=NULL
 	p1<-ncol(K)
-	if(!isFast || p1 < 2000){
-		lambda<-Get_Lambda(K)
-		re<-Get_PValue.Lambda(lambda,Q)
-		
-	} else {
-
-		out_lambda=Get_Lambda_Approx(K)
-		lambda = out_lambda$lambda
-		df1=out_lambda$df1
-		re<-Get_PValue.Lambda(lambda,Q, df1=df1)
-	}
+	lambda<-Get_Lambda(K, isFast=isFast, FastCutoff=FastCutoff)
+	re<-Get_PValue.Lambda(lambda, Q, isFast=isFast)
 	
 	return(re)
 }
 
 
-Get_PValue.Lambda<-function(lambda,Q, df1=NULL){
+Get_PValue.Lambda<-function(lambda,Q, isFast=FALSE, nMAX=100){
 	
 	#print(lambda)
 	n1<-length(Q)
@@ -379,6 +392,21 @@ Get_PValue.Lambda<-function(lambda,Q, df1=NULL){
 	p.val<-rep(0,n1)
 	p.val.liu<-rep(0,n1)
 	is_converge<-rep(0,n1)
+	
+	
+	# if IsFast==TRUE, and lambda > nMAX, we treat all lambda rank < nMAX make a one value with correspoinding df
+	# if nMAX=100, there should be 101 dfs
+	#lambda<-9000:1
+	df1=NULL
+	lambda.org = lambda
+	lambda.n = length(lambda)
+	if(isFast && lambda.n> nMAX){
+    df1=rep(1,nMAX+1)
+    df1[nMAX+1] = lambda.n - nMAX
+    lambda<-lambda[1:(nMAX+1)]
+    lambda[nMAX+1] = mean(lambda.org[-(1:nMAX)])
+	}
+	
 	p.val.liu<-Get_Liu_PVal.MOD.Lambda(Q, lambda, df1)
 	
 	for(i in 1:n1){

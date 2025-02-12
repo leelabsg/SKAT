@@ -48,7 +48,7 @@ SKAT_Optimal_Param<-function(Z1,r.all){
 #	Function get SKAT statistics with given rho
 #		Q.all is a matrix with n.q x n.r
 
-SKAT_Optimal_Each_Q<-function(param.m, Q.all, r.all, lambda.all, method=NULL){
+SKAT_Optimal_Each_Q<-function(param.m, Q.all, r.all, lambda.all, method=NULL, isFast=FALSE){
 
 	n.r<-length(r.all)
 	c1<-rep(0,4)
@@ -79,7 +79,7 @@ SKAT_Optimal_Each_Q<-function(param.m, Q.all, r.all, lambda.all, method=NULL){
 		
 		if(!is.null(method)){
 			if(method=="optimal.mod" || method=="optimal.adj" || method=="optimal.moment.adj" ){
-				pval[,i]<-Get_PValue.Lambda(lambda.temp,Q)$p.value
+				pval[,i]<-Get_PValue.Lambda(lambda.temp,Q, isFast=isFast)$p.value
 			}
 		}
 		

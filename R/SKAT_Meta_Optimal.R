@@ -37,7 +37,7 @@ SKAT_META_Optimal_Get_Q_Res<-function(Score.res, r.all){
 
 }
 
-SKAT_META_Optimal_Get_Pvalue<-function(Q.all, Phi, r.all, method, isFast=FALSE){
+SKAT_META_Optimal_Get_Pvalue<-function(Q.all, Phi, r.all, method, isFast=FALSE, FastCutoff=2000){
 
 	n.r<-length(r.all)
 	n.q<-dim(Q.all)[1]
@@ -49,13 +49,13 @@ SKAT_META_Optimal_Get_Pvalue<-function(Q.all, Phi, r.all, method, isFast=FALSE){
 		R.M<-diag(rep(1-r.corr,p.m)) + matrix(rep(r.corr,p.m*p.m),ncol=p.m)
 		L<-chol(R.M,pivot=TRUE)
 		Phi_rho<- L %*% (Phi %*% t(L))
-		lambda.all[[i]]<-Get_Lambda(Phi_rho, isFast=isFast)
+		lambda.all[[i]]<-Get_Lambda(Phi_rho, isFast=isFast, FastCutoff=FastCutoff)
 		 
 	}
 
 	# Get Mixture param 
 	param.m<-SKAT_META_Optimal_Param(Phi,r.all)
-	Each_Info<-SKAT_Optimal_Each_Q(param.m, Q.all, r.all, lambda.all, method=method)
+	Each_Info<-SKAT_Optimal_Each_Q(param.m, Q.all, r.all, lambda.all, method=method, isFast=isFast)
 	pmin.q<-Each_Info$pmin.q
 	pval<-rep(0,n.q)
 	
@@ -171,7 +171,7 @@ tau.2= p.m*z_mean_2 )
 #######################################################33
 #	Linear and Logistic
 
-SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampling, isFast=FALSE){
+SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampling, isFast=FALSE, FastCutoff=2000){
 
 	# if r.all >=0.999 ,then r.all = 0.999
 	IDX<-which(r.all >= 0.999)
@@ -197,7 +197,7 @@ SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampli
 	# Compute P-values 
 	#################################################
 
-	out<-SKAT_META_Optimal_Get_Pvalue(Q.all, Phi/2, r.all, method, isFast=isFast)
+	out<-SKAT_META_Optimal_Get_Pvalue(Q.all, Phi/2, r.all, method, isFast=isFast, FastCutoff=FastCutoff)
 
 	param<-list(p.val.each=NULL,q.val.each=NULL)
 	param$p.val.each<-out$p.val.each[1,]
@@ -228,8 +228,9 @@ SKAT_META_Optimal  = function(Score, Phi, r.all, method="davies", Score.Resampli
 ##################################################################
 #
 # Note: fastOption cannot be used for Optimal test
+#   
 
-Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL, isFast=FALSE){
+Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL, isFast=FALSE, FastCutoff=2000){
 
 	#Score.Resampling1<<-Score.Resampling
 	p.m<-nrow(Phi)
@@ -292,7 +293,7 @@ Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL,
 		
 	}
 
-	re<-Get_Davies_PVal(Q, Phi, Q.res, isFast=isFast)
+	re<-Get_Davies_PVal(Q, Phi, Q.res, isFast=isFast, FastCutoff=FastCutoff)
 	if(length(r.corr)==1){
 		re$Q = Q
 	}
@@ -304,7 +305,8 @@ Met_SKAT_Get_Pvalue<-function(Score, Phi, r.corr, method, Score.Resampling=NULL,
 #		C: continuous, D:binary, V: Kinship
 #
 #
-SKAT_RunFrom_MetaSKAT<-function(res,Z, X1, kernel, weights=NULL, s2=NULL, pi_1=NULL, P0=NULL, out_type="C", method, res.out, n.Resampling, r.corr, isFast=FALSE){
+SKAT_RunFrom_MetaSKAT<-function(res,Z, X1, kernel, weights=NULL, s2=NULL, pi_1=NULL, P0=NULL, out_type="C", method, res.out, n.Resampling, r.corr, 
+                                isFast=FALSE){
 	
 	if (kernel == "linear.weighted") {
     	Z = t(t(Z) * (weights))
@@ -336,6 +338,108 @@ SKAT_RunFrom_MetaSKAT<-function(res,Z, X1, kernel, weights=NULL, s2=NULL, pi_1=N
 	re$IsMeta=TRUE
 	return(re)
 	
+}
+
+######################################################
+# Added 
+# 2025-02-12
+
+
+#Cauchy combination for multiple testing with varying annotations and maf cutoffs
+CCT <- function(pvals, weights=NULL){
+  #### check if there is NA
+  if(sum(is.na(pvals)) > 0){
+    stop("Cannot have NAs in the p-values!")
+  }
+  
+  #### check if all p-values are between 0 and 1
+  if((sum(pvals<0) + sum(pvals>1)) > 0){
+    stop("All p-values must be between 0 and 1!")
+  }
+  
+  #### check if there are p-values that are either exactly 0 or 1.
+  is.zero <- (sum(pvals==0)>=1)
+  is.one <- (sum(pvals==1)>=1)
+  #if(is.zero && is.one){
+  #  stop("Cannot have both 0 and 1 p-values!")
+  #}
+  if(is.zero){
+    return(0)
+  }
+  if(is.one){
+    warning("There are p-values that are exactly 1!")
+    return(min(1,(min(pvals))*(length(pvals))))
+  }
+  
+  #### check the validity of weights (default: equal weights) and standardize them.
+  if(is.null(weights)){
+    weights <- rep(1/length(pvals),length(pvals))
+  }else if(length(weights)!=length(pvals)){
+    stop("The length of weights should be the same as that of the p-values!")
+  }else if(sum(weights < 0) > 0){
+    stop("All the weights must be positive!")
+  }else{
+    weights <- weights/sum(weights)
+  }
+  
+  #### check if there are very small non-zero p-values
+  is.small <- (pvals < 1e-16)
+  if (sum(is.small) == 0){
+    cct.stat <- sum(weights*tan((0.5-pvals)*pi))
+  }else{
+    cct.stat <- sum((weights[is.small]/pvals[is.small])/pi)
+    cct.stat <- cct.stat + sum(weights[!is.small]*tan((0.5-pvals[!is.small])*pi))
+  }
+  
+  #### check if the test statistic is very large.
+  if(cct.stat > 1e+15){
+    pval <- (1/cct.stat)/pi
+  }else{
+    pval <- 1-pcauchy(cct.stat)
+  }
+  return(pval)
+}
+
+##############################################################
+# SKAT-O with cauchy-combination
+#
+
+Met_SKAT_Get_Pvalue_Cauchy<-function(Score, Phi, r.corr, method, isFast=FALSE, FastCutoff=2000){
+  
+  r.corr.n<-length(r.corr)
+  pvals<-rep(NA, r.corr.n)
+  for(i in 1:r.corr.n){
+    r.corr1<-r.corr[i]
+    out1<-Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr1, method=method, isFast=isFast, FastCutoff=FastCutoff)
+    pvals[i]<-out1$p.value
+  }
+  
+  if(r.corr.n > 1){
+    pval = CCT(pvals=pvals)
+    idx_min = which(min(pvals)==pvals)
+    param = list(p.val.each=pvals, rho = r.corr, minp = pvals[idx_min], rho_est=r.corr[idx_min])
+    re<-list(p.value = pval, param=param)
+    
+  } else {
+    re<-list(p.value = pval)
+  }
+  return(re)
+}
+
+##############################################################
+# First run Met_SKAT_Get_Pvalue_Cauchy with r.corr=c(0,1)
+# if p.value < cutoff, run full skat-o
+# isFast and FastCutoff is about using fast eigenvalue calculation (only calculate top 100 eigenvalues)
+Met_SKAT_Get_Pvalue_Hybrid<-function(Score, Phi, r.corr, method, pval_cutoff= 0.01, isFast=FALSE, FastCutoff=2000){
+  
+  # first run Met_SKAT_Get_Pvalue_Cauchy
+  re1 = Met_SKAT_Get_Pvalue_Cauchy(Score=Score, Phi=Phi, r.corr=c(0,1), method=method, isFast=isFast, FastCutoff=FastCutoff)
+  if(re1$p.value > pval_cutoff){
+    return(re1)
+  }
+  
+  re2 = Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, isFast=isFast, FastCutoff=FastCutoff)
+  return(re2)
 }
 
 
