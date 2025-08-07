@@ -1,12 +1,11 @@
-#ifndef _STAND_ALONE_
-
-    #include <R.h>
-    #include <Rmath.h>
-    
-#endif
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifndef _STAND_ALONE_
+    #include <R.h>
+    #include <Rmath.h>
+#endif
 
 /*********************************************************************
 
