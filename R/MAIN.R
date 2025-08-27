@@ -191,8 +191,8 @@ SKAT_MAIN_Check_Z<-function(Z, n, id_include, SetID, weights, weights.beta, impu
 	##############################################
 	# Check Missing 
 
-	IDX_MISS<-union(which(is.na(Z)),which(Z == 9))
-	if(length(IDX_MISS) > 0){
+	IDX_MISS<-rbind(which(is.na(Z), arr.ind = TRUE), which(Z == 9, arr.ind = TRUE))
+	if(nrow(IDX_MISS) > 0){
 		Z[IDX_MISS]<-NA
 	} 
 
